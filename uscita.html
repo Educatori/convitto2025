@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ora Libera 17/18</title>
+    <link rel="stylesheet" href="css/uscita-style.css">
+</head>
+<body>
+
+<div class="print-bar">
+    <button class="btn" onclick="window.print()">STAMPA</button>
+</div>
+
+<div class="header-main">
+    <h1>ORA LIBERA</h1> 
+</div>
+
+<div class="grid-wrapper">
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-room">Room</div>
+            <div class="cell-class">Cl</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-notes">Uscita</div>
+            <div class="cell-notes">Ingresso</div>
+        </div>
+        <div id="col0" class="col-data"></div>
+    </div>
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-room">Room</div>
+            <div class="cell-class">Cl</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-notes">Uscita</div>
+            <div class="cell-notes">Ingresso</div>
+        </div>
+        <div id="col1" class="col-data"></div>
+    </div>
+</div>
+
+<script src="js/database.js"></script>
+<script src="js/uscita-script.js"></script>
+
+</body>
+</html>

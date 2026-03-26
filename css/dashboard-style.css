@@ -1,0 +1,179 @@
+/* STYLE.CSS - Dashboard Convitto 
+    Organizzazione: Palette -> Base -> Layout -> Card -> Elementi Speciali
+*/
+
+:root {
+    /* Palette Principale */
+    --p: #2c3e50;               /* Header e Testi principali */
+    --s: #27ae60;               /* Presente / OK (Verde Smeraldo) */
+    --d: #ed5a3a;               /* Assente (Arancio) */
+    --e: #3498db;               /* Non Cena (Blu Cielo) */
+    --bg: #f4f7f6;              /* Sfondo generale */
+    --card-bg: #ffffff;         /* Sfondo card studente */
+    
+    /* Accenti e Stati Speciali */
+    --permessi: #ee4700;        /* Colore carico per PP */
+    --highlight-lab: #fdf2d0;   /* Giallo crema per evidenziare LAB */
+    --lab-text: #d35400;        /* Testo badge LAB */
+    --cambiati: #16a085;        /* Switch turno (Ottanio) */
+    --btn-inactive: #f1f2f6;    /* Bottoni non attivi */
+    
+    /* Colori Bottoni Toolbar */
+    --btn-color-1: #16d867;     /* Verde per 18:30 */
+    --btn-color-2: #65b7ed;     /* Blu per 19:15 */
+    --btn-color-3: #8e44ad;     /* Viola per CONVITTO */
+    --btn-color-4: #5d7d8c;     /* Grigio per DINNER */
+    --btn-reset: #ff1800;       /* Rosso per Reset */
+
+    /* Testo e Bordi */
+    --text-dark: #2d3436;
+    --text-muted: #636e72;
+    --border-color: #eee;
+}
+
+/* --- BASE --- */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: var(--bg); 
+    margin: 0; 
+    padding: 20px; 
+    color: var(--text-dark); 
+}
+
+.container { 
+    max-width: 1200px; 
+    margin: auto; 
+}
+
+/* --- HEADER & TOOLBAR --- */
+header { 
+    background: var(--p); 
+    color: white; 
+    padding: 15px 30px; 
+    border-radius: 20px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+
+.toolbar { 
+    background: var(--card-bg); 
+    padding: 15px; 
+    border-radius: 20px; 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    align-items: center; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+}
+
+#search, #roomInput { 
+    border: 2px solid var(--border-color); 
+    border-radius: 12px; 
+    outline: none; 
+    padding: 10px; 
+    transition: 0.3s; 
+}
+
+#search:focus, #roomInput:focus { border-color: var(--e); }
+#search { flex: 1; }
+
+.btn-toolbar { 
+    border: none; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    color: white; 
+    padding: 10px 18px; 
+    transition: 0.2s; 
+}
+
+.btn-toolbar:hover { 
+    opacity: 0.9; 
+    transform: translateY(-1px); 
+}
+
+/* --- GRID STUDENTI --- */
+#listaStudenti { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
+    gap: 15px; 
+}
+
+.student-row { 
+    background: var(--card-bg); 
+    border-radius: 18px; 
+    padding: 20px; 
+    border-bottom: 5px solid var(--s); 
+    transition: 0.2s; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02); 
+}
+
+/* Stati Card */
+.student-row.dinner-no { border-bottom-color: var(--e); background: #f0faff; }
+.student-row.assente { border-bottom-color: var(--d); background: #fff9f4; }
+.student-row.highlight-lab { background: var(--highlight-lab) !important; border-bottom-color: var(--d) !important; }
+
+/* Elementi Card */
+.st-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+.room-badge { background: var(--btn-inactive); padding: 2px 8px; border-radius: 6px; font-weight: bold; font-size: 0.7em; }
+.lab-badge { color: var(--lab-text); font-weight: bold; font-size: 0.8em; animation: pulse 3s infinite; }
+
+.inputs { display: flex; gap: 5px; margin: 10px 0; }
+.inputs input { width: 50%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8em; }
+
+.btns { display: flex; gap: 5px; }
+.btns button { 
+    flex: 1; 
+    padding: 8px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 0.75em; 
+    font-weight: bold; 
+    background: var(--btn-inactive); 
+    color: var(--text-muted); 
+    transition: 0.2s; 
+}
+
+/* Stati Attivi Bottoni Card */
+.active-ass { background: var(--d) !important; color: white !important; }
+.active-din { background: var(--e) !important; color: white !important; }
+
+.btn-switch { 
+    background: var(--btn-inactive); 
+    border: none; 
+    border-radius: 50%; 
+    width: 32px; 
+    height: 32px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.btn-switch.modificato { background: var(--cambiati) !important; color: white; }
+
+/* --- SIDEBAR & PANNELLI --- */
+.day-box { 
+    background: var(--card-bg); 
+    padding: 10px; 
+    text-align: center; 
+    border-radius: 12px; 
+    font-size: 0.8em; 
+    cursor: pointer; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    flex: 1;
+}
+
+#sidePanel h3 { border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+/* --- ANIMAZIONI --- */
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+/* --- MEDIA QUERIES --- */
+@media (max-width: 768px) {
+    #listaStudenti { grid-template-columns: 1fr 1fr; }
+    header { flex-direction: column; text-align: center; gap: 10px; }
+    .toolbar { flex-wrap: wrap; }
+}

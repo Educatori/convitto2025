@@ -1,0 +1,112 @@
+:root {
+    --bg-header: #5a8fc4;
+    --accent-color: #2c3e50;
+}
+
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 0; 
+    padding: 10px; 
+    font-size: 10px;
+    background-color: #fff;
+}
+
+.header-main {
+    text-align: center;
+    border-bottom: 2px solid var(--bg-header);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+}
+
+h1 { 
+    margin: 0; 
+    font-size: 18px; 
+    text-transform: uppercase; 
+    color: var(--accent-color);
+}
+
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
+}
+
+.column-header {
+    display: flex;
+    background: var(--bg-header);
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    border-radius: 3px 3px 0 0;
+    font-size: 8px;
+    margin-bottom: 2px;
+}
+
+.student-row { 
+    border: 0.5px solid #bbb; 
+    display: flex; 
+    align-items: center;
+    padding: 3px 5px;
+    margin-bottom: 1px;
+    page-break-inside: avoid; /* Per la stampa */
+}
+
+/* Colori speciali 5B */
+.bg-5b-g1 { background-color: #e8e8e8 !important; } 
+.bg-5b-g2 { background-color: #f9f9f9 !important; } 
+
+.row-crossed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: #ffebee !important; 
+}
+
+.cell-room { width: 30px; font-weight: bold; border-right: 1px solid #eee; }
+.cell-name { flex-grow: 1; padding-left: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cell-class { width: 45px; text-align: center; font-size: 8.5px; }
+.cell-check { width: 40px; text-align: center; font-weight: bold; }
+.cell-notes { width: 60px; text-align: center; font-weight: bold; }
+
+.check-box {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #333;
+    margin: 0 auto;
+    position: relative;
+}
+
+.check-box.checked::after {
+    content: '✔';
+    display: block;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+    color: #2e7d32;
+}
+
+.line-notes {
+    width: 90%;
+    border-bottom: 0.5px solid #999;
+    height: 12px;
+    margin: 0 auto;
+}
+
+.no-print { text-align: center; margin-bottom: 15px; }
+.btn { 
+    padding: 10px 30px; 
+    background: var(--bg-header); 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 5px; 
+    font-weight: bold;
+}
+
+@media print {
+    .no-print { display: none; }
+    @page { 
+        size: A4 landscape; 
+        margin: 0.8cm; 
+    }
+    body { padding: 0; }
+}

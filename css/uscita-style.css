@@ -1,0 +1,104 @@
+:root {
+    --bg-header: #5a8fc4;
+    --accent-color: #2c3e50;
+    --row-alt: #f9f9f9;
+}
+
+/* RESET */
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif;
+    height: 100vh; 
+    overflow: hidden;
+}
+
+body { 
+    display: flex; 
+    flex-direction: column; 
+    padding: 5mm 10mm;
+    box-sizing: border-box;
+}
+
+.header-main {
+    text-align: center;
+    border-bottom: 1.5px solid var(--bg-header);
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    flex-shrink: 0;
+}
+
+h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #2c3e50; }
+
+/* Container principale */
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 15px;
+    flex-grow: 1; 
+    min-height: 0;
+}
+
+.macro-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 0.5px solid #ccc;
+}
+
+.column-header {
+    display: flex;
+    background: var(--bg-header);
+    color: white;
+    font-weight: bold;
+    padding: 4px 2px;
+    flex-shrink: 0;
+    font-size: 8.5px;
+    text-align: center;
+}
+
+.col-data {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.print-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.student-row { 
+    border-bottom: 0.1px solid #eee; 
+    display: flex; 
+    align-items: center;
+    padding: 1px 4px;
+    font-size: 9px;
+    flex-grow: 1;
+    max-height: 22px;
+}
+
+.student-row:nth-child(even) { background-color: var(--row-alt); }
+.row-crossed { text-decoration: line-through; opacity: 0.4; background-color: #ffebee !important; }
+
+/* Celle */
+.cell-room { width: 25px; font-weight: bold; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
+.cell-class { width: 25px; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
+.cell-name { flex-grow: 1; padding-left: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-notes { width: 50px; border-left: 0.5px solid #eee; height: 100%; display: flex; align-items: flex-end; flex-shrink: 0; }
+.line-notes { width: 80%; border-bottom: 0.5px solid #bbb; margin: 0 auto 3px; height: 8px; }
+
+.btn { padding: 6px 15px; background: #3c8740; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+@media print {
+    .print-bar { display: none !important; }
+    @page { 
+        size: A4 portrait; 
+        margin: 0.8cm; 
+    }
+    body { padding: 0; height: 100%; }
+    .student-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
