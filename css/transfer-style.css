@@ -1,0 +1,157 @@
+:root {
+    --bg-page: #eef2f7; 
+    --bg-header: #1a3a5a; 
+    --bg-room: #ffffff;
+    --accent-color: #2c3e50;
+}
+
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 0; 
+    padding: 10px; 
+    font-size: 10.5px; 
+    line-height: 1.1; 
+    background-color: var(--bg-page);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 2px solid var(--bg-header);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    min-height: 60px;
+}
+
+.logo-space {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-space img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+h1 { 
+    margin: 0; 
+    font-size: 18px; 
+    text-transform: uppercase; 
+    color: var(--accent-color);
+    letter-spacing: 1px;
+}
+
+.grid-container { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 4px; 
+}
+
+.section-title { 
+    grid-column: span 3; 
+    background: var(--bg-header);
+    color: white; 
+    padding: 6px; 
+    text-align: center; 
+    font-weight: bold; 
+    text-transform: uppercase;
+    margin-top: 12px;
+    font-size: 11.5px;
+    border-radius: 4px;
+}
+
+.room-box { 
+    border: 1px solid #333; 
+    display: flex; 
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 35px;
+    background: var(--bg-room);
+    border-radius: 2px;
+}
+
+.room-info { 
+    width: 35px; 
+    background: #d1d9e0; 
+    border-right: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--bg-header);
+    flex-shrink: 0;
+}
+
+.occupants-list { 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.row-student { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 2px 5px;
+    border-bottom: 0.5px solid #eee;
+}
+
+.row-student:last-child { 
+    border-bottom: none; 
+}
+
+.student-name { 
+    flex: 1; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    font-size: 10px; 
+}
+
+.student-name b { 
+    text-transform: uppercase; 
+    color: #000; 
+}
+
+.student-details { 
+    margin-left: 5px; 
+    font-size: 8.5px; 
+    color: #1a3a5a; 
+    font-weight: bold;
+}
+
+.no-print { 
+    text-align: center; 
+    margin: 15px; 
+}
+
+.btn { 
+    padding: 10px 30px; 
+    background: var(--bg-header); 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 30px; 
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+@media print {
+    body { 
+        background-color: white !important; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+    }
+    .no-print { display: none; }
+    @page { size: A4 portrait; margin: 0.5cm; }
+}
