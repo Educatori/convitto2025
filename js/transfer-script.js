@@ -1,4 +1,4 @@
-function generaGrigliaRooming() {
+ function generaGrigliaRooming() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
 
@@ -8,9 +8,14 @@ function generaGrigliaRooming() {
     ];
 
     let listaDalDatabase = [];
-    if (typeof studenti !== 'undefined') {
-        listaDalDatabase = studenti;
-    } else {
+
+if (typeof studenti !== 'undefined') {
+    listaDalDatabase = listaDalDatabase.concat(studenti);
+}
+
+if (typeof fuorisede !== 'undefined') {
+    listaDalDatabase = listaDalDatabase.concat(fuorisede);
+} else {
         console.warn("Attenzione: variabile 'studenti' non trovata in database.js");
     }
 
