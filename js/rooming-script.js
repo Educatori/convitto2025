@@ -4,18 +4,21 @@ function generaGrigliaRooming() {
 
     // Dati extra statici
     const extra = [
-        { cognome: "EDUCATORI", nome: "", classe: "", gruppo: "", room: "112" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "213" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "216" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "220" }
+        { cognome: "EDUCATORI", nome: "", classe: "", gruppo: "", room: "112", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "213", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "216", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "220", percorso: "" }
     ];
 
     // LOGICA DI RECUPERO: Cerca 'studenti', se non esiste usa lista vuota
     let listaDalDatabase = [];
-    if (typeof studenti !== 'undefined') {
-        listaDalDatabase = studenti;
+
+if (typeof studenticonvittori !== 'undefined') {
+    listaDalDatabase = listaDalDatabase.concat(studenticonvittori);
+
+        
     } else {
         console.warn("Attenzione: variabile 'studenti' non trovata in database.js");
     }
@@ -54,11 +57,13 @@ function generaGrigliaRooming() {
 
         const occupantiHtml = stanze[num].map(s => {
             const infoGruppo = s.gruppo ? ` [${s.gruppo}]` : "";
+            const infoPercorso = s.percorso ? ` <span class="percorso-tag">(${s.percorso})</span>` : "";
             const nomeDisplay = (s.cognome === "-") ? "<i>Libero / Foresteria</i>" : `<b>${s.cognome}</b> ${s.nome}`;
             return `
                 <div class="row-student">
                     <span class="student-name">${nomeDisplay}</span>
-                    <span class="student-details">${s.classe}${infoGruppo}</span>
+                    <span class="student-details">${infoPercorso} ${s.classe}${infoGruppo}</span>
+                    
                 </div>`;
         }).join('');
 
