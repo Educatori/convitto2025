@@ -3,34 +3,36 @@
     --bg-header: #1a3a5a; 
     --bg-room: #ffffff;
     --accent-color: #2c3e50;
+    --lab-color: #e74c3c; /* Colore Lab */
 }
 
 body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
-    margin: 0; 
+    margin: 10; 
     padding: 10px; 
-    font-size: 10.5px; 
-    line-height: 1.1; 
+    font-size: 12px; 
+    line-height: 1.5; 
     background-color: var(--bg-page);
 }
 
+/* --- HEADER --- */
 .header-container {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border-bottom: 2px solid var(--bg-header);
-    margin-bottom: 10px;
+    border-bottom: 5px solid var(--bg-header);
+    margin-bottom: 7px;
     padding-bottom: 5px;
-    min-height: 60px;
+    min-height: 5px;
 }
 
 .logo-space {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 20;
     width: 80px;
-    height: 60px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,10 +52,11 @@ h1 {
     letter-spacing: 1px;
 }
 
+/* --- GRIGLIA SU 3 O 4 COLONNE --- */
 .grid-container { 
     display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 4px; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 6px; 
 }
 
 .section-title { 
@@ -69,6 +72,7 @@ h1 {
     border-radius: 4px;
 }
 
+/* --- BOX CLASSE --- */
 .room-box { 
     border: 1px solid #333; 
     display: flex; 
@@ -77,29 +81,56 @@ h1 {
     min-height: 35px;
     background: var(--bg-room);
     border-radius: 2px;
+    transition: transform 0.2s;
+    break-inside: avoid; /* Evita che una classe venga spezzata tra due pagine */
+     
+}
+
+/* Evidenza speciale per classi in LAB */
+.room-box.has-lab {
+    border: 2px solid var(--lab-color);
+    background-color: #fff5f5;
+    z-index: 1;
 }
 
 .room-info { 
-    width: 35px; 
+    width: 40px; /* Aumentato leggermente per ospitare il testo */
     background: #d1d9e0; 
     border-right: 1px solid #333;
     display: flex;
+    flex-direction: column; /* Per incolonnare Classe e Badge LAB */
     justify-content: center;
     align-items: center;
     font-weight: bold;
     font-size: 12px;
     color: var(--bg-header);
     flex-shrink: 0;
+    text-align: center;
 }
 
+/* Badge Lab all'interno di room-info */
+.lab-badge {
+    background-color: var(--lab-color);
+    color: white;
+    font-size: 8px;
+    padding: 1px 3px;
+    border-radius: 2px;
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+/* --- LISTA STUDENTI --- */
 .occupants-list { 
     flex-grow: 1; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
+   
+     //* due colonne nella stessa box display: grid; grid-template-columns: 1fr 1fr;*/
 }
 
 .row-student { 
+    font-size: 10pt;
     display: flex; 
     justify-content: space-between; 
     padding: 2px 5px;
@@ -125,11 +156,12 @@ h1 {
 
 .student-details { 
     margin-left: 5px; 
-    font-size: 8.5px; 
+    font-size: 10px; 
     color: #1a3a5a; 
     font-weight: bold;
 }
 
+/* --- UTILITY --- */
 .no-print { 
     text-align: center; 
     margin: 15px; 
@@ -146,12 +178,22 @@ h1 {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+/* --- STAMPA --- */
 @media print {
     body { 
         background-color: white !important; 
-        -webkit-print-color-adjust: exact; 
-        print-color-adjust: exact; 
+        padding: 0;
     }
     .no-print { display: none; }
+    .room-box.has-lab {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border: 2px solid var(--lab-color) !important;
+    }
+    .lab-badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: var(--lab-color) !important;
+    }
     @page { size: A4 portrait; margin: 0.5cm; }
 }
