@@ -1,70 +1,91 @@
- function generaGrigliaRooming() {
+/**
+ * TRANSFER-SCRIPT.JS - Versione Aggiornata
+ */
+
+function generaGriglia() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
 
-    const extra = [
-        { cognome: " ", nome: " ", classe: ".", gruppo: "", room: " " },
-        
-    ];
+// 1. Configurazione: Classi da ESCLUDERE e Lab del giorno
+    const classiDaEscludere = ["1P", "2P", "3P", "2A", "2B", "5B"];
+    const oggi = new Date().getDay(); 
+    const labConfig = (typeof LAB_PRANZO !== 'undefined') ? LAB_PRANZO : {};
+    const classiInLabOggi = labConfig[oggi] || [];
 
+    // 2. Caricamento e Unione dati
     let listaDalDatabase = [];
 
-if (typeof studenti !== 'undefined') {
-    listaDalDatabase = listaDalDatabase.concat(studenti);
-}
-
-if (typeof fuorisede !== 'undefined') {
-    listaDalDatabase = listaDalDatabase.concat(fuorisede);
-} else {
-        console.warn("Attenzione: variabile 'studenti' non trovata in database.js");
+    if (typeof studenticonvittori !== 'undefined') {
+        listaDalDatabase = listaDalDatabase.concat(studenticonvittori);
+    }
+    
+    // Controllo flessibile per esterni
+    if (typeof studentiesterni !== 'undefined') {
+        listaDalDatabase = listaDalDatabase.concat(studentiesterni);
+    } else if (typeof esterni !== 'undefined') {
+        listaDalDatabase = listaDalDatabase.concat(esterni);
     }
 
-    const tuttiIPartecipanti = [...extra, ...listaDalDatabase];
+    // 3. Filtraggio e Raggruppamento per classe
     const classi = {};
+    
+    listaDalDatabase.forEach(s => {
+        // Salta se non ha cognome o se la classe è nell'elenco degli esclusi
+        if (!s.cognome || s.cognome.trim() === "") return;
+        
+        const nomeClasse = s.classe ? s.classe.toUpperCase().trim() : "SENZA CLASSE";
+        
+        if (classiDaEscludere.includes(nomeClasse)) return;
 
-    // Raggruppamento per classe
-    tuttiIPartecipanti.forEach(s => {
-        const classe = s.classe || "Senza classe";
-        if (!classi[classe]) classi[classe] = [];
-        classi[classe].push(s);
+        if (!classi[nomeClasse]) classi[nomeClasse] = [];
+        classi[nomeClasse].push(s);
     });
 
-    // Ordinamento classi alfabetico
-    const elencoClassi = Object.keys(classi).sort((a, b) => a.localeCompare(b));
-
+    const elencoClassi = Object.keys(classi).sort();
     grid.innerHTML = "";
 
-    elencoClassi.forEach(classe => {
+    // 4. Generazione HTML
+    elencoClassi.forEach(nomeClasse => {
         const box = document.createElement('div');
-        box.className = 'room-box';
+        const haLabOggi = classiInLabOggi.includes(nomeClasse);
+        
+        box.className = `room-box ${haLabOggi ? 'has-lab' : ''}`;
 
-        // Ordinamento alfabetico cognome dentro ogni classe
-        classi[classe].sort((a, b) => (a.cognome || "").localeCompare(b.cognome || ""));
+        // Ordinamento studenti per cognome
+        classi[nomeClasse].sort((a, b) => a.cognome.localeCompare(b.cognome));
 
-        const occupantiHtml = classi[classe].map(s => {
-            const infoGruppo = s.gruppo ? ` [${s.gruppo}]` : "";
-            let nomeDisplay;
-
-            if (s.cognome === "-") {
-                nomeDisplay = "<i>Libero / Foresteria</i>";
-                } else {
-                nomeDisplay = `<b>${s.cognome}</b> ${s.nome}`;
-                }
+        const occupantiHtml = classi[nomeClasse].map(s => {
+            // Gestione Percorso e Gruppo
+            const tagPercorso = s.percorso ? `<span class="percorso-tag">${s.percorso}</span>` : "";
+            const tagGruppo = s.gruppo ? `[${s.gruppo}]` : "";
+            // Uniamo i dettagli (Stanza + Percorso + Gruppo)
+            const dettagli = [
+                ` ${s.room || '--'}`,
+                tagPercorso,
+                tagGruppo
+            ].filter(Boolean).join(" ");
 
             return `
                 <div class="row-student">
-                    <span class="student-name">${nomeDisplay}</span>
-                    <span class="student-details"> ${s.room}${infoGruppo}</span>
+                    <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
+                    <span class="student-details">${dettagli}</span>
                 </div>`;
         }).join('');
 
+        // Costruzione box della classe
         box.innerHTML = `
-            <div class="room-info">${classe}</div>
-            <div class="occupants-list">${occupantiHtml}</div>
+            <div class="room-info">
+                <span> ${nomeClasse}</span>
+                ${haLabOggi ? '<span class="lab-badge">LAB LUNCH</span>' : ''}
+            </div>
+            <div class="occupants-list">
+                ${occupantiHtml}
+            </div>
         `;
 
         grid.appendChild(box);
     });
 }
 
-window.onload = generaGrigliaRooming;
+// Lancia la funzione al caricamento
+window.onload = generaGriglia;
