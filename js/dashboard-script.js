@@ -21,6 +21,7 @@ function init() {
     lista.innerHTML = "";
 
     // Ordinamento per camera e generazione card
+    const studenti = [...studenticonvittori,];
     studenti.sort((a, b) => a.room.localeCompare(b.room, undefined, { numeric: true })).forEach(s => {
         const r = document.createElement('div');
         r.className = 'student-row';
@@ -33,6 +34,7 @@ function init() {
         r.dataset.classe = s.classe;
         r.dataset.room = s.room;
         r.dataset.gruppo = s.gruppo || "";
+        r.dataset.percorso = s.percorso || "";
         r.dataset.dinnerno = "0";
 
         r.innerHTML = `
@@ -42,7 +44,7 @@ function init() {
                     <button class="btn-switch" onclick="toggleSwitchTurno(this)">⇄</button>
                 </div>
                 <span style="font-size:0.75em; color:#666; font-weight:bold;">
-                    ${s.classe} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
+                    ${s.classe} ${s.percorso ? '('+s.percorso+')' : ''} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
                 </span>
             </div>
             <b style="font-size:1.1em">${s.cognome}</b> ${s.nome}
@@ -67,15 +69,15 @@ function turnoStudente(classe, cognome) {
     const giornoSettimana = oggi.getDay(); 
     const cgn = cognome.toUpperCase();
 
-    // Override basato su database.js
-    if (OVERRIDE_TURNI[cgn] && OVERRIDE_TURNI[cgn][giornoSettimana]) {
-        return OVERRIDE_TURNI[cgn][giornoSettimana];
+    // Override basato su PERMESSI.js
+    if (OVERRIDE_TURNI_DINNER[cgn] && OVERRIDE_TURNI_DINNER[cgn][giornoSettimana]) {
+        return OVERRIDE_TURNI_DINNER[cgn][giornoSettimana];
     }
-    return TURNI_BASE[1].includes(classe) ? 1 : 2;
+    return TURNI_DINNER[1].includes(classe) ? 1 : 2;
 }
 
 function setTurno(turno) {
-    const classi = TURNI_BASE[turno];
+    const classi = TURNI_DINNER[turno];
     document.querySelectorAll('.student-row').forEach(r => {
         r.style.display = classi.includes(r.dataset.classe) ? 'block' : 'none';
     });
@@ -93,7 +95,14 @@ function toggleSwitchTurno(btn) {
 function applicaFiltri() {
     const s = document.getElementById('search').value.toLowerCase();
     document.querySelectorAll('.student-row').forEach(r => {
-        const testo = (r.dataset.cognome + " " + r.dataset.nomeCompleto + " " + r.dataset.classe + " " + r.dataset.room + r.dataset.gruppo + " ").toLowerCase();
+        const testo = (
+    r.dataset.cognome + " " +
+    r.dataset.nomeCompleto + " " +
+    r.dataset.classe + " " +
+    r.dataset.room + " " +
+    r.dataset.gruppo + " " +
+    r.dataset.percorso
+).toLowerCase();
         r.style.display = testo.includes(s) ? 'block' : 'none';
     });
 }
@@ -132,7 +141,7 @@ function controllaDinnerAutomatico(riga) {
     let entra = normalizzaOrario(riga.querySelector('.in-i').value);
     let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
 
-    let limite = TURNI_BASE[1].includes(classe) ? "18:30" : "19:15";
+    let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
     const paroleNo = ["no", "non", "nor", "no rientro"];
 
     const isTardi = (orario) => orario.includes(":") && orario > limite;
@@ -174,7 +183,7 @@ function generaPopUpStampaDinner() {
     document.querySelectorAll('.student-row').forEach(r => {
         const cognome = r.dataset.cognome;
         const nomeCompleto = r.dataset.nomeCompleto;
-        let turnoOriginale = TURNI_BASE[1].includes(r.dataset.classe) ? 1 : 2;
+        let turnoOriginale = TURNI_DINNER[1].includes(r.dataset.classe) ? 1 : 2;
         let turnoEffettivo = turnoStudente(r.dataset.classe, cognome);
 
         if (cambiTurnoManuali[cognome]) turnoEffettivo = (turnoEffettivo === 1) ? 2 : 1;
@@ -280,6 +289,7 @@ const dataStampa = document.getElementById('todayDate').innerText;
         if (!camere[room]) camere[room] = [];
         camere[room].push({
             classe: r.dataset.classe,
+            percorso: r.dataset.percorso,
             cognome: cognome,
             dinnerno: r.dataset.dinnerno,
             presente: !r.classList.contains('assente'),
@@ -347,7 +357,7 @@ popup.document.write(`
                             return `
                                 <tr>
                                     ${idx === 0 ? `<td rowspan="${camere[room].length}" class="room-header border-bottom-bold">${room}</td>` : ''}
-                                    <td ${borderClass}>${s.classe}</td>
+                                    <td ${borderClass}>${s.classe} ${s.percorso || ''}</td>
                                     <td ${borderClass} class="col-cognome"><b>${s.cognome}</b> ${s.gruppo ? '('+s.gruppo+')' : ''}</td>
                                     <td ${borderClass}>${s.presente ? 'X' : ''}</td>
                                     <td ${borderClass}>${!s.presente ? 'X' : ''}</td>
@@ -406,7 +416,7 @@ function togglePanel() {
 function isStudenteInLabOggi(classe, gruppo, dataOggetto) {
     const dataKey = dataOggetto.toLocaleDateString('it-IT');
     const giorno = dataOggetto.getDay();
-    const gLab = CALENDARIO_GRUPPI[dataKey];
+    const gLab = CALENDARIO_GRUPPI_DINNER[dataKey];
     if ({ 1: ["2P"], 3: ["2B"], 4: ["2A"] }[giorno]?.includes(classe)) return true;
     if ((classe === "5A" || classe === "5B") && gLab) return (gLab === "gr1" && gruppo === "G1") || (gLab === "gr2" && gruppo === "G2");
     return false;
@@ -440,7 +450,7 @@ function caricaDatiLocale() {
 
 function mostraDataReset() {
     const dReset = localStorage.getItem('dataUltimoReset');
-    if (dReset) document.getElementById('info-reset').innerText = `Update: ${dReset}`;
+    if (dReset) document.getElementById('info-reset').innerText = `Update: ${dReset}`; 
 }
 
 window.onload = init;
