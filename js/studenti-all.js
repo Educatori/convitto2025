@@ -1,0 +1,2 @@
+const studenti = [...studenticonvittori, ...studentiesterni];
+
