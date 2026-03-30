@@ -1,11 +1,11 @@
 function generaGrigliaBus() {
-    if (typeof studenti === 'undefined') {
-        console.error("Errore: database.js non caricato correttamente.");
+    if (typeof studenticonvittori === 'undefined') {
+        console.error("Errore: convittori.js non caricato correttamente.");
         return;
     }
 
     // --- FILTRO CLASSI ESCLUSE ---
-    const validi = studenti.filter(s => {
+    const validi = studenticonvittori.filter(s => {
         const classe = s.classe.toUpperCase();
         const escluse = ["2A", "2B"];
         return !escluse.includes(classe) && !classe.includes("P") && s.cognome;
