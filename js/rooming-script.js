@@ -1,7 +1,7 @@
 function generaGrigliaRooming() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
-
+ 
     // Dati extra statici
     const extra = [
         { cognome: "EDUCATORI", nome: "", classe: "", gruppo: "", room: "112", percorso: "" },
@@ -56,8 +56,8 @@ if (typeof studenticonvittori !== 'undefined') {
         stanze[num].sort((a, b) => (a.cognome || "").localeCompare(b.cognome || ""));
 
         const occupantiHtml = stanze[num].map(s => {
-            const infoGruppo = s.gruppo ? ` [${s.gruppo}]` : "";
-            const infoPercorso = s.percorso ? ` <span class="percorso-tag">(${s.percorso})</span>` : "";
+            const infoGruppo = s.gruppo ? ` • ${s.gruppo}` : "";
+            const infoPercorso = s.percorso ? ` <span class="percorso-tag">${s.percorso}</span>` : "";
             const nomeDisplay = (s.cognome === "-") ? "<i>Libero / Foresteria</i>" : `<b>${s.cognome}</b> ${s.nome}`;
             return `
                 <div class="row-student">
