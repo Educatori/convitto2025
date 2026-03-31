@@ -1,0 +1,75 @@
+<!DOCTYPE html> 
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Convitto e Dinner</title>
+    
+    <link rel="stylesheet" href="css/dashboard-style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+<h1>  CONVITTO & DINNER  </h1>
+                
+                <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
+            </div>
+            <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
+        </header>
+
+        <div class="toolbar">
+             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">PERMESSI</button>
+            <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
+            
+            <div style="display:flex; align-items:center; gap:5px;">
+                <span style="font-size:0.8em; font-weight:bold; color:var(--p);">ROOM:</span>
+                <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" 
+                       onfocus="this.oldValue = this.value;" 
+                       oninput="gestisciSaltoStanze(this); validaERicerca();">
+            </div>
+
+            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">AZZERA</button>
+         <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
+            Ultimo aggiornamento: MAI
+        </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;">
+            <div class="day-box" style="border-bottom:4px solid var(--btn-color-1)" onclick="setTurno(1)">1° TURNO (18:30)</div>
+            <div class="day-box" style="border-bottom:4px solid var(--btn-color-2)" onclick="setTurno(2)">2° TURNO (19:15)</div>
+            <div class="day-box" style="border-bottom:4px solid var(--btn-color-3)" onclick="generaPopUpStampaConvitto()">STAMPA CONVITTO</div>
+            <div class="day-box" style="border-bottom:4px solid var(--btn-color-4)" onclick="generaPopUpStampaDinner()">STAMPA DINNER</div>
+        </div>
+
+        
+        <div id="listaStudenti"></div>
+    </div>
+
+    <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0;">Permessi Permanenti</h3>
+            <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
+        </div>
+        <div id="listaPermessiContent"></div>
+    </div>
+
+    <script src="js/convittori.js"></script>
+    <script src="js/permessi.js"></script>
+    <script src="js/dashboard-script.js"></script>
+
+    <script>
+        function resetDati() {
+            if(confirm("Sei sicuro? Questo cancellerà tutte le uscite e le assenze inserite oggi ⚠")) {
+                localStorage.removeItem('datiConvitto');
+                const ora = new Date().toLocaleString('it-IT');
+                localStorage.setItem('dataUltimoReset', ora);
+                location.reload();
+            }
+        }
+    </script>
+
+    
+</body>
+</html>
