@@ -1,5 +1,5 @@
 /**
- * TRANSFER-SCRIPT.JS - Versione Aggiornata
+ * TRANSFER-SCRIPT.JS - Versione Aggiornata 
  */
 
 function generaGriglia() {
@@ -57,7 +57,7 @@ function generaGriglia() {
         const occupantiHtml = classi[nomeClasse].map(s => {
             // Gestione Percorso e Gruppo
             const tagPercorso = s.percorso ? `<span class="percorso-tag">${s.percorso}</span>` : "";
-            const tagGruppo = s.gruppo ? `[${s.gruppo}]` : "";
+            const tagGruppo = s.gruppo ? `• ${s.gruppo}` : "";
             // Uniamo i dettagli (Stanza + Percorso + Gruppo)
             const dettagli = [
                 ` ${s.room || '--'}`,
