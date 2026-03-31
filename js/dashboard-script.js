@@ -44,7 +44,7 @@ function init() {
                     <button class="btn-switch" onclick="toggleSwitchTurno(this)">⇄</button>
                 </div>
                 <span style="font-size:0.75em; color:#666; font-weight:bold;">
-                    ${s.classe} ${s.percorso ? '('+s.percorso+')' : ''} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
+                    ${s.classe} ${s.percorso ? ''+s.percorso+'' : ''} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
                 </span>
             </div>
             <b style="font-size:1.1em">${s.cognome}</b> ${s.nome}
