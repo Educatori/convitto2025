@@ -39,7 +39,7 @@ function generaGrigliaBus() {
         const colTarget = document.getElementById('col' + colIndex);
         if (!colTarget) return;
 
-        const infoClasse = `${s.classe}${s.gruppo ? ' ' + s.gruppo : ''}`;
+        const infoClasse = `${s.classe} ${s.percorso ? s.percorso : ''} ${s.gruppo ? '•  ' + s.gruppo : ''}`;
         
         let bgClass = "";
         if (s.classe === "5B") {
@@ -47,7 +47,7 @@ function generaGrigliaBus() {
             if (s.gruppo === "G2") bgClass = "bg-5b-g2";
         }
 
-        const row = document.createElement('div');
+        const row = document.createElement('div'); 
         row.className = `student-row ${bgClass}`;
         row.innerHTML = `
             <div class="cell-room">${s.room}</div>
