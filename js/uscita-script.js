@@ -38,7 +38,8 @@ function generaGrigliaLibera() {
             // Layout della riga con toggle per sbarrare il nome al click
             row.innerHTML = `
                 <div class="cell-room">${s.room || '-'}</div>
-                <div class="cell-class" style="font-size: 0.85em; width: 40px;">${s.classe || '-'}</div>
+                <div class="cell-class" style="font-size: 0.85em; width: 70px;">
+    ${[s.classe, s.percorso, s.gruppo].filter(Boolean).join(" ") || '-'} </div>
                 <div class="cell-name" style="cursor:pointer; flex-grow: 1;">
                     <b>${s.cognome}</b> ${s.nome}
                 </div>
