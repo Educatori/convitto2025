@@ -1,111 +1,194 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indice</title>
-    <style>
-        :root {
-            --bg-page: #eef7ef; 
-            --bg-header: #1a3a5a; 
-            --accent-color: #2c3e50;
-            --white: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-page);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+<title>Indice</title>
 
-        .header-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+<style>
+:root {
+    --bg-light: linear-gradient(135deg, #dfe9f3, #ffffff);
+    --bg-dark: linear-gradient(135deg, #0f172a, #1e293b);
+    --card-light: rgba(255,255,255,0.6);
+    --card-dark: rgba(30,41,59,0.6);
+    --primary: #1a3a5a;
+    --accent: #4a90e2;
+}
 
-        h1 {
-            color: var(--bg-header);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 24px;
-            border-bottom: 3px solid var(--bg-header);
-            padding-bottom: 10px;
-            margin: 0;
-        }
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui;
+    background: var(--bg-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    transition: 0.4s;
+}
 
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            max-width: 800px;
-            padding: 20px;
-        }
+/* DARK MODE AUTO */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: var(--bg-dark);
+        color: white;
+    }
+    .link-card {
+        background: var(--card-dark);
+    }
+    .link-card span {
+        color: white;
+    }
+    .link-card svg {
+        stroke: #e2e8f0;
+    }
+}
 
-        .link-card {
-            background: var(--white);
-            border: 1px solid #d1d9e0;
-            border-radius: 15px;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px; /* Ridotto leggermente per centratura migliore */
-            text-decoration: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
+/* HEADER */
+h1 {
+    font-size: 30px;
+    letter-spacing: 4px;
+    margin-bottom: 50px;
+    background: linear-gradient(90deg, #4a90e2, #6dd5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        .link-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(26, 58, 90, 0.2);
-            background-color: #f8f9fa;
-            border-color: var(--bg-header);
-        }
+/* GRID */
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 130px);
+    gap: 30px;
+}
 
-        @media (max-width: 600px) {
-            .links-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .link-card {
-                width: 120px;
-                height: 120px;
-            }
-        }
-        
-        .link-card.out {
-            opacity: 0.4;
-            filter: grayscale(80%);
-            pointer-events: none;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-    </style>
+/* CARD */
+.link-card {
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    height: 130px;
+    width: 130px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transition: all 0.35s cubic-bezier(.25,.8,.25,1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* LIGHT EFFECT */
+.link-card::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: rotate(25deg);
+    top: -100%;
+    left: -100%;
+    transition: 0.5s;
+}
+
+.link-card:hover::before {
+    top: 100%;
+    left: 100%;
+}
+
+/* ICON */
+.link-card svg {
+    width: 50px;
+    height: 43px;
+    stroke: var(--primary);
+    transition: 0.3s;
+}
+
+/* TEXT */
+.link-card span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+/* HOVER */
+.link-card:hover {
+    transform: translateY(-10px) scale(1.07);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* CLICK EFFECT */
+.link-card:active {
+    transform: scale(0.95);
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .links-grid {
+        grid-template-columns: repeat(2, 130px);
+    }
+}
+</style>
 </head>
+
 <body>
 
-<div class="header-container">
-    <h1>INDICE 2025/26</h1>
-</div>
+<h1>INDICE</h1>
 
 <div class="links-grid">
-    <a href="dashboard.html" class="link-card" title="Dashboard Convitto e Dinner">🖥️</a>    
-    <a href="roomcloud.html" class="link-row link-card" title="Rooming on Cloud">☁️</a>    
-    <a href="bus.html" class="link-row link-card" title="Bus del Mattino">🚌</a>
-    <a href="uscita.html" class="link-card" title="Uscita Serale">📋</a>
-    <a href="rooming.html" class="link-card" title="Rooming List">🛌</a>
-     <a href="transfer.html" class="link-card" title="Transfer">🚛</a>
-    
-    <a href="#" class="link-card out" title="Dinner">🍽️</a>
-    <a href="#" class="link-card out" title="Convitto">🏠</a>
-    <a href="#" class="link-card out" title="Archivio">📂</a>
-    <a href="#" class="link-card out" title="Mappa">📍</a>
-   
+
+<a href="dashboard.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 3v18h18"/>
+<path d="M7 14v4M12 10v8M17 6v12"/>
+</svg>
+<span>Dashboard</span>
+</a>
+
+<a href="roomcloud.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 15a4 4 0 014-4 5 5 0 019.9-1A4 4 0 1121 15H3z"/>
+</svg>
+<span>Cloud</span>
+</a>
+
+<a href="bus.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<rect x="3" y="5" width="18" height="12" rx="2"/>
+<circle cx="7" cy="18" r="2"/>
+<circle cx="17" cy="18" r="2"/>
+</svg>
+<span>Bus</span>
+</a>
+
+<a href="uscita.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<path d="M10 17l5-5-5-5"/>
+<path d="M15 12H3"/>
+</svg>
+<span>Uscita</span>
+</a>
+
+<a href="rooming.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 10h18v7H3z"/>
+<path d="M7 10V7h4v3"/>
+</svg>
+<span>Rooming</span>
+</a>
+
+<a href="transfer.html" class="link-card">
+<svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 7h13l3 4v6H3z"/>
+<circle cx="7" cy="17" r="2"/>
+<circle cx="17" cy="17" r="2"/>
+</svg>
+<span>Transfer</span>
+</a>
+
 </div>
 
 </body>
