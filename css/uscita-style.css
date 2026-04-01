@@ -23,12 +23,12 @@ body {
 .header-main {
     text-align: center;
     border-bottom: 1.5px solid var(--bg-header);
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     padding-bottom: 2px;
     flex-shrink: 0;
 }
 
-h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #2c3e50; }
+h1 { margin: 10; font-size: 20px; text-transform: uppercase; color: #2c3e50; }
 
 /* Container principale */
 .grid-wrapper {
@@ -85,13 +85,13 @@ h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #2c3e50; }
 .row-crossed { text-decoration: line-through; opacity: 0.4; background-color: #ffebee !important; }
 
 /* Celle */
-.cell-room { width: 25px; font-weight: bold; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
-.cell-class { width: 25px; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
+.cell-room { width: 30px; font-weight: bold; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
+.cell-class { width: 70px; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
 .cell-name { flex-grow: 1; padding-left: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cell-notes { width: 50px; border-left: 0.5px solid #eee; height: 100%; display: flex; align-items: flex-end; flex-shrink: 0; }
 .line-notes { width: 80%; border-bottom: 0.5px solid #bbb; margin: 0 auto 3px; height: 8px; }
 
-.btn { padding: 6px 15px; background: #3c8740; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.btn { padding: 15px 25px; background: #3c8740; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
 
 @media print {
     .print-bar { display: none !important; }
