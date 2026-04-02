@@ -14,6 +14,7 @@ const studenticonvittori = [
     { cognome: "DATTRINO", nome: "Nicolas", classe: "1B", room: "105" },
     { cognome: "GIOVANDO", nome: "Caterina", classe: "1B", room: "206" },
     { cognome: "LUNARDI", nome: "Filippo", classe: "1B", room: "108" },
+    { cognome: "PASCUZZI", nome: "Pietro", classe: "1B", room: "107" },
     { cognome: "POUJOL", nome: "Chiara", classe: "1B", room: "206" },
     { cognome: "QUERIO GIANETTO", nome: "Giorgio", classe: "1B", room: "104" },
     { cognome: "SALVI", nome: "Sophie", classe: "1B", room: "206" },
