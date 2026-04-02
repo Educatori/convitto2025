@@ -25,7 +25,6 @@ const studentiesterni = [
 { cognome: "IANNONE", nome: "Mattia", classe: "1B", room: "-" },
 { cognome: "MARTINI", nome: "Ilaria", classe: "1B", room: "-" },
 { cognome: "MATHAMEL", nome: "Iris", classe: "1B", room: "-" },
-{ cognome: "PASCUZZI", nome: "Pietro", classe: "1B", room: "-" },
 { cognome: "PIEILLER", nome: "Carole", classe: "1B", room: "-" },
 { cognome: "PORCEILLON", nome: "Thierry", classe: "1B", room: "-" },
 // 1P tot 12 ext
