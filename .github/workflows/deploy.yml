@@ -18,8 +18,8 @@ jobs:
 
       - name: Inserimento API Key Segreta
         run: |
-          sed -i 's/FIREBASE_API_KEY_PLACEHOLDER/${{ secrets.FIREBASE_API_KEY }}/g' index.html
-
+          sed -i 's/FIREBASE_API_KEY_PLACEHOLDER/${{ secrets.FIREBASE_API_KEY }}/g' roomcloud.html
+          
       - name: Pubblicazione su GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
