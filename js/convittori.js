@@ -8,7 +8,7 @@ const studenticonvittori = [
     { cognome: "OBETTI", nome: "Virginia", classe: "1A", room: "203" },
     { cognome: "PETTORALI", nome: "Matilde", classe: "1A", room: "203" },
     { cognome: "ZIGGIOTTO", nome: "Beatrice", classe: "1A", room: "211" },
-    // 1B tot 10
+    // 1B tot 11
     { cognome: "BLANCHET N", nome: "Nadine", classe: "1B", room: "221" },
     { cognome: "BOMBONATO", nome: "Francesco", classe: "1B", room: "104" },
     { cognome: "DATTRINO", nome: "Nicolas", classe: "1B", room: "105" },
@@ -72,7 +72,7 @@ const studenticonvittori = [
     { cognome: "FLORIAN", nome: "Gabriele", classe: "3A", gruppo: "", room:"118", percorso: "🍴" },
     { cognome: "MARANGELO", nome: "Giulio", classe: "3A", gruppo: "", room:"118", percorso: "🍷" },
     { cognome: "PEAQUIN", nome: "Linda", classe: "3A", gruppo: "", room:"214", percorso: "🍷" },
-    { cognome: "ZOPPO", nome: "Rodrigue", classe: "3A", gruppo: "", room:"121", percorso: "🍷" },
+    { cognome: "ZOPPO", nome: "Rodrigue", classe: "3A", gruppo: "", room:"124", percorso: "🍷" },
     // 3B tot 7
     { cognome: "BLANCHET M", nome: "Magalie", classe: "3B", gruppo: "", room:"214", percorso: "🍷" },
     { cognome: "BOGGIA", nome: "Vittoria", classe: "3B", gruppo: "", room:"214", percorso: "🍷" },
