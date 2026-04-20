@@ -1,47 +1,112 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>BUS mattino</title>
-    <link rel="stylesheet" href="css/bus-style.css">
-</head>
-<body>
+:root {
+    --bg-header: #2c3e50;
+    --accent-color: #2c3e50;
+}
 
-<div class="no-print">
-    <button class="btn" onclick="window.print()">STAMPA</button>
-</div>
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 0; 
+    padding: 10px; 
+    font-size: 10px;
+    background-color: #fff;
+}
 
-<div class="header-main">
-   <h1>
-    <a href="index.html" style="text-decoration: none; color: inherit;">
-        Bus Trasporti Mattino
-    </a>
-</h1>
-</div>
+.header-main {
+    text-align: center;
+    border-bottom: 2px solid var(--bg-header);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+}
 
-<div class="grid-wrapper" id="mainWrapper">
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div>
-        </div>
-        <div id="col0"></div>
-    </div>
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div>
-        </div>
-        <div id="col1"></div>
-    </div>
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div>
-        </div>
-        <div id="col2"></div>
-    </div>
-</div>
+h1 { 
+    margin: 0; 
+    font-size: 18px; 
+    text-transform: uppercase; 
+    color: var(--accent-color);
+}
 
-<script src="js/convittori.js"></script>
-<script src="js/bus-script.js"></script>
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
+}
 
-</body>
-</html>
+.column-header {
+    display: flex;
+    background: var(--bg-header);
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    border-radius: 3px 3px 0 0;
+    font-size: 8px;
+    margin-bottom: 2px;
+}
+
+.student-row { 
+    border: 0.5px solid #bbb; 
+    display: flex; 
+    align-items: center;
+    padding: 3px 5px;
+    margin-bottom: 1px;
+    page-break-inside: avoid; /* Per la stampa */
+}
+
+/* Colori speciali 5B */
+.bg-5b-g1 { background-color: #e8e8e8 !important; } 
+.bg-5b-g2 { background-color: #f9f9f9 !important; } 
+
+.row-crossed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: #ffebee !important; 
+}
+
+.cell-room { width: 30px; font-weight: bold; border-right: 1px solid #eee; }
+.cell-name { flex-grow: 1; padding-left: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cell-class { width: 45px; text-align: center; font-size: 8.5px; }
+.cell-check { width: 40px; text-align: center; font-weight: bold; }
+.cell-notes { width: 60px; text-align: center; font-weight: bold; }
+
+.check-box {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #333;
+    margin: 0 auto;
+    position: relative;
+}
+
+.check-box.checked::after {
+    content: '✔';
+    display: block;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+    color: #2e7d32;
+}
+
+.line-notes {
+    width: 90%;
+    border-bottom: 0.5px solid #999;
+    height: 12px;
+    margin: 0 auto;
+}
+
+.no-print { text-align: center; margin-bottom: 15px; }
+.btn { 
+    padding: 10px 30px; 
+    background: var(--bg-header); 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 30px; 
+    font-weight: bold;
+}
+
+@media print {
+    .no-print { display: none; }
+    @page { 
+        size: A4 landscape; 
+        margin: 0.8cm; 
+    }
+    body { padding: 0; }
+}
