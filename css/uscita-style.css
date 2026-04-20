@@ -1,5 +1,5 @@
 :root {
-    --bg-header: #5a8fc4;
+    --bg-header: #2c3e50;
     --accent-color: #2c3e50;
     --row-alt: #f9f9f9;
 }
@@ -91,7 +91,7 @@ h1 { margin: 10; font-size: 20px; text-transform: uppercase; color: #2c3e50; }
 .cell-notes { width: 50px; border-left: 0.5px solid #eee; height: 100%; display: flex; align-items: flex-end; flex-shrink: 0; }
 .line-notes { width: 80%; border-bottom: 0.5px solid #bbb; margin: 0 auto 3px; height: 8px; }
 
-.btn { padding: 10px 30px; background: #3c8740; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 14px; }
+.btn { padding: 10px 30px; background: #2c3e50; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 14px; }
 
 @media print {
     .print-bar { display: none !important; }
