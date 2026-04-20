@@ -1,104 +1,46 @@
-:root {
-    --bg-header: #2c3e50;
-    --accent-color: #2c3e50;
-    --row-alt: #f9f9f9;
-}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ora Libera 17/18</title>
+    <link rel="stylesheet" href="css/uscita-style.css">
+</head>
+<body>
 
-/* RESET */
-html, body { 
-    margin: 0; 
-    padding: 0; 
-    font-family: 'Segoe UI', Arial, sans-serif;
-    height: 100vh; 
-    overflow: hidden;
-}
+<div class="print-bar">
+    <button class="btn" onclick="window.print()">STAMPA</button>
+</div>
 
-body { 
-    display: flex; 
-    flex-direction: column; 
-    padding: 5mm 10mm;
-    box-sizing: border-box;
-}
+<div class="header-main">
+    <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> Ora Libera 17/18 </a> </h1>
+</div>
 
-.header-main {
-    text-align: center;
-    border-bottom: 1.5px solid var(--bg-header);
-    margin-bottom: 10px;
-    padding-bottom: 2px;
-    flex-shrink: 0;
-}
+<div class="grid-wrapper">
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-room">Room</div>
+            <div class="cell-class">Classe</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-notes">Uscita</div>
+            <div class="cell-notes">Ingresso</div>
+        </div>
+        <div id="col0" class="col-data"></div>
+    </div>
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-room">Room</div>
+            <div class="cell-class">Classe</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-notes">Uscita</div>
+            <div class="cell-notes">Ingresso</div>
+        </div>
+        <div id="col1" class="col-data"></div>
+    </div>
+</div>
 
-h1 { margin: 10; font-size: 20px; text-transform: uppercase; color: #2c3e50; }
+<script src="js/convittori.js"></script>
+<script src="js/uscita-script.js"></script>
 
-/* Container principale */
-.grid-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 15px;
-    flex-grow: 1; 
-    min-height: 0;
-}
-
-.macro-column {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border: 0.5px solid #ccc;
-}
-
-.column-header {
-    display: flex;
-    background: var(--bg-header);
-    color: white;
-    font-weight: bold;
-    padding: 4px 2px;
-    flex-shrink: 0;
-    font-size: 8.5px;
-    text-align: center;
-}
-
-.col-data {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow: hidden;
-}
-
-.print-bar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-    flex-shrink: 0;
-}
-
-.student-row { 
-    border-bottom: 0.1px solid #eee; 
-    display: flex; 
-    align-items: center;
-    padding: 1px 4px;
-    font-size: 9px;
-    flex-grow: 1;
-    max-height: 22px;
-}
-
-.student-row:nth-child(even) { background-color: var(--row-alt); }
-.row-crossed { text-decoration: line-through; opacity: 0.4; background-color: #ffebee !important; }
-
-/* Celle */
-.cell-room { width: 30px; font-weight: bold; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
-.cell-class { width: 70px; text-align: center; border-right: 1px solid #eee; flex-shrink: 0; }
-.cell-name { flex-grow: 1; padding-left: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cell-notes { width: 50px; border-left: 0.5px solid #eee; height: 100%; display: flex; align-items: flex-end; flex-shrink: 0; }
-.line-notes { width: 80%; border-bottom: 0.5px solid #bbb; margin: 0 auto 3px; height: 8px; }
-
-.btn { padding: 10px 30px; background: #2c3e50; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 14px; }
-
-@media print {
-    .print-bar { display: none !important; }
-    @page { 
-        size: A4 portrait; 
-        margin: 0.8cm; 
-    }
-    body { padding: 0; height: 100%; }
-    .student-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
+</body>
+</html>
