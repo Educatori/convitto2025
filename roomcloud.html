@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rooming Cloud LOCK</title>
+    <title>Rooming Cloud LOCK2</title>
     <style>
         :root {
             --bg-page: #ffffff;
@@ -25,33 +25,47 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .print-only { display: none; }
+
+        /* --- STILE STAMPA --- */
         @media print {
+            body { zoom: 90%; }
             .print-only { display: block; text-align: right; font-weight: bold; margin-bottom: 10px; font-size: 10px; }
             .room-box { page-break-inside: avoid; break-inside: avoid; }
             .no-print { display: none !important; }
-            .grid-container { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
-            .row-student { transform: none !important; }
-             body { zoom: 90%; }
+            .grid-container { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 5px; }
+            .row-student { transform: none !important; border: 1px solid #eee !important; }
         }
+
         h1 { margin: 0; font-size: 16px; color: var(--accent-color); }
         #stats-foresteria { font-weight: bold; color: var(--color-occupato-bg); margin-top: 5px; font-size: 12px; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
         .room-box { border: 1px solid #c0c0c0; display: flex; background: white; border-radius: 5px; overflow: hidden; }
         .room-info { width: 40px; background: #e2e8f0; border-right: 1px solid #c0c0c0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
         .occupants-list { flex-grow: 1; position: relative; overflow: hidden; background: #eee; }
+        
         .row-student { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: grab; position: relative; z-index: 2; transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), background 0.3s; background: white; touch-action: pan-y; }
         .student-swipe-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; font-weight: bold; opacity: 0; }
         .student-swipe-background.active { opacity: 1; }
+        
+        /* Classi di stato */
         .row-student.assente { background: #fff9c4 !important; border-left: 5px solid var(--color-assente-bg); }
         .row-student.confermato { background: #ffcdd2 !important; text-decoration: line-through; border-left: 5px solid var(--color-confermato-bg); }
         .row-student.occupato { background: #e3f2fd !important; color: #0d47a1; font-weight: bold; border-left: 5px solid var(--color-occupato-bg); }
         .row-student.nota { background: #e8f5e9 !important; color: #2e7d32; cursor: default; justify-content: center; font-weight: bold; z-index: 3; }
+        
+        /* Stile specifico Foresteria */
+        .row-student[data-classe="Foresteria"] { cursor: default; touch-action: auto; }
+        .input-foresteria { 
+            border: 1px solid #ccc; background: #fff; border-radius: 4px; 
+            padding: 4px 8px; font-size: 11px; width: 90%; margin-top: 5px; outline: none; 
+        }
+        .input-foresteria:focus { border-color: var(--color-occupato-bg); background: #e3f2fd; }
+
         .student-name { flex: 1; font-size: 11.5px; pointer-events: none; }
         .student-details { font-size: 9.5px; color: #666; font-weight: bold; pointer-events: none; }
-        .no-print { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .no-print-flex { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .btn { padding: 12px 25px; background: var(--bg-header); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        /* Stile per il form di login */
         #login-form {
             max-width: 300px; margin: 100px auto; padding: 20px;
             background: #f8f9fa; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -71,7 +85,7 @@
     <div id="app-content" style="display: none;">
         <div class="print-only date-timestamp" id="printTimestamp"></div>
         
-        <div class="no-print">
+        <div class="no-print no-print-flex">
             <button class="btn" onclick="window.print()">STAMPA</button>
             <button class="btn" style="background: #95a5a6" onclick="window.resetAssenze()">RESET</button>
             <button class="btn" style="background: #e74c3c" onclick="window.logout()">ESCI</button>
@@ -79,7 +93,6 @@
 
         <div class="header-container">
             <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> Rooming CLOUD☁️</a> </h1>
-           
             <div id="stats-foresteria">Posti Foresteria Liberi: -</div>
         </div>
         
@@ -92,7 +105,7 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCoksYaBM2Bbfwf5NPc8F8wWDT9yI5F-4Y",
+            apiKey: "AIzaSyBC17ac3XodwrgRrFlndy8TiKMsPKIboPI",
             databaseURL: "https://rooms-2ff73-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "rooms-2ff73"
         };
@@ -121,7 +134,6 @@
                 loginForm.style.display = 'none';
                 appContent.style.display = 'block';
 
-                // Carica prima l'anagrafica, poi le assenze
                 onValue(ref(db, "anagrafica"), (snapshot) => {
                     studenti = snapshot.val() || [];
                     onValue(ref(db, "assenze"), (snap) => {
@@ -135,13 +147,30 @@
             }
         });
 
-        // --- SWIPE LOGIC ---
+        // --- SALVATAGGIO NOME FORESTERIA ---
+        window.salvaNomeForesteria = (id, valore) => {
+            let data = { ...assentiData };
+            if (valore.trim() === "") {
+                if (data[id]) delete data[id];
+            } else {
+                data[id] = { 
+                    ...data[id], 
+                    nomeOccupante: valore, 
+                    occupato: true,
+                    assente: false,
+                    confermato: false 
+                };
+            }
+            set(ref(db, "assenze"), data);
+        };
+
+        // --- SWIPE LOGIC (Solo per NON Foresteria) ---
         let startX = 0, currentTranslate = 0, isGrabbing = false, currentRow = null;
         const threshold = 60;
 
         window.gestisciStart = (e) => {
             currentRow = e.currentTarget;
-            if (currentRow.classList.contains("nota")) return;
+            if (currentRow.classList.contains("nota") || currentRow.getAttribute("data-classe") === "Foresteria") return;
             isGrabbing = true;
             startX = e.clientX || e.touches?.[0]?.clientX || e.screenX;
             currentRow.classList.add("grabbing");
@@ -159,25 +188,23 @@
             const bg = currentRow.parentNode.querySelector(".student-swipe-background");
             const labelL = bg.querySelector(".swipe-label-left");
             const labelR = bg.querySelector(".swipe-label-right");
-            const isF = currentRow.getAttribute("data-classe") === "Foresteria";
 
             if (currentTranslate > 0) {
                 labelL.style.opacity = 1; labelR.style.opacity = 0;
-                labelL.textContent = isF ? "➡️ LIBERO" : "➡️ ASSENTE";
-                bg.style.background = isF ? "linear-gradient(90deg, #4caf50 0%, white 100%)" : "linear-gradient(90deg, var(--color-assente-bg) 0%, white 100%)";
+                labelL.textContent = "➡️ ASSENTE";
+                bg.style.background = "linear-gradient(90deg, var(--color-assente-bg) 0%, white 100%)";
             } else {
                 labelL.style.opacity = 0; labelR.style.opacity = 1;
-                labelR.textContent = isF ? "OCCUPATO ⬅️" : "CONFERMA ⬅️";
-                bg.style.background = isF ? "linear-gradient(270deg, var(--color-occupato-bg) 0%, white 100%)" : "linear-gradient(270deg, var(--color-confermato-bg) 0%, white 100%)";
+                labelR.textContent = "CONFERMA ⬅️";
+                bg.style.background = "linear-gradient(270deg, var(--color-confermato-bg) 0%, white 100%)";
             }
         };
 
         window.gestisciEnd = () => {
             if (!isGrabbing) return;
             const id = currentRow.getAttribute("data-id");
-            const isF = currentRow.getAttribute("data-classe") === "Foresteria";
             if (Math.abs(currentTranslate) > threshold) {
-                toggleStato(id, isF ? (currentTranslate > 0 ? "libera" : "occupato") : (currentTranslate > 0 ? "assente" : "confermato"));
+                toggleStato(id, (currentTranslate > 0 ? "assente" : "confermato"));
             }
             currentRow.style.transform = "";
             currentRow.classList.remove("grabbing");
@@ -189,12 +216,10 @@
 
         function toggleStato(id, tipo) {
             let data = { ...assentiData };
-            if (!data[id]) data[id] = { assente: false, confermato: false, occupato: false };
-            if (tipo === "libera") data[id].occupato = false;
-            else if (tipo === "occupato") data[id].occupato = true;
-            else if (tipo === "assente") { data[id].assente = !data[id].assente; data[id].confermato = false; }
+            if (!data[id]) data[id] = { assente: false, confermato: false };
+            if (tipo === "assente") { data[id].assente = !data[id].assente; data[id].confermato = false; }
             else if (tipo === "confermato") { data[id].confermato = !data[id].confermato; data[id].assente = false; }
-            if (!data[id].assente && !data[id].confermato && !data[id].occupato) delete data[id];
+            if (!data[id].assente && !data[id].confermato && !data[id].nomeOccupante) delete data[id];
             set(ref(db, "assenze"), data);
         }
 
@@ -211,9 +236,14 @@
             studenti.forEach(s => {
                 if (!stanze[s.room]) stanze[s.room] = [];
                 stanze[s.room].push(s);
+            });
+
+            // Conteggio dinamico Foresteria
+            studenti.forEach(s => {
                 if (s.classe === "Foresteria") {
                     totF++;
-                    if (!assentiData[`${s.cognome}_${s.nome}_${s.room}`]?.occupato) libereF++;
+                    const id = `${s.cognome}_${s.nome}_${s.room}`;
+                    if (!(assentiData[id]?.nomeOccupante)) libereF++;
                 }
             });
 
@@ -226,11 +256,24 @@
                     const id = `${s.cognome}_${s.nome}_${num}`;
                     const st = assentiData[id] || {};
                     const isN = s.cognome === "NOTE";
-                    const cls = isN ? "nota" : (st.occupato ? "occupato" : (st.confermato ? "confermato" : (st.assente ? "assente" : "")));
+                    const isF = s.classe === "Foresteria";
+                    
+                    const nomeOccupante = st.nomeOccupante || "";
+                    let cls = "";
+                    if (isN) cls = "nota";
+                    else if (isF) cls = nomeOccupante.trim() !== "" ? "occupato" : "";
+                    else cls = st.confermato ? "confermato" : (st.assente ? "assente" : "");
+
                     return `<div style="position:relative;">
                         <div class="student-swipe-background"><span class="swipe-label-left"></span><span class="swipe-label-right"></span></div>
-                        <div class="row-student ${cls}" data-id="${id}" data-classe="${s.classe}" onpointerdown="window.gestisciStart(event)">
-                            <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
+                        <div class="row-student ${cls}" data-id="${id}" data-classe="${s.classe}" ${!isF ? 'onpointerdown="window.gestisciStart(event)"' : ''}>
+                            <div style="display: flex; flex-direction: column; width: 100%;">
+                                <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
+                                ${isF ? `
+                                    <input type="text" class="input-foresteria no-print" placeholder="Nome occupante..." value="${nomeOccupante}" onchange="window.salvaNomeForesteria('${id}', this.value)" onpointerdown="event.stopPropagation()">
+                                    ${nomeOccupante ? `<span class="print-only" style="font-size:9px; color:#0d47a1; font-weight:bold; margin-top:2px;">OCCUPATO: ${nomeOccupante}</span>` : ''}
+                                ` : ""}
+                            </div>
                             <span class="student-details">${isN ? "" : s.classe}</span>
                         </div>
                     </div>`;
