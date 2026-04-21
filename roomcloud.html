@@ -271,7 +271,7 @@
                                 <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
                                 ${isF ? `
                                     <input type="text" class="input-foresteria no-print" placeholder="Nome occupante..." value="${nomeOccupante}" onchange="window.salvaNomeForesteria('${id}', this.value)" onpointerdown="event.stopPropagation()">
-                                    ${nomeOccupante ? `<span class="print-only" style="font-size:9px; color:#0d47a1; font-weight:bold; margin-top:2px;">OCCUPATO:_ ${nomeOccupante}</span>` : ''}
+                                    ${nomeOccupante ? `<span class="print-only" style="font-size:9px; color:#0d47a1; font-weight:bold; margin-top:2px;">OCCUPATO: ${nomeOccupante}_</span>` : ''}
                                 ` : ""}
                             </div>
                             <span class="student-details">${isN ? "" : s.classe}</span>
