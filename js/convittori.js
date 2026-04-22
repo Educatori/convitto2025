@@ -9,10 +9,10 @@ const studenticonvittori = [
     { cognome: "PETTORALI", nome: "Matilde", classe: "1A", room: "203" },
     { cognome: "ZIGGIOTTO", nome: "Beatrice", classe: "1A", room: "211" },
     // 1B tot 11
-    { cognome: "BLANCHET N", nome: "Nadine", classe: "1B", room: "221" },
+    { cognome: "BLANCHET N", nome: "Nadine", classe: "1B", room: "206" },
     { cognome: "BOMBONATO", nome: "Francesco", classe: "1B", room: "104" },
     { cognome: "DATTRINO", nome: "Nicolas", classe: "1B", room: "105" },
-    { cognome: "GIOVANDO", nome: "Caterina", classe: "1B", room: "206" },
+    { cognome: "GIOVANDO", nome: "Caterina", classe: "1B", room: "221" },
     { cognome: "LUNARDI", nome: "Filippo", classe: "1B", room: "108" },
     { cognome: "PASCUZZI", nome: "Pietro", classe: "1B", room: "107" },
     { cognome: "POUJOL", nome: "Chiara", classe: "1B", room: "206" },
