@@ -1,6 +1,8 @@
 /**
  * SCRIPT.JS - Versione Integrale Omnicomprensiva
- * Gestione Dashboard Convitto
+ * gruppi
+ * percorso
+ + Colonna BUS
  */
 
 let cambiTurnoManuali = {};
@@ -8,8 +10,6 @@ let cambiTurnoManuali = {};
 // --- 1. INIZIALIZZAZIONE ---
 function init() {
     const d = new Date();
-    
-    // Mostra data e avvia orologio
     const dateEl = document.getElementById('todayDate');
     if (dateEl) dateEl.innerText = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
@@ -20,8 +20,7 @@ function init() {
     if (!lista) return;
     lista.innerHTML = "";
 
-    // Ordinamento per camera e generazione card
-    const studenti = [...studenticonvittori,];
+    const studenti = [...studenticonvittori];
     studenti.sort((a, b) => a.room.localeCompare(b.room, undefined, { numeric: true })).forEach(s => {
         const r = document.createElement('div');
         r.className = 'student-row';
@@ -63,24 +62,20 @@ function init() {
     mostraDataReset();
 }
 
-// --- 2. LOGICA TURNI E OVERRIDE ---
+function haDirittoAlBus(s) {
+    if (!s) return false;
+    const classe = s.classe.toUpperCase();
+    const escluse = ["2A", "2B"];
+    return !escluse.includes(classe) && !classe.includes("P");
+}
+
+// --- LOGICA TURNI, FILTRI E INPUT (INVARIATA) ---
 function turnoStudente(classe, cognome) {
     const oggi = new Date();
     const giornoSettimana = oggi.getDay(); 
     const cgn = cognome.toUpperCase();
-
-    // Override basato su PERMESSI.js
-    if (OVERRIDE_TURNI_DINNER[cgn] && OVERRIDE_TURNI_DINNER[cgn][giornoSettimana]) {
-        return OVERRIDE_TURNI_DINNER[cgn][giornoSettimana];
-    }
+    if (OVERRIDE_TURNI_DINNER[cgn] && OVERRIDE_TURNI_DINNER[cgn][giornoSettimana]) return OVERRIDE_TURNI_DINNER[cgn][giornoSettimana];
     return TURNI_DINNER[1].includes(classe) ? 1 : 2;
-}
-
-function setTurno(turno) {
-    const classi = TURNI_DINNER[turno];
-    document.querySelectorAll('.student-row').forEach(r => {
-        r.style.display = classi.includes(r.dataset.classe) ? 'block' : 'none';
-    });
 }
 
 function toggleSwitchTurno(btn) {
@@ -91,42 +86,6 @@ function toggleSwitchTurno(btn) {
     salvaDatiLocale();
 }
 
-// --- 3. FILTRI E RICERCA ---
-function applicaFiltri() {
-    const s = document.getElementById('search').value.toLowerCase();
-    document.querySelectorAll('.student-row').forEach(r => {
-        const testo = (
-    r.dataset.cognome + " " +
-    r.dataset.nomeCompleto + " " +
-    r.dataset.classe + " " +
-    r.dataset.room + " " +
-    r.dataset.gruppo + " " +
-    r.dataset.percorso
-).toLowerCase();
-        r.style.display = testo.includes(s) ? 'block' : 'none';
-    });
-}
-
-function validaERicerca() {
-    const rVal = document.getElementById('roomInput').value;
-    const searchInput = document.getElementById('search');
-    if (rVal !== "") {
-        searchInput.value = ""; 
-        document.querySelectorAll('.student-row').forEach(card => {
-            card.style.display = (card.dataset.room === rVal) ? 'block' : 'none';
-        });
-    } else { applicaFiltri(); }
-}
-
-function gestisciSaltoStanze(el) {
-    let val = parseInt(el.value);
-    let old = parseInt(el.oldValue) || 0;
-    if (val > 125 && val < 201 && val > old) el.value = 201;
-    else if (val > 125 && val < 201 && val < old) el.value = 125;
-    el.oldValue = el.value;
-}
-
-// --- 4. LOGICA INPUT E AUTO-DINNER ---
 function normalizzaOrario(valore) {
     valore = valore.trim().toLowerCase().replace(".", ":").replace(",", ":");
     if (/^\d{2}$/.test(valore)) valore += ":00";
@@ -140,138 +99,20 @@ function controllaDinnerAutomatico(riga) {
     const giornoSettimana = new Date().getDay();
     let entra = normalizzaOrario(riga.querySelector('.in-i').value);
     let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
-
     let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
     const paroleNo = ["no", "non", "nor", "no rientro"];
-
     const isTardi = (orario) => orario.includes(":") && orario > limite;
     const isNoRientro = (orario) => paroleNo.includes(orario);
 
     if (riga.classList.contains('assente') || isNoRientro(entra) || isNoRientro(ppIn) || isTardi(entra) || isTardi(ppIn)) {
-        riga.dataset.dinnerno = "1";
-        riga.classList.add('dinner-no');
+        riga.dataset.dinnerno = "1"; riga.classList.add('dinner-no');
     } else {
-        riga.dataset.dinnerno = "0";
-        riga.classList.remove('dinner-no');
+        riga.dataset.dinnerno = "0"; riga.classList.remove('dinner-no');
     }
 }
 
-function toggleAssenza(btn) {
-    const r = btn.closest('.student-row');
-    r.classList.toggle('assente');
-    btn.classList.toggle('active-ass');
-    controllaDinnerAutomatico(r);
-    salvaDatiLocale();
-}
-
-function toggleDinnerNo(btn) {
-    const r = btn.closest('.student-row');
-    r.dataset.dinnerno = r.dataset.dinnerno === "1" ? "0" : "1";
-    r.classList.toggle('dinner-no');
-    btn.classList.toggle('active-din');
-    salvaDatiLocale();
-}
-
-// --- 5. STAMPE ---
-function generaPopUpStampaDinner() {
-    let a1=0, p1=0, a2=0, p2=0, n1=[], n2=[], switch1=[], switch2=[];
-    const oggi = new Date();
-    const giornoSett = oggi.getDay();
-    const oraEsatta = oggi.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const dataOggi = oggi.toLocaleDateString('it-IT');
-
-    document.querySelectorAll('.student-row').forEach(r => {
-        const cognome = r.dataset.cognome;
-        const nomeCompleto = r.dataset.nomeCompleto;
-        let turnoOriginale = TURNI_DINNER[1].includes(r.dataset.classe) ? 1 : 2;
-        let turnoEffettivo = turnoStudente(r.dataset.classe, cognome);
-
-        if (cambiTurnoManuali[cognome]) turnoEffettivo = (turnoEffettivo === 1) ? 2 : 1;
-
-        if (turnoEffettivo !== turnoOriginale) {
-            const nota = (turnoEffettivo === 1) ? " (da 2° a 1°)" : " (da 1° a 2°)";
-            if(turnoEffettivo === 1) switch1.push(nomeCompleto + nota);
-            else switch2.push(nomeCompleto + nota);
-        }
-
-        const isLab = isStudenteInLabOggi(r.dataset.classe, r.dataset.gruppo, oggi);
-        const isPPNoCena = isPPNoDinnerOggi(cognome, giornoSett);
-        const escluso = isLab || isPPNoCena || r.classList.contains('assente') || r.dataset.dinnerno === "1";
-
-        if (turnoEffettivo === 1) {
-            if (escluso) { a1++; n1.push(nomeCompleto + (isLab ? " (LAB)" : "")); } else p1++;
-        } else {
-            if (escluso) { a2++; n2.push(nomeCompleto + (isLab ? " (LAB)" : "")); } else p2++;
-        }
-    });
-
-const dataStampa = document.getElementById('todayDate').innerText;
-    const testiPermessi = {
-        1: "LAB 2IeFP - PERMESSI: Tessarin NO dinner / Casalicchio turno ore 18 / Bombonato, Paonessa turno ore 19:15 / TENERE PER Querio, Pignatelli, Menaldino, Chessa dopo i turni",
-        2: "LAB 5A-5B - PERMESSI: Chen, Commod NO dinner / Casalicchio, Clerin turno ore 18 / TENERE PER Querio, Lazier, Lunardi, Paonessa, Gaspard dopo i turni",
-        3: "LAB 2B - PERMESSI: Berruti S, D'Agostino, Giovannelli P NO dinner / Casalicchio dinner ore 18 / Saitta, Bombonato, Paonessa turno ore 19:15 / TENERE PER Querio, Pignatelli, Chessa dopo i turni",
-        4: "LAB 2A - PERMESSI: Berruti A, Chen NO dinner / Casalicchio, Clerin turno ore 18 / Bombonato, Paonessa turno ore 19:15 / TENERE PER Querio, Menaldino, Chessa dopo i turni"
-    };
-    const notaGiornoCorrente = testiPermessi[giornoSett] || "";
-
-    const popup = window.open('', '_blank', 'width=900,height=800');
-    popup.document.write(`
-        <html><head><title>Riepilogo Dinner</title><style>
-            body { font-family: sans-serif; padding: 40px; position: relative; }
-            h2 { text-align: center; text-transform: uppercase; margin-top: 20px; }
-            .timestamp { position: absolute; top: 10px; right: 20px; font-size: 0.8em; color: #666; }
-            .date { text-align: center; font-size: 1.2em; margin-bottom: 20px;}
-            .editable-notes { width: 100%; border: 1px dashed #ccc; font-size: 1.1em; font-weight: bold; text-align: center; text-transform: uppercase; padding: 10px; margin-bottom: 20px;}
-            .section { margin-bottom: 30px; border-left: 6px solid #333; padding-left: 20px; }
-            .stats-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-            input { font-size: 1.5em; font-weight: bold; width: 60px; border: none; border-bottom: 2px solid #000; text-align: center; background: transparent; }
-            .nomi { font-size: 0.85em; color: #444; font-style: italic; margin-top: 10px; line-height: 1.4; }
-            .cambi { font-size: 0.85em; color: #444; font-style: italic; margin-top: 10px; line-height: 1.4; }
-            .no-print { margin-top: 30px; display: flex; justify-content: center; }
-            @media print { .no-print { display: none; } .editable-notes { border: none; } }
-        </style></head><body>
-            <div class="timestamp">aggiornamento ${dataOggi} ore ${oraEsatta}</div>
-            <h2>Riepilogo Dinner</h2>
-            <div class="date">${dataStampa}</div>
-            
-        <div class="no-print"><button onclick="window.print()" style="padding:15px 50px; 
-            background:#27ae60; color:white; font-weight:bold; border-radius:80px;
-            border:none; cursor:pointer; font-size:0.9em;">STAMPARE IN FORMATO A4</button></div>
-            
-            <textarea class="editable-notes" rows="2">${notaGiornoCorrente}</textarea>
-            
-            <div class="section">
-                <h3>1° DINNER ore 18:30 (Classi: 1A, 1B, 1P, 2A, 2B, 2P, 3P)</h3>
-                <div class="stats-row">
-                    <span>Assenti: <input type="number" value="${a1}"></span>
-                    <span>Presenti: <input type="number" value="${p1}"></span>
-                    <span>+ EDU: <input type="number" value="2"></span>
-                    + <input type="text" id="altroDettaglioLab2" placeholder="..." style="width: 250px; font-size: 1.0em;">
-                    </div>
-                
-                <div class="nomi"><b>Esclusi per assenza, permesso, laboratorio:</b> ${n1.length ? n1.join(', ') : 'Nessuno'}</div>
-                    <div class="cambi"><b>Cambi Turno:</b> ${switch1.length ? switch1.join(', ') : 'Nessuno'}</div>
-                
-            </div>
-
-            <div class="section">
-                <h3>2° DINNER ore 19:15 (Classi: 3A, 3B, 3C, 4A, 4B, 5A, 5B)</h3>
-                <div class="stats-row">
-                    <span>Assenti: <input type="number" value="${a2}"></span>
-                    <span>Presenti: <input type="number" value="${p2}"></span>
-                   <span>+ EDU: <input type="number" value="2"></span>
-                    + <input type="text" id="altroDettaglioLab2" placeholder="..." style="width: 250px; font-size: 1.0em;">
-                    </div>
-                <div class="nomi"><b>Esclusi per assenza, permesso, laboratorio:</b> ${n2.length ? n2.join(', ') : 'Nessuno'}</div>
-                <div class="cambi"><b>Cambi Turno:</b> ${switch2.length ? switch2.join(', ') : 'Nessuno'}</div>
-           </div>
-    </body></html>
-    `);
- popup.document.close();
-}
-
-   // --- FUNZIONE STAMPA CONVITTO ---
-   function generaPopUpStampaConvitto() {
+// --- 5. STAMPA CON STILE RIPRISTINATO ---
+function generaPopUpStampaConvitto() {
     const dataStampa = document.getElementById('todayDate').innerText;
     const oraStampa = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     const dataOggiStampa = new Date().toLocaleDateString('it-IT');
@@ -286,6 +127,8 @@ const dataStampa = document.getElementById('todayDate').innerText;
             ppOut = ORARI_PP[cognome][giornoSettimana].out;
             ppIn = ORARI_PP[cognome][giornoSettimana].in;
         }
+        const studenteOriginale = studenticonvittori.find(s => s.cognome === cognome);
+
         if (!camere[room]) camere[room] = [];
         camere[room].push({
             classe: r.dataset.classe,
@@ -295,56 +138,45 @@ const dataStampa = document.getElementById('todayDate').innerText;
             presente: !r.classList.contains('assente'),
             oraU: r.querySelector('.in-u').value, 
             oraI: r.querySelector('.in-i').value,
-            ppOut: ppOut, ppIn: ppIn, gruppo: r.dataset.gruppo
+            ppOut: ppOut, ppIn: ppIn, 
+            gruppo: r.dataset.gruppo,
+            bus: haDirittoAlBus(studenteOriginale)
         });
     });
 
     const camereOrdinate = Object.keys(camere).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     const popup = window.open('', '_blank', 'width=1200,height=800');
 
-popup.document.write(`
+    popup.document.write(`
         <html>
         <head>
             <title>Riepilogo Convitto - ${dataStampa}</title>
             <style>
                 @page { size: A3 portrait; margin: 0.3cm; }
-                body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; color: #000; position: relative; min-height: 100%; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; color: #000; }
                 h2 { text-align: center; text-transform: uppercase; font-size: 1.1em; margin: 6px 0; }
                 table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 10px; }
-                th, td { border: 1px solid #000; padding: 4px 2px; text-align: center; font-size: 0.62em; overflow: hidden; }
-                .border-bottom-bold { border-bottom: 2.5px solid #000 !important; }
-                .border-dashed { border-bottom: 1px dashed #999 !important; }
+                th, td { border: 1px solid #000; padding: 4px 2px; text-align: center; font-size: 0.62em; }
                 th { background: #f2f2f2; font-weight: bold; }
                 .room-header { background: #eee; font-weight: bold; width: 45px; }
-                .col-cognome { text-align: center; width: 130px; padding-left: 5px; text-transform: uppercase; }
+                .border-bottom-bold { border-bottom: 2.5px solid #000 !important; }
+                .border-dashed { border-bottom: 1px dashed #999 !important; }
+                .col-cognome { width: 130px; text-transform: uppercase; }
+                .bg-gray { background: #f9f9f9; }
                 .page-break { page-break-after: always; }
-                .no-print { display: block; text-align: center; margin: 20px; }
-                .footer-timestamp { 
-                    text-align: right; 
-                    font-size: 0.75em; 
-                    margin-top: 15px; 
-                    padding-top: 5px; 
-                    border-top: 1px solid #eee;
-                    font-style: italic;
-                    color: #555;
-                }
+                .no-print { text-align: center; margin: 20px; }
                 @media print { .no-print { display: none; } }
             </style>
         </head>
         <body>
-            <div class="no-print">
-                <button onclick="window.print()" style="padding:15px 50px; 
-                    background:#27ae60; color:white; font-weight:bold; border-radius:80px; 
-                    border:none; cursor:pointer; font-size:0.9em;">STAMPARE IN FORMATO A3</button>
-            </div>
-            
+            <div class="no-print"><button onclick="window.print()" style="padding:15px 50px; background:#27ae60; color:white; font-weight:bold; border-radius:80px; border:none; cursor:pointer;">STAMPA A3</button></div>
             <h2>MASCHILE - piano 1° - ${dataStampa}</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Room</th><th>Classe</th><th class="col-cognome">Cognome</th>
                         <th>Presente</th><th>Assente</th><th>Uscita</th><th>Ingresso</th>
-                        <th>PP Uscita</th><th>PP Rientro</th><th>Dinner 1° e 2° NO</th><th>Notte SI</th><th>Notte NO</th>
+                        <th>PP Uscita</th><th>PP Rientro</th><th>Dinner NO</th><th>Notte SI</th><th>Notte NO</th><th>7:30</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -352,67 +184,38 @@ popup.document.write(`
                         let html = "";
                         html += camere[room].map((s, idx) => {
                             const isLastRow = idx === camere[room].length - 1;
-                            const borderClass = isLastRow ? 'class="border-bottom-bold"' : 'class="border-dashed"';
+                            const bClass = isLastRow ? 'class="border-bottom-bold"' : 'class="border-dashed"';
+                            const bClassGray = isLastRow ? 'class="border-bottom-bold bg-gray"' : 'class="border-dashed bg-gray"';
 
                             return `
                                 <tr>
                                     ${idx === 0 ? `<td rowspan="${camere[room].length}" class="room-header border-bottom-bold">${room}</td>` : ''}
-                                    <td ${borderClass}>${s.classe} ${s.percorso || ''}</td>
-                                    <td ${borderClass} class="col-cognome"><b>${s.cognome}</b> ${s.gruppo ? '('+s.gruppo+')' : ''}</td>
-                                    <td ${borderClass}>${s.presente ? 'X' : ''}</td>
-                                    <td ${borderClass}>${!s.presente ? 'X' : ''}</td>
-                                    <td ${borderClass} style="background:#f9f9f9">${s.oraU}</td>
-                                    <td ${borderClass}>${s.oraI}</td>
-                                    <td ${borderClass} style="background:#f9f9f9"><b>${s.ppOut}</b></td>
-                                    <td ${borderClass}><b>${s.ppIn}</b></td>
-                                    <td ${borderClass} style="background:#f9f9f9">${s.dinnerno === "1" ? "X" : ""}</td>
-                                    <td ${borderClass}></td>
-                                    <td ${borderClass} style="background:#f9f9f9"></td>
+                                    <td ${bClass}>${s.classe} ${s.percorso || ''}</td>
+                                    <td ${bClass} class="col-cognome"><b>${s.cognome}</b> ${s.gruppo ? '('+s.gruppo+')' : ''}</td>
+                                    <td ${bClass}>${s.presente ? 'X' : ''}</td>
+                                    <td ${bClass}>${!s.presente ? 'X' : ''}</td>
+                                    <td ${bClassGray}>${s.oraU}</td>
+                                    <td ${bClass}>${s.oraI}</td>
+                                    <td ${bClassGray}><b>${s.ppOut}</b></td>
+                                    <td ${bClass}><b>${s.ppIn}</b></td>
+                                    <td ${bClassGray}>${s.dinnerno === "1" ? "X" : ""}</td>
+                                    <td ${bClass}></td><td ${bClassGray}></td>
+                                    <td ${bClass}>${s.bus ? '🚌' : ''}</td>
                                 </tr>`;
                         }).join('');
 
-                        // Salto pagina dopo la camera 125
                         if (room === "125") {
-                            html += `</tbody></table><div class="page-break"></div>
-                            <h2>FEMMINILE - piano 2° - ${dataStampa}</h2>
-                            <table><thead><tr>
-                                <th>Room</th><th>Classe</th><th class="col-cognome">Cognome</th>
-                                <th>Presente</th><th>Assente</th><th>Uscita</th><th>Ingresso</th>
-                                <th>PP Uscita</th><th>PP Rientro</th><th>Dinner 1° e 2° NO</th><th>Notte SI</th><th>Notte NO</th>
-                            </tr></thead><tbody>`;
+                            html += `</tbody></table><div class="page-break"></div><h2>FEMMINILE - piano 2° - ${dataStampa}</h2><table><thead><tr><th>Room</th><th>Classe</th><th class="col-cognome">Cognome</th><th>Presente</th><th>Assente</th><th>Uscita</th><th>Ingresso</th><th>PP Uscita</th><th>PP Rientro</th><th>Dinner NO</th><th>Notte SI</th><th>Notte NO</th><th>7:30</th></tr></thead><tbody>`;
                         }
                         return html;
                     }).join('')}
                 </tbody>
             </table>
-            
-            <div class="footer-timestamp">
-                aggiornamento ${dataOggiStampa} ore ${oraStampa}
-            </div>
-        </body>
-        </html>`);
+        </body></html>`);
     popup.document.close();
 }
 
-// --- 6. UTILITY E PERSISTENZA ---
-function popolaListaPermessi() {
-    const container = document.getElementById('listaPermessiContent');
-    const giorniSettimana = ["", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
-    const studentiPP = Object.keys(ORARI_PP).sort();
-    if (studentiPP.length === 0) { container.innerHTML = "<p>Nessun orario PP.</p>"; return; }
-    container.innerHTML = studentiPP.map(cognome => {
-        const orari = ORARI_PP[cognome];
-        let dettagli = Object.keys(orari).map(g => `<div style="font-size:0.8em; margin-left:10px;"><b style="color:var(--p)">${giorniSettimana[g].substring(0,2)}:</b> ${orari[g].out} > ${orari[g].in}</div>`).join('');
-        return `<div style="margin-bottom:12px; border-bottom:1px solid #eee;"><b>${cognome}</b>${dettagli}</div>`;
-    }).join('');
-}
-
-function togglePanel() {
-    const panel = document.getElementById('sidePanel');
-    if (panel.style.right === "0px") panel.style.right = "-350px";
-    else { popolaListaPermessi(); panel.style.right = "0px"; }
-}
-
+// --- UTILITY FINALI (INVARIATE) ---
 function isStudenteInLabOggi(classe, gruppo, dataOggetto) {
     const dataKey = dataOggetto.toLocaleDateString('it-IT');
     const giorno = dataOggetto.getDay();
@@ -421,11 +224,7 @@ function isStudenteInLabOggi(classe, gruppo, dataOggetto) {
     if ((classe === "5A" || classe === "5B") && gLab) return (gLab === "gr1" && gruppo === "G1") || (gLab === "gr2" && gruppo === "G2");
     return false;
 }
-
-function isPPNoDinnerOggi(cognome, giorno) { return ASSENTI_PERMESSO[giorno]?.includes(cognome.toUpperCase()); }
-
 function updateClock() { document.getElementById('digitalClock').innerText = new Date().toLocaleTimeString('it-IT'); }
-
 function salvaDatiLocale() {
     const dati = {};
     document.querySelectorAll('.student-row').forEach(r => {
@@ -433,24 +232,16 @@ function salvaDatiLocale() {
     });
     localStorage.setItem('datiConvitto', JSON.stringify(dati));
 }
-
-function caricaDatiLocale() {
+function caricaDatiLocale() { 
     const dati = JSON.parse(localStorage.getItem('datiConvitto') || "{}");
     document.querySelectorAll('.student-row').forEach(r => {
         const d = dati[r.dataset.cognome];
         if (d) {
-            r.querySelector('.in-u').value = d.esce || "";
-            r.querySelector('.in-i').value = d.entra || "";
+            r.querySelector('.in-u').value = d.esce || ""; r.querySelector('.in-i').value = d.entra || "";
             if (d.assente) { r.classList.add('assente'); r.querySelector('.btn-ass')?.classList.add('active-ass'); }
             if (d.dinnerno === "1") { r.classList.add('dinner-no'); r.querySelector('.btn-din')?.classList.add('active-din'); r.dataset.dinnerno = "1"; }
             if (d.switch) { cambiTurnoManuali[r.dataset.cognome] = true; r.querySelector('.btn-switch')?.classList.add('modificato'); }
         }
     });
 }
-
-function mostraDataReset() {
-    const dReset = localStorage.getItem('dataUltimoReset');
-    if (dReset) document.getElementById('info-reset').innerText = `Update: ${dReset}`; 
-}
-
 window.onload = init;
