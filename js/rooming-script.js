@@ -5,7 +5,7 @@ function generaGrigliaRooming() {
     // Dati extra statici
     const extra = [
         { cognome: "EDUCATORI", nome: "", classe: "", gruppo: "", room: "112", percorso: "" },
-        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125", percorso: "" },
+        { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "124", percorso: "" },
         { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "125", percorso: "" },
         { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "213", percorso: "" },
         { cognome: "", nome: "", classe: "Foresteria", gruppo: "", room: "216", percorso: "" },
