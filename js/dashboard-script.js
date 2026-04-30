@@ -1,13 +1,15 @@
-/**
+ /**
  * SCRIPT.JS - Versione Integrale Omnicomprensiva + Modifica BUS 7:30
  * Gestione Dashboard Convitto
  */
 
 let cambiTurnoManuali = {};
+let assenzeProgrammate = {};
 
 // --- 1. INIZIALIZZAZIONE ---
 function init() {
     const d = new Date();
+    caricaAssenzeProgrammate();
     
     // Mostra data e avvia orologio
     const dateEl = document.getElementById('todayDate');
@@ -56,6 +58,14 @@ function init() {
                 <button class="btn-ass" onclick="toggleAssenza(this)">ASSENTE</button>
                 <button class="btn-din" onclick="toggleDinnerNo(this)">NON CENA</button>
             </div>`;
+        
+        if (isAssenteProgrammato(s.cognome, d)) {
+        r.classList.add('assente');
+        r.dataset.dinnerno = "1";
+        }
+        
+        
+        
         lista.appendChild(r);
     });
     
@@ -353,6 +363,28 @@ function generaPopUpStampaConvitto() {
 }
 
 // --- 6. UTILITY E PERSISTENZA ---
+function salvaAssenzeProgrammate() {
+    localStorage.setItem('assenzeProgrammate', JSON.stringify(assenzeProgrammate));
+}
+
+function caricaAssenzeProgrammate() {
+    assenzeProgrammate = JSON.parse(localStorage.getItem('assenzeProgrammate') || "{}");
+}
+
+function isAssenteProgrammato(cognome, data) {
+    const lista = assenzeProgrammate[cognome.toUpperCase()];
+    if (!lista) return false;
+
+    const oggi = new Date(data.toISOString().split('T')[0]);
+
+    return lista.some(periodo => {
+        const dal = new Date(periodo.dal);
+        const al = new Date(periodo.al);
+        return oggi >= dal && oggi <= al;
+    });
+}
+
+
 function popolaListaPermessi() {
     const container = document.getElementById('listaPermessiContent');
     const giorniSettimana = ["", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
@@ -365,11 +397,121 @@ function popolaListaPermessi() {
     }).join('');
 }
 
+
 function togglePanel() {
     const panel = document.getElementById('sidePanel');
     if (panel.style.right === "0px") panel.style.right = "-350px";
-    else { popolaListaPermessi(); panel.style.right = "0px"; }
+   else {
+    popolaListaPermessi();
+    popolaSelectStudenti();
+    renderListaAssenze();
+       popolaSelectClassi();
+    panel.style.right = "0px";
 }
+}
+
+
+function popolaSelectStudenti() {
+    const sel = document.getElementById('selectStudente');
+    if (!sel) return;
+
+    const gruppi = {};
+
+    studenticonvittori.forEach(s => {
+        if (!gruppi[s.classe]) gruppi[s.classe] = [];
+        gruppi[s.classe].push(s);
+    });
+
+    let html = `<option value="">-- Seleziona Nome --</option>`;
+
+    Object.keys(gruppi).sort().forEach(classe => {
+        html += `<optgroup label="${classe}">`;
+        gruppi[classe].forEach(s => {
+            html += `<option value="${s.cognome}">${s.cognome} ${s.nome}</option>`;
+        });
+        html += `</optgroup>`;
+    });
+
+    sel.innerHTML = html;
+}
+
+function popolaSelectClassi() {
+    const sel = document.getElementById('selectClasse');
+    if (!sel) return;
+
+    const classiUniche = [...new Set(studenticonvittori.map(s => s.classe))].sort();
+
+    sel.innerHTML += classiUniche.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+
+function aggiungiAssenza() {
+    const cognomeSel = document.getElementById('selectStudente').value;
+    const classeSel = document.getElementById('selectClasse').value;
+    const dal = document.getElementById('dataDal').value;
+    const al = document.getElementById('dataAl').value;
+
+    if (!dal || !al) return alert("Seleziona entrambe le date");
+
+    let studentiDaAggiornare = [];
+
+    // 👉 PRIORITÀ: classe se selezionata
+    if (classeSel) {
+        studentiDaAggiornare = studenticonvittori
+            .filter(s => s.classe === classeSel)
+            .map(s => s.cognome.toUpperCase());
+    } 
+    // 👉 altrimenti singolo studente
+    else if (cognomeSel) {
+        studentiDaAggiornare = [cognomeSel.toUpperCase()];
+    } 
+    else {
+        return alert("Seleziona uno studente o una classe");
+    }
+
+    studentiDaAggiornare.forEach(cognome => {
+        if (!assenzeProgrammate[cognome]) {
+            assenzeProgrammate[cognome] = [];
+        }
+
+        assenzeProgrammate[cognome].push({ dal, al });
+    });
+
+    salvaAssenzeProgrammate();
+    renderListaAssenze();
+}
+
+function renderListaAssenze() {
+    const container = document.getElementById('listaAssenze');
+    if (!container) return;
+
+    container.innerHTML = Object.entries(assenzeProgrammate).map(([cognome, periodi]) => {
+        return `
+            <div style="margin-bottom:10px;">
+                <b>${cognome}</b>
+                ${periodi.map((p, i) => `
+                    <div style="font-size:0.8em;">
+                        ${p.dal} → ${p.al}
+                        <button onclick="rimuoviAssenza('${cognome}', ${i})">❌</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }).join('');
+}
+
+function rimuoviAssenza(cognome, index) {
+    assenzeProgrammate[cognome].splice(index, 1);
+
+    if (assenzeProgrammate[cognome].length === 0) {
+        delete assenzeProgrammate[cognome];
+    }
+
+    salvaAssenzeProgrammate();
+    renderListaAssenze();
+}
+
+
 
 function isStudenteInLabOggi(classe, gruppo, dataOggetto) {
     const dataKey = dataOggetto.toLocaleDateString('it-IT');
