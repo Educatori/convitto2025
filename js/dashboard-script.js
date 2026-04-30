@@ -337,7 +337,7 @@ function generaPopUpStampaConvitto() {
                                 <td ${bClassGray}>${s.oraU}</td><td ${bClass}>${s.oraI}</td>
                                 <td ${bClassGray}><b>${s.ppOut}</b></td><td ${bClass}><b>${s.ppIn}</b></td>
                                 <td ${bClassGray}>${s.dinnerno === "1" ? "X" : ""}</td><td ${bClass}></td><td ${bClassGray}></td>
-                                <td ${bClass}>${s.bus ? '🚌' : ''}</td>
+                                <td ${bClass}>${s.bus ? '📌' : ''}</td>
                             </tr>`;
                         }).join('');
                         if (room === "125") {
