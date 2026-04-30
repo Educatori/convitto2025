@@ -92,13 +92,26 @@ h1 { margin: 10; font-size: 20px; text-transform: uppercase; color: #2c3e50; }
 .line-notes { width: 80%; border-bottom: 0.5px solid #bbb; margin: 0 auto 3px; height: 8px; }
 
 .btn { padding: 10px 30px; background: #2c3e50; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 14px; }
-
+/* REGOLE PER LA STAMPA */
 @media print {
     .print-bar { display: none !important; }
+    
     @page { 
         size: A4 portrait; 
         margin: 0.8cm; 
     }
-    body { padding: 0; height: 100%; }
+
+    /* Forza il salto pagina dopo il primo blocco */
+    #documento-da-stampare {
+        page-break-after: always;
+        break-after: page;
+    }
+
+    body { 
+        padding: 0; 
+        height: auto !important; 
+        overflow: visible !important; 
+    }
+
     .student-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
