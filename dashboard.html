@@ -12,7 +12,7 @@
     <div class="container">
         <header>
             <div>
-<h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CONVITTO & DINNER  </a> </h1>
+<h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CONVITTO e DINNER  </a> </h1>
                 
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
@@ -30,7 +30,7 @@
                        oninput="gestisciSaltoStanze(this); validaERicerca();">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">AZZERARE</button>
+            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">DAILY RESET</button>
          <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
             Ultimo aggiornamento: MAI
         </div>
@@ -47,13 +47,47 @@
         <div id="listaStudenti"></div>
     </div>
 
-    <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0;">Permessi Permanenti</h3>
-            <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
-        </div>
-        <div id="listaPermessiContent"></div>
+ <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto; display:flex; flex-direction:column;">
+
+    <!-- HEADER -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0;">Gestione Convitto</h3>
+        <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
     </div>
+
+    <hr>
+
+    <!-- 🔴 ASSENZE PROGRAMMATE -->
+    <h3 style="margin-top:10px;">Assenze Programmate</h3>
+
+    <select id="selectStudente" style="width:100%; margin-bottom:6px;">
+        <option value="">-- Seleziona Nome --</option>
+    </select>
+
+    <select id="selectClasse" style="width:100%; margin-bottom:6px;">
+        <option value="">-- Seleziona Classe --</option>
+    </select>
+
+    <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
+    <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
+
+    <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
+        ➕ Aggiungi Assenza
+    </button>
+
+    <hr style="margin:20px 0;">
+
+    <!-- 🔵 LISTA ASSENZE -->
+    <h3>Lista Assenze</h3>
+    <div id="listaAssenze" style="margin-bottom:20px;"></div>
+
+    <hr>
+
+    <!-- 🟢 PERMESSI -->
+    <h3>Permessi Permanenti</h3>
+    <div id="listaPermessiContent"></div>
+
+</div>
 
     <script src="js/convittori.js"></script>
     <script src="js/permessi.js"></script>
@@ -70,6 +104,7 @@
         }
     </script>
 
+    
     
 </body>
 </html>
