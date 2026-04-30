@@ -18,9 +18,15 @@
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
         </header>
-
+<div class="note-toolbar-container">
+    <div class="note-content">
+        <span class="note-icon">📌</span>
+        <input type="text" id="dailyNotes" placeholder="Inserisci note, promemoria o comunicazioni..." class="note-input">
+       <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
+    </div>
+</div>       
         <div class="toolbar">
-             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">GESTIONE</button>
+             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
             <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
             
             <div style="display:flex; align-items:center; gap:5px;">
@@ -102,6 +108,30 @@
                 location.reload();
             }
         }
+        
+        
+        const noteInput = document.getElementById('dailyNotes');
+
+// 1. Appena la pagina si carica, recupera le note salvate
+window.addEventListener('load', () => {
+    const noteSalvate = localStorage.getItem('note_convitto');
+    if (noteSalvate) {
+        noteInput.value = noteSalvate;
+    }
+});
+
+// 2. Ogni volta che scrivi, salva il testo in tempo reale
+noteInput.addEventListener('input', () => {
+    localStorage.setItem('note_convitto', noteInput.value);
+});
+
+// 3. Funzione per la X: svuota tutto e cancella la memoria
+function cancellaNote() {
+    if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
+        noteInput.value = ''; // Svuota il campo visibile
+        localStorage.removeItem('note_convitto'); // Cancella la memoria
+    }
+}
     </script>
 
     
