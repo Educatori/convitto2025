@@ -73,7 +73,7 @@ const studenticonvittori = [
     { cognome: "FLORIAN", nome: "Gabriele", classe: "3A", gruppo: "", room:"118", percorso: "🍴" },
     { cognome: "MARANGELO", nome: "Giulio", classe: "3A", gruppo: "", room:"118", percorso: "🍷" },
     { cognome: "PEAQUIN", nome: "Linda", classe: "3A", gruppo: "", room:"214", percorso: "🍷" },
-    { cognome: "ZOPPO", nome: "Rodrigue", classe: "3A", gruppo: "", room:"124", percorso: "🍷" },
+    { cognome: "ZOPPO", nome: "Rodrigue", classe: "3A", gruppo: "", room:"125", percorso: "🍷" },
     // 3B tot 7
     { cognome: "BLANCHET M", nome: "Magalie", classe: "3B", gruppo: "", room:"214", percorso: "🍷" },
     { cognome: "BOGGIA", nome: "Vittoria", classe: "3B", gruppo: "", room:"214", percorso: "🍷" },
