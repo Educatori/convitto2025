@@ -1,12 +1,15 @@
 /**
- * TRANSFER-SCRIPT.JS - Versione Aggiornata 
+ * TRANSFER-SCRIPT.JS - Versione Aggiornata con Nome File PDF Dinamico
  */
 
 function generaGriglia() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
 
-// 1. Configurazione: Classi da ESCLUDERE e Lab del giorno
+    // --- AGGIORNAMENTO TITOLO PER STAMPA PDF ---
+    impostaTitoloDinamico();
+
+    // 1. Configurazione: Classi da ESCLUDERE e Lab del giorno
     const classiDaEscludere = ["1P", "2P", "3P", "2A", "2B", "5B"];
     const oggi = new Date().getDay(); 
     const labConfig = (typeof LAB_PRANZO !== 'undefined') ? LAB_PRANZO : {};
@@ -19,7 +22,6 @@ function generaGriglia() {
         listaDalDatabase = listaDalDatabase.concat(studenticonvittori);
     }
     
-    // Controllo flessibile per esterni
     if (typeof studentiesterni !== 'undefined') {
         listaDalDatabase = listaDalDatabase.concat(studentiesterni);
     } else if (typeof esterni !== 'undefined') {
@@ -30,7 +32,6 @@ function generaGriglia() {
     const classi = {};
     
     listaDalDatabase.forEach(s => {
-        // Salta se non ha cognome o se la classe è nell'elenco degli esclusi
         if (!s.cognome || s.cognome.trim() === "") return;
         
         const nomeClasse = s.classe ? s.classe.toUpperCase().trim() : "SENZA CLASSE";
@@ -51,14 +52,11 @@ function generaGriglia() {
         
         box.className = `room-box ${haLabOggi ? 'has-lab' : ''}`;
 
-        // Ordinamento studenti per cognome
         classi[nomeClasse].sort((a, b) => a.cognome.localeCompare(b.cognome));
 
         const occupantiHtml = classi[nomeClasse].map(s => {
-            // Gestione Percorso e Gruppo
             const tagPercorso = s.percorso ? `<span class="percorso-tag">${s.percorso}</span>` : "";
             const tagGruppo = s.gruppo ? `• ${s.gruppo}` : "";
-            // Uniamo i dettagli (Stanza + Percorso + Gruppo)
             const dettagli = [
                 ` ${s.room || '--'}`,
                 tagPercorso,
@@ -72,7 +70,6 @@ function generaGriglia() {
                 </div>`;
         }).join('');
 
-        // Costruzione box della classe
         box.innerHTML = `
             <div class="room-info">
                 <span> ${nomeClasse}</span>
@@ -85,6 +82,20 @@ function generaGriglia() {
 
         grid.appendChild(box);
     });
+}
+
+/**
+ * Funzione per impostare il titolo della pagina che diventerà il nome del PDF
+ */
+function impostaTitoloDinamico() {
+    const oggi = new Date();
+    
+    // Opzioni per formattare la data come richiesto (lunedì 4 maggio 2026)
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    const dataFormattata = oggi.toLocaleDateString('it-IT', options);
+    
+    // Imposta il document.title (usato dai browser come nome file in "Salva come PDF")
+    document.title = `Transfer Lunch - ${dataFormattata}`;
 }
 
 // Lancia la funzione al caricamento
