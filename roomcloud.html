@@ -1,9 +1,22 @@
+Nessun elemento selezionato 
+
+Vai ai contenuti
+Utilizzo di Posta di WebEcole con gli screen reader
+
+Conversazioni
+ 
+Norme del programma
+Powered by Google
+Ultima attività dell'account: 15 ore fa
+Dettagli
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
     <title>Rooming Cloud LOCK2</title>
+
     <style>
         :root {
             --bg-page: #ffffff;
@@ -12,99 +25,330 @@
             --color-assente-bg: #ffe500;
             --color-confermato-bg: #ff0000;
             --color-occupato-bg: #2196f3;
+            --border-light: #c0c0c0;
+            --danger: #c0392b;
+            --muted: #6b7280;
+            --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-            margin: 0; padding: 15px; font-size: 11px; line-height: 1.2;
-            background-color: var(--bg-page); user-select: none; -webkit-user-select: none;
+            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 15px;
+            font-size: 11px;
+            line-height: 1.2;
+            background-color: var(--bg-page);
+            user-select: none;
+            -webkit-user-select: none;
         }
+
+        h1 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--accent-color);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
         .header-container {
-            display: flex; flex-direction: column; align-items: center;
-            border-bottom: 3px solid var(--bg-header); margin-bottom: 15px;
-            padding: 10px; background: white; border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 3px solid var(--bg-header);
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-soft);
         }
+
         .print-only { display: none; }
 
-        /* --- STILE STAMPA --- */
+        #stats-foresteria {
+            font-weight: bold;
+            color: var(--color-occupato-bg);
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        #user-status {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 8px;
+        }
+
+        .room-box {
+            border: 1px solid var(--border-light);
+            display: flex;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .room-info {
+            width: 40px;
+            background: #e2e8f0;
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .occupants-list {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background: #eee;
+        }
+
+        .student-wrapper {
+            position: relative;
+        }
+
+        .row-student {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: grab;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), background 0.3s;
+            background: white;
+            touch-action: pan-y;
+        }
+
+        .row-student.grabbing {
+            cursor: grabbing;
+        }
+
+        .student-swipe-background {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .student-swipe-background.active { opacity: 1; }
+
+        .row-student.assente {
+            background: #fff9c4 !important;
+            border-left: 5px solid var(--color-assente-bg);
+        }
+
+        .row-student.confermato {
+            background: #ffcdd2 !important;
+            text-decoration: line-through;
+            border-left: 5px solid var(--color-confermato-bg);
+        }
+
+        .row-student.occupato {
+            background: #e3f2fd !important;
+            color: #0d47a1;
+            font-weight: bold;
+            border-left: 5px solid var(--color-occupato-bg);
+        }
+
+        .row-student.nota {
+            background: #e8f5e9 !important;
+            color: #2e7d32;
+            cursor: default;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        .row-student[data-classe="Foresteria"] {
+            cursor: default;
+            touch-action: auto;
+        }
+
+        .student-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .input-foresteria {
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            width: 90%;
+            margin-top: 5px;
+            outline: none;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .input-foresteria:focus {
+            border-color: var(--color-occupato-bg);
+            background: #e3f2fd;
+        }
+
+        .student-name {
+            flex: 1;
+            font-size: 11.5px;
+            pointer-events: none;
+        }
+
+        .student-details {
+            font-size: 9.5px;
+            color: #666;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .no-print-flex {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: var(--bg-header);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover { filter: brightness(0.95); }
+        .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        #login-form {
+            max-width: 320px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #login-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #login-error,
+        #app-error {
+            color: var(--danger);
+            font-weight: bold;
+            min-height: 16px;
+        }
+
+        #app-error {
+            text-align: center;
+            margin: 8px 0;
+        }
+
         @media print {
             body { zoom: 90%; }
-            .print-only { display: block; text-align: right; font-weight: bold; margin-bottom: 10px; font-size: 10px; }
-            .room-box { page-break-inside: avoid; break-inside: avoid; }
+
+            .print-only {
+                display: block;
+                text-align: right;
+                font-weight: bold;
+                margin-bottom: 10px;
+                font-size: 10px;
+            }
+
+            .room-box {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
             .no-print { display: none !important; }
-            .grid-container { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 5px; }
-            .row-student { transform: none !important; border: 1px solid #eee !important; }
-        }
 
-        h1 { margin: 0; font-size: 16px; color: var(--accent-color); }
-        #stats-foresteria { font-weight: bold; color: var(--color-occupato-bg); margin-top: 5px; font-size: 12px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
-        .room-box { border: 1px solid #c0c0c0; display: flex; background: white; border-radius: 5px; overflow: hidden; }
-        .room-info { width: 40px; background: #e2e8f0; border-right: 1px solid #c0c0c0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
-        .occupants-list { flex-grow: 1; position: relative; overflow: hidden; background: #eee; }
-        
-        .row-student { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: grab; position: relative; z-index: 2; transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), background 0.3s; background: white; touch-action: pan-y; }
-        .student-swipe-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; font-weight: bold; opacity: 0; }
-        .student-swipe-background.active { opacity: 1; }
-        
-        /* Classi di stato */
-        .row-student.assente { background: #fff9c4 !important; border-left: 5px solid var(--color-assente-bg); }
-        .row-student.confermato { background: #ffcdd2 !important; text-decoration: line-through; border-left: 5px solid var(--color-confermato-bg); }
-        .row-student.occupato { background: #e3f2fd !important; color: #0d47a1; font-weight: bold; border-left: 5px solid var(--color-occupato-bg); }
-        .row-student.nota { background: #e8f5e9 !important; color: #2e7d32; cursor: default; justify-content: center; font-weight: bold; z-index: 3; }
-        
-        /* Stile specifico Foresteria */
-        .row-student[data-classe="Foresteria"] { cursor: default; touch-action: auto; }
-        .input-foresteria { 
-            border: 1px solid #ccc; background: #fff; border-radius: 4px; 
-            padding: 4px 8px; font-size: 11px; width: 90%; margin-top: 5px; outline: none; 
-        }
-        .input-foresteria:focus { border-color: var(--color-occupato-bg); background: #e3f2fd; }
+            .grid-container {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 5px;
+            }
 
-        .student-name { flex: 1; font-size: 11.5px; pointer-events: none; }
-        .student-details { font-size: 9.5px; color: #666; font-weight: bold; pointer-events: none; }
-        .no-print-flex { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
-        .btn { padding: 12px 25px; background: var(--bg-header); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        #login-form {
-            max-width: 300px; margin: 100px auto; padding: 20px;
-            background: #f8f9fa; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            .row-student {
+                transform: none !important;
+                border: 1px solid #eee !important;
+            }
         }
-        #login-form input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
     </style>
 </head>
 <body>
-
-    <div id="login-form">
+    <form id="login-form" autocomplete="on">
         <h2 style="color: var(--accent-color)">Rooming Cloud</h2>
-        <input type="email" id="email" placeholder="User">
-        <input type="password" id="password" placeholder="Password">
-        <button class="btn" onclick="eseguiLogin()">ACCEDI</button>
-    </div>
+        <input type="email" id="email" name="email" placeholder="User" autocomplete="username" required />
+        <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required />
+        <p id="login-error" aria-live="polite"></p>
+        <button class="btn" id="login-button" type="submit">ACCEDI</button>
+    </form>
 
-    <div id="app-content" style="display: none;">
+    <main id="app-content" style="display: none;">
         <div class="print-only date-timestamp" id="printTimestamp"></div>
-        
+
         <div class="no-print no-print-flex">
-            <button class="btn" onclick="window.print()">STAMPA</button>
-            <button class="btn" style="background: #95a5a6" onclick="window.resetAssenze()">RESET</button>
-            <button class="btn" style="background: #e74c3c" onclick="window.logout()">ESCI</button>
+            <button class="btn" type="button" id="printButton">STAMPA</button>
+            <button class="btn" type="button" id="resetButton" style="background: #95a5a6">RESET</button>
+            <button class="btn" type="button" id="logoutButton" style="background: #e74c3c">ESCI</button>
         </div>
+
+        <div id="app-error" class="no-print" aria-live="polite"></div>
 
         <div class="header-container">
-            <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> Rooming CLOUD☁️</a> </h1>
+            <h1><a href="index.html">Rooming CLOUD☁️</a></h1>
             <div id="stats-foresteria">Posti Foresteria Liberi: -</div>
+            <div id="user-status" class="no-print"></div>
         </div>
-        
+
         <div class="grid-container" id="mainGrid"></div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getDatabase,
+            ref,
+            onValue,
+            set,
+            serverTimestamp,
+            off
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "FIREBASE_API_KEY_PLACEHOLDER",
             databaseURL: "https://rooms-2ff73-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "rooms-2ff73"
@@ -114,174 +358,430 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
+        const dbRefs = {
+            anagrafica: ref(db, "anagrafica"),
+            assenze: ref(db, "assenze")
+        };
+
+        const els = {
+            loginForm: document.getElementById("login-form"),
+            loginButton: document.getElementById("login-button"),
+            loginError: document.getElementById("login-error"),
+            email: document.getElementById("email"),
+            password: document.getElementById("password"),
+            appContent: document.getElementById("app-content"),
+            appError: document.getElementById("app-error"),
+            mainGrid: document.getElementById("mainGrid"),
+            printTimestamp: document.getElementById("printTimestamp"),
+            statsForesteria: document.getElementById("stats-foresteria"),
+            userStatus: document.getElementById("user-status"),
+            printButton: document.getElementById("printButton"),
+            resetButton: document.getElementById("resetButton"),
+            logoutButton: document.getElementById("logoutButton")
+        };
+
         let studenti = [];
         let assentiData = {};
+        let unsubscribeAnagrafica = null;
+        let unsubscribeAssenze = null;
 
-        // --- AUTH ---
-        window.eseguiLogin = () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, password).catch(err => alert("Errore: " + err.message));
-        };
-
-        window.logout = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            const loginForm = document.getElementById('login-form');
-            const appContent = document.getElementById('app-content');
-
-            if (user) {
-                loginForm.style.display = 'none';
-                appContent.style.display = 'block';
-
-                onValue(ref(db, "anagrafica"), (snapshot) => {
-                    studenti = snapshot.val() || [];
-                    onValue(ref(db, "assenze"), (snap) => {
-                        assentiData = snap.val() || {};
-                        generaGriglia();
-                    });
-                });
-            } else {
-                loginForm.style.display = 'block';
-                appContent.style.display = 'none';
-            }
-        });
-
-        // --- SALVATAGGIO NOME FORESTERIA ---
-        window.salvaNomeForesteria = (id, valore) => {
-            let data = { ...assentiData };
-            if (valore.trim() === "") {
-                if (data[id]) delete data[id];
-            } else {
-                data[id] = { 
-                    ...data[id], 
-                    nomeOccupante: valore, 
-                    occupato: true,
-                    assente: false,
-                    confermato: false 
-                };
-            }
-            set(ref(db, "assenze"), data);
-        };
-
-        // --- SWIPE LOGIC (Solo per NON Foresteria) ---
-        let startX = 0, currentTranslate = 0, isGrabbing = false, currentRow = null;
+        let startX = 0;
+        let currentTranslate = 0;
+        let isGrabbing = false;
+        let currentRow = null;
         const threshold = 60;
 
-        window.gestisciStart = (e) => {
-            currentRow = e.currentTarget;
-            if (currentRow.classList.contains("nota") || currentRow.getAttribute("data-classe") === "Foresteria") return;
-            isGrabbing = true;
-            startX = e.clientX || e.touches?.[0]?.clientX || e.screenX;
-            currentRow.classList.add("grabbing");
-            currentRow.parentNode.querySelector(".student-swipe-background").classList.add("active");
-            document.addEventListener("pointermove", window.gestisciMove);
-            document.addEventListener("pointerup", window.gestisciEnd);
-        };
+        function showAppError(message) {
+            els.appError.textContent = message || "";
+        }
 
-        window.gestisciMove = (e) => {
+        function normalizeIdPart(value = "") {
+            return String(value)
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-zA-Z0-9_-]/g, "_")
+                .replace(/_+/g, "_")
+                .replace(/^_+|_+$/g, "")
+                .slice(0, 40);
+        }
+
+        function getStudenteId(studente, room) {
+            return [studente.cognome, studente.nome, room]
+                .map(normalizeIdPart)
+                .filter(Boolean)
+                .join("_")
+                .slice(0, 120);
+        }
+
+        function asArrayFromFirebase(value) {
+            if (!value) return [];
+            if (Array.isArray(value)) return value.filter(Boolean);
+            return Object.values(value).filter(Boolean);
+        }
+
+        function isValidStudente(s) {
+            return Boolean(
+                s &&
+                typeof s.cognome === "string" &&
+                typeof s.nome === "string" &&
+                typeof s.classe === "string" &&
+                typeof s.room === "string"
+            );
+        }
+
+        function buildAuditFields() {
+            const user = auth.currentUser;
+            if (!user) throw new Error("Utente non autenticato.");
+            return {
+                updatedBy: user.uid,
+                updatedAt: serverTimestamp()
+            };
+        }
+
+        async function writeAssenza(id, payloadOrNull) {
+            showAppError("");
+            try {
+                await set(ref(db, `assenze/${id}`), payloadOrNull);
+            } catch (error) {
+                console.error(error);
+                showAppError("Salvataggio non riuscito. Controlla connessione, autorizzazioni e rules Firebase.");
+            }
+        }
+
+        async function eseguiLogin(event) {
+            event.preventDefault();
+            els.loginError.textContent = "";
+            els.loginButton.disabled = true;
+
+            const email = els.email.value.trim().toLowerCase();
+            const password = els.password.value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                els.password.value = "";
+            } catch (error) {
+                console.error(error);
+                els.loginError.textContent = "Credenziali non valide o utente non autorizzato.";
+            } finally {
+                els.loginButton.disabled = false;
+            }
+        }
+
+        async function logout() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error(error);
+                showAppError("Logout non riuscito.");
+            }
+        }
+
+        function detachDatabaseListeners() {
+            if (unsubscribeAnagrafica) unsubscribeAnagrafica();
+            if (unsubscribeAssenze) unsubscribeAssenze();
+            off(dbRefs.anagrafica);
+            off(dbRefs.assenze);
+            unsubscribeAnagrafica = null;
+            unsubscribeAssenze = null;
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            detachDatabaseListeners();
+            showAppError("");
+
+            if (!user) {
+                els.loginForm.style.display = "block";
+                els.appContent.style.display = "none";
+                els.userStatus.textContent = "";
+                studenti = [];
+                assentiData = {};
+                els.mainGrid.innerHTML = "";
+                return;
+            }
+
+            els.loginForm.style.display = "none";
+            els.appContent.style.display = "block";
+            els.userStatus.textContent = `Accesso: ${user.email || user.uid}`;
+
+            unsubscribeAnagrafica = onValue(
+                dbRefs.anagrafica,
+                (snapshot) => {
+                    studenti = asArrayFromFirebase(snapshot.val()).filter(isValidStudente);
+                    generaGriglia();
+                },
+                (error) => {
+                    console.error(error);
+                    showAppError("Lettura anagrafica negata. Verifica che il tuo UID sia in authorizedUsers.");
+                }
+            );
+
+            unsubscribeAssenze = onValue(
+                dbRefs.assenze,
+                (snapshot) => {
+                    assentiData = snapshot.val() || {};
+                    generaGriglia();
+                },
+                (error) => {
+                    console.error(error);
+                    showAppError("Lettura assenze negata. Verifica che il tuo UID sia in authorizedUsers.");
+                }
+            );
+        });
+
+        function salvaNomeForesteria(id, valore) {
+            const nomePulito = valore.trim().slice(0, 80);
+
+            if (nomePulito === "") {
+                writeAssenza(id, null);
+                return;
+            }
+
+            writeAssenza(id, {
+                assente: false,
+                confermato: false,
+                occupato: true,
+                nomeOccupante: nomePulito,
+                ...buildAuditFields()
+            });
+        }
+
+        function gestisciStart(event) {
+            currentRow = event.currentTarget;
+
+            if (
+                currentRow.classList.contains("nota") ||
+                currentRow.dataset.classe === "Foresteria"
+            ) return;
+
+            isGrabbing = true;
+            startX = event.clientX;
+            currentTranslate = 0;
+            currentRow.classList.add("grabbing");
+            currentRow.setPointerCapture?.(event.pointerId);
+            currentRow.parentNode.querySelector(".student-swipe-background")?.classList.add("active");
+
+            document.addEventListener("pointermove", gestisciMove);
+            document.addEventListener("pointerup", gestisciEnd);
+            document.addEventListener("pointercancel", gestisciEnd);
+        }
+
+        function gestisciMove(event) {
             if (!isGrabbing || !currentRow) return;
-            const currentX = e.clientX || e.touches?.[0]?.clientX || e.screenX;
-            currentTranslate = currentX - startX;
+
+            currentTranslate = event.clientX - startX;
             currentRow.style.transform = `translateX(${currentTranslate}px)`;
 
             const bg = currentRow.parentNode.querySelector(".student-swipe-background");
+            if (!bg) return;
+
             const labelL = bg.querySelector(".swipe-label-left");
             const labelR = bg.querySelector(".swipe-label-right");
 
             if (currentTranslate > 0) {
-                labelL.style.opacity = 1; labelR.style.opacity = 0;
+                labelL.style.opacity = 1;
+                labelR.style.opacity = 0;
                 labelL.textContent = "➡️ ASSENTE";
                 bg.style.background = "linear-gradient(90deg, var(--color-assente-bg) 0%, white 100%)";
             } else {
-                labelL.style.opacity = 0; labelR.style.opacity = 1;
+                labelL.style.opacity = 0;
+                labelR.style.opacity = 1;
                 labelR.textContent = "CONFERMA ⬅️";
                 bg.style.background = "linear-gradient(270deg, var(--color-confermato-bg) 0%, white 100%)";
             }
-        };
-
-        window.gestisciEnd = () => {
-            if (!isGrabbing) return;
-            const id = currentRow.getAttribute("data-id");
-            if (Math.abs(currentTranslate) > threshold) {
-                toggleStato(id, (currentTranslate > 0 ? "assente" : "confermato"));
-            }
-            currentRow.style.transform = "";
-            currentRow.classList.remove("grabbing");
-            currentRow.parentNode.querySelector(".student-swipe-background").classList.remove("active");
-            document.removeEventListener("pointermove", window.gestisciMove);
-            document.removeEventListener("pointerup", window.gestisciEnd);
-            isGrabbing = false;
-        };
-
-        function toggleStato(id, tipo) {
-            let data = { ...assentiData };
-            if (!data[id]) data[id] = { assente: false, confermato: false };
-            if (tipo === "assente") { data[id].assente = !data[id].assente; data[id].confermato = false; }
-            else if (tipo === "confermato") { data[id].confermato = !data[id].confermato; data[id].assente = false; }
-            if (!data[id].assente && !data[id].confermato && !data[id].nomeOccupante) delete data[id];
-            set(ref(db, "assenze"), data);
         }
 
-        window.resetAssenze = () => { if (confirm("Resettare tutto?")) set(ref(db, "assenze"), {}); };
+        function gestisciEnd() {
+            if (!isGrabbing || !currentRow) return;
+
+            const id = currentRow.dataset.id;
+            if (Math.abs(currentTranslate) > threshold) {
+                toggleStato(id, currentTranslate > 0 ? "assente" : "confermato");
+            }
+
+            currentRow.style.transform = "";
+            currentRow.classList.remove("grabbing");
+            currentRow.parentNode.querySelector(".student-swipe-background")?.classList.remove("active");
+
+            document.removeEventListener("pointermove", gestisciMove);
+            document.removeEventListener("pointerup", gestisciEnd);
+            document.removeEventListener("pointercancel", gestisciEnd);
+
+            isGrabbing = false;
+            currentRow = null;
+            currentTranslate = 0;
+        }
+
+        function toggleStato(id, tipo) {
+            const current = assentiData[id] || {};
+            let next = {
+                assente: Boolean(current.assente),
+                confermato: Boolean(current.confermato)
+            };
+
+            if (tipo === "assente") {
+                next.assente = !next.assente;
+                next.confermato = false;
+            }
+
+            if (tipo === "confermato") {
+                next.confermato = !next.confermato;
+                next.assente = false;
+            }
+
+            if (!next.assente && !next.confermato) {
+                writeAssenza(id, null);
+                return;
+            }
+
+            writeAssenza(id, {
+                ...next,
+                occupato: false,
+                ...buildAuditFields()
+            });
+        }
+
+        async function resetAssenze() {
+            const ids = Object.keys(assentiData || {});
+            if (ids.length === 0) return;
+            if (!confirm(`Resettare ${ids.length} registrazioni?`)) return;
+
+            showAppError("");
+            els.resetButton.disabled = true;
+
+            try {
+                await Promise.all(ids.map((id) => set(ref(db, `assenze/${id}`), null)));
+            } catch (error) {
+                console.error(error);
+                showAppError("Reset non riuscito. Verifica autorizzazioni e rules Firebase.");
+            } finally {
+                els.resetButton.disabled = false;
+            }
+        }
+
+        function createStudentRow(studente, room) {
+            const id = getStudenteId(studente, room);
+            const stato = assentiData[id] || {};
+            const isNota = studente.cognome === "NOTE";
+            const isForesteria = studente.classe === "Foresteria";
+            const nomeOccupante = typeof stato.nomeOccupante === "string" ? stato.nomeOccupante : "";
+
+            let cls = "";
+            if (isNota) cls = "nota";
+            else if (isForesteria) cls = nomeOccupante.trim() !== "" ? "occupato" : "";
+            else cls = stato.confermato ? "confermato" : stato.assente ? "assente" : "";
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "student-wrapper";
+
+            const swipeBg = document.createElement("div");
+            swipeBg.className = "student-swipe-background";
+
+            const labelLeft = document.createElement("span");
+            labelLeft.className = "swipe-label-left";
+            const labelRight = document.createElement("span");
+            labelRight.className = "swipe-label-right";
+            swipeBg.append(labelLeft, labelRight);
+
+            const row = document.createElement("div");
+            row.className = `row-student ${cls}`.trim();
+            row.dataset.id = id;
+            row.dataset.classe = studente.classe;
+
+            if (!isForesteria) {
+                row.addEventListener("pointerdown", gestisciStart);
+            }
+
+            const content = document.createElement("div");
+            content.className = "student-content";
+
+            const name = document.createElement("span");
+            name.className = "student-name";
+
+            const surname = document.createElement("b");
+            surname.textContent = studente.cognome;
+            name.append(surname, ` ${studente.nome}`);
+            content.appendChild(name);
+
+            if (isForesteria) {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.className = "input-foresteria no-print";
+                input.placeholder = "Nome occupante...";
+                input.value = nomeOccupante;
+                input.maxLength = 80;
+                input.addEventListener("change", () => salvaNomeForesteria(id, input.value));
+                input.addEventListener("pointerdown", (event) => event.stopPropagation());
+                content.appendChild(input);
+
+                if (nomeOccupante) {
+                    const printSpan = document.createElement("span");
+                    printSpan.className = "print-only";
+                    printSpan.style.fontSize = "9px";
+                    printSpan.style.color = "#0d47a1";
+                    printSpan.style.fontWeight = "bold";
+                    printSpan.style.marginTop = "2px";
+                    printSpan.textContent = `OCCUPATO: ${nomeOccupante}`;
+                    content.appendChild(printSpan);
+                }
+            }
+
+            const details = document.createElement("span");
+            details.className = "student-details";
+            details.textContent = isNota ? "" : studente.classe;
+
+            row.append(content, details);
+            wrapper.append(swipeBg, row);
+            return wrapper;
+        }
 
         function generaGriglia() {
-            const grid = document.getElementById("mainGrid");
-            grid.innerHTML = "";
+            els.mainGrid.replaceChildren();
             const stanze = {};
-            let libereF = 0, totF = 0;
+            let libereForesteria = 0;
+            let totaleForesteria = 0;
 
-            document.getElementById('printTimestamp').textContent = "Report: " + new Date().toLocaleString('it-IT');
+            els.printTimestamp.textContent = "Report: " + new Date().toLocaleString("it-IT");
 
-            studenti.forEach(s => {
+            studenti.forEach((s) => {
                 if (!stanze[s.room]) stanze[s.room] = [];
                 stanze[s.room].push(s);
-            });
 
-            // Conteggio dinamico Foresteria
-            studenti.forEach(s => {
                 if (s.classe === "Foresteria") {
-                    totF++;
-                    const id = `${s.cognome}_${s.nome}_${s.room}`;
-                    if (!(assentiData[id]?.nomeOccupante)) libereF++;
+                    totaleForesteria++;
+                    const id = getStudenteId(s, s.room);
+                    if (!assentiData[id]?.nomeOccupante) libereForesteria++;
                 }
             });
 
-            document.getElementById("stats-foresteria").textContent = `Posti Foresteria Liberi: ${libereF} su ${totF}`;
+            els.statsForesteria.textContent = `Posti Foresteria Liberi: ${libereForesteria} su ${totaleForesteria}`;
 
-            Object.keys(stanze).sort((a,b) => a-b).forEach(num => {
-                const box = document.createElement("div");
-                box.className = "room-box";
-                const html = stanze[num].map(s => {
-                    const id = `${s.cognome}_${s.nome}_${num}`;
-                    const st = assentiData[id] || {};
-                    const isN = s.cognome === "NOTE";
-                    const isF = s.classe === "Foresteria";
-                    
-                    const nomeOccupante = st.nomeOccupante || "";
-                    let cls = "";
-                    if (isN) cls = "nota";
-                    else if (isF) cls = nomeOccupante.trim() !== "" ? "occupato" : "";
-                    else cls = st.confermato ? "confermato" : (st.assente ? "assente" : "");
+            Object.keys(stanze)
+                .sort((a, b) => Number(a) - Number(b))
+                .forEach((room) => {
+                    const box = document.createElement("div");
+                    box.className = "room-box";
 
-                    return `<div style="position:relative;">
-                        <div class="student-swipe-background"><span class="swipe-label-left"></span><span class="swipe-label-right"></span></div>
-                        <div class="row-student ${cls}" data-id="${id}" data-classe="${s.classe}" ${!isF ? 'onpointerdown="window.gestisciStart(event)"' : ''}>
-                            <div style="display: flex; flex-direction: column; width: 100%;">
-                                <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
-                                ${isF ? `
-                                    <input type="text" class="input-foresteria no-print" placeholder="Nome occupante..." value="${nomeOccupante}" onchange="window.salvaNomeForesteria('${id}', this.value)" onpointerdown="event.stopPropagation()">
-                                    ${nomeOccupante ? `<span class="print-only" style="font-size:9px; color:#0d47a1; font-weight:bold; margin-top:2px;">OCCUPATO: ${nomeOccupante}_</span>` : ''}
-                                ` : ""}
-                            </div>
-                            <span class="student-details">${isN ? "" : s.classe}</span>
-                        </div>
-                    </div>`;
-                }).join("");
-                box.innerHTML = `<div class="room-info">${num}</div><div class="occupants-list">${html}</div>`;
-                grid.appendChild(box);
-            });
+                    const roomInfo = document.createElement("div");
+                    roomInfo.className = "room-info";
+                    roomInfo.textContent = room;
+
+                    const occupantsList = document.createElement("div");
+                    occupantsList.className = "occupants-list";
+
+                    stanze[room].forEach((studente) => {
+                        occupantsList.appendChild(createStudentRow(studente, room));
+                    });
+
+                    box.append(roomInfo, occupantsList);
+                    els.mainGrid.appendChild(box);
+                });
         }
+
+        els.loginForm.addEventListener("submit", eseguiLogin);
+        els.printButton.addEventListener("click", () => window.print());
+        els.resetButton.addEventListener("click", resetAssenze);
+        els.logoutButton.addEventListener("click", logout);
     </script>
 </body>
 </html>
