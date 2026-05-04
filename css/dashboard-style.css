@@ -94,11 +94,15 @@ header {
     transform: translateY(-1px); 
 }
 
+
+
 .note-toolbar-container {
+    background: #fff9c4;
     width: 100%;
-    max-width: 450px; /* Larghezza bilanciata per la griglia */
-    margin: 0 auto 30px auto;
-    padding: 0 10px;
+    max-width: 500px; /* Larghezza bilanciata per la griglia */
+    margin: 0 auto 40px auto;
+    padding: 12 12px;
+    border-radius: 15px;
 }
 
 .note-content {
@@ -244,4 +248,4 @@ header {
     #listaStudenti { grid-template-columns: 1fr 1fr; }
     header { flex-direction: column; text-align: center; gap: 10px; }
     .toolbar { flex-wrap: wrap; }
-}
+} 
