@@ -1,5 +1,5 @@
  /**
- * SCRIPT.JS - Versione Integrale Omnicomprensiva + Modifica BUS 7:30
+ * SCRIPT.JS - Versione Integrale Omnicomprensiva
  * Gestione Dashboard Convitto
  */
 
