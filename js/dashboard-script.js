@@ -189,13 +189,15 @@ function toggleDinnerNo(btn) {
     salvaDatiLocale();
 }
 
-// --- 5. STAMPE ---
+
+// --- 5. STAMPE (MODIFICATA PER NOME FILE PDF) ---
 function generaPopUpStampaDinner() {
     let a1=0, p1=0, a2=0, p2=0, n1=[], n2=[], switch1=[], switch2=[];
     const oggi = new Date();
     const giornoSett = oggi.getDay();
     const oraEsatta = oggi.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     const dataOggi = oggi.toLocaleDateString('it-IT');
+    const dataTestuale = document.getElementById('todayDate').innerText; // Recupera la data lunga (es. lunedì 4 maggio 2026)
 
     document.querySelectorAll('.student-row').forEach(r => {
         const cognome = r.dataset.cognome;
@@ -222,7 +224,6 @@ function generaPopUpStampaDinner() {
         }
     });
 
-    const dataStampa = document.getElementById('todayDate').innerText;
     const testiPermessi = {
         1: "LAB 2IeFP - PERMESSI: Tessarin NO dinner / Casalicchio turno ore 18 / Bombonato, Paonessa turno ore 19:15 / TENERE PER Querio, Pignatelli, Menaldino, Chessa dopo i turni",
         2: "LAB 5A-5B - PERMESSI: Chen, Commod NO dinner / Casalicchio, Clerin turno ore 18 / TENERE PER Querio, Lazier, Lunardi, Paonessa, Gaspard dopo i turni",
@@ -233,22 +234,23 @@ function generaPopUpStampaDinner() {
 
     const popup = window.open('', '_blank', 'width=900,height=800');
     popup.document.write(`
-        <html><head><title>Riepilogo Dinner</title><style>
-            body { font-family: sans-serif; padding: 40px; position: relative; }
-            h2 { text-align: center; text-transform: uppercase; margin-top: 20px; }
-            .timestamp { position: absolute; top: 10px; right: 20px; font-size: 0.8em; color: #666; }
-            .date { text-align: center; font-size: 1.2em; margin-bottom: 20px;}
-            .editable-notes { width: 100%; border: 1px dashed #ccc; font-size: 1.1em; font-weight: bold; text-align: center; text-transform: uppercase; padding: 10px; margin-bottom: 20px;}
-            .section { margin-bottom: 30px; border-left: 6px solid #333; padding-left: 20px; }
-            .stats-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-            input { font-size: 1.5em; font-weight: bold; width: 60px; border: none; border-bottom: 2px solid #000; text-align: center; background: transparent; }
-            .nomi, .cambi { font-size: 0.85em; color: #444; font-style: italic; margin-top: 10px; line-height: 1.4; }
-            .no-print { margin-top: 30px; display: flex; justify-content: center; }
-            @media print { .no-print { display: none; } .editable-notes { border: none; } }
-        </style></head><body>
+        <html><head>
+            <title>Riepilogo Dinner - ${dataTestuale}</title> <style>
+                body { font-family: sans-serif; padding: 40px; position: relative; }
+                h2 { text-align: center; text-transform: uppercase; margin-top: 20px; }
+                .timestamp { position: absolute; top: 10px; right: 20px; font-size: 0.8em; color: #666; }
+                .date { text-align: center; font-size: 1.2em; margin-bottom: 20px;}
+                .editable-notes { width: 100%; border: 1px dashed #ccc; font-size: 1.1em; font-weight: bold; text-align: center; text-transform: uppercase; padding: 10px; margin-bottom: 20px;}
+                .section { margin-bottom: 30px; border-left: 6px solid #333; padding-left: 20px; }
+                .stats-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+                input { font-size: 1.5em; font-weight: bold; width: 60px; border: none; border-bottom: 2px solid #000; text-align: center; background: transparent; }
+                .nomi, .cambi { font-size: 0.85em; color: #444; font-style: italic; margin-top: 10px; line-height: 1.4; }
+                .no-print { margin-top: 30px; display: flex; justify-content: center; }
+                @media print { .no-print { display: none; } .editable-notes { border: none; } }
+            </style></head><body>
             <div class="timestamp">aggiornamento ${dataOggi} ore ${oraEsatta}</div>
             <h2>Riepilogo Dinner</h2>
-            <div class="date">${dataStampa}</div>
+            <div class="date">${dataTestuale}</div>
             <div class="no-print"><button onclick="window.print()" style="padding:15px 50px; background:#27ae60; color:white; font-weight:bold; border-radius:80px; border:none; cursor:pointer; font-size:0.9em;">STAMPARE IN FORMATO A4</button></div>
             <textarea class="editable-notes" rows="2">${notaGiornoCorrente}</textarea>
             <div class="section">
