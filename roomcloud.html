@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="no-referrer" />
-    <title>Rooming Cloud LOCK3</title>
+    <title>Rooming Cloud v3</title>
 
     <style>
         :root {
@@ -768,8 +767,29 @@
                 });
         }
 
+        // --- NUOVA FUNZIONE PER IL NOME FILE PDF ---
+        function generaNomeFileDinamico() {
+            const oggi = new Date();
+            const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const dataFormattata = oggi.toLocaleDateString('it-IT', opzioni);
+            return `Rooming Cloud - ${dataFormattata}`;
+        }
+
         els.loginForm.addEventListener("submit", eseguiLogin);
-        els.printButton.addEventListener("click", () => window.print());
+
+        // --- LISTENER STAMPA AGGIORNATO ---
+        els.printButton.addEventListener("click", () => {
+            const originalTitle = document.title;
+            document.title = generaNomeFileDinamico();
+            
+            window.print();
+
+            // Ripristina il titolo originale dopo la chiusura del dialogo di stampa
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 1000);
+        });
+
         els.resetButton.addEventListener("click", resetAssenze);
         els.logoutButton.addEventListener("click", logout);
     </script>
