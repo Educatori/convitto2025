@@ -458,12 +458,14 @@
         }
 
         async function logout() {
+            if (!confirm("Vuoi davvero uscire dall'app?")) return;
+
             try {
-                await signOut(auth);
+        await signOut(auth);
             } catch (error) {
-                console.error(error);
-                showAppError("Logout non riuscito.");
-            }
+        console.error(error);
+        showAppError("Logout non riuscito.");
+        }
         }
 
         function detachDatabaseListeners() {
