@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>cruscotto 1.0</title>
-    
     <link rel="stylesheet" href="css/cruscotto-style.css">
 </head>
 <body>
@@ -13,21 +11,22 @@
     <div class="container">
         <header>
             <div>
-<h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO  </a> </h1>
-                
+                <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO </a> </h1>
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
         </header>
-<div class="note-toolbar-container">
-    <div class="note-content">
-        <span class="note-icon">📌</span>
-        <input type="text" id="dailyNotes" placeholder="Inserisci note, promemoria o comunicazioni..." class="note-input">
-       <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
-    </div>
-</div>       
+
+        <div class="note-toolbar-container">
+            <div class="note-content">
+                <span class="note-icon">📌</span>
+                <input type="text" id="dailyNotes" placeholder="Inserisci note, promemoria o comunicazioni..." class="note-input">
+                <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
+            </div>
+        </div>       
+
         <div class="toolbar">
-             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
+            <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
             <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
             
             <div style="display:flex; align-items:center; gap:5px;">
@@ -37,10 +36,10 @@
                        oninput="gestisciSaltoStanze(this); validaERicerca();">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">DAILY RESET</button>
-         <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
-            Ultimo aggiornamento: MAI
-        </div>
+            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">RESET</button>
+            <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
+                Ultimo aggiornamento: MAI
+            </div>
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;">
@@ -50,115 +49,84 @@
             <div class="day-box" style="border-bottom:4px solid var(--btn-color-4)" onclick="generaPopUpStampaDinner()">STAMPA DINNER</div>
         </div>
 
-        
         <div id="listaStudenti"></div>
     </div>
 
- <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto; display:flex; flex-direction:column;">
-
-    <!-- HEADER -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;">Gestione Convitto</h3>
-        <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
+    <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto; display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">Gestione Convitto</h3>
+            <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
+        </div>
+        <hr>
+        <h3>Assenze Programmate</h3>
+        <select id="selectStudente" style="width:100%; margin-bottom:6px;"><option value="">-- Seleziona Nome --</option></select>
+        <select id="selectClasse" style="width:100%; margin-bottom:6px;"><option value="">-- Seleziona Classe --</option></select>
+        <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
+        <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
+        <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">➕ Aggiungi Assenza</button>
+        <hr style="margin:20px 0;">
+        <h3>Lista Assenze</h3>
+        <div id="listaAssenze" style="margin-bottom:20px;"></div>
+        <hr>
+        <h3>Permessi Permanenti</h3>
+        <div id="listaPermessiContent"></div>
     </div>
 
-    <hr>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <!-- 🔴 ASSENZE PROGRAMMATE -->
-    <h3 style="margin-top:10px;">Assenze Programmate</h3>
-
-    <select id="selectStudente" style="width:100%; margin-bottom:6px;">
-        <option value="">-- Seleziona Nome --</option>
-    </select>
-
-    <select id="selectClasse" style="width:100%; margin-bottom:6px;">
-        <option value="">-- Seleziona Classe --</option>
-    </select>
-
-    <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
-    <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
-
-    <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
-        ➕ Aggiungi Assenza
-    </button>
-
-    <hr style="margin:20px 0;">
-
-    <!-- 🔵 LISTA ASSENZE -->
-    <h3>Lista Assenze</h3>
-    <div id="listaAssenze" style="margin-bottom:20px;"></div>
-
-    <hr>
-
-    <!-- 🟢 PERMESSI -->
-    <h3>Permessi Permanenti</h3>
-    <div id="listaPermessiContent"></div>
-
-</div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKBQJYiu1ConaCKOj_rlKQSOQaGVTinCc",
+            authDomain: "cruscotto-438bc.firebaseapp.com",
+            databaseURL: "https://cruscotto-438bc-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "cruscotto-438bc",
+            storageBucket: "cruscotto-438bc.firebasestorage.app",
+            messagingSenderId: "142955041436",
+            appId: "1:142955041436:web:22be8db6e293bf14c55359",
+            measurementId: "G-LK93GN5JNP"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+    </script>
 
     <script src="js/convittori.js"></script>
     <script src="js/permessi.js"></script>
     <script src="js/cruscotto-script.js"></script>
 
     <script>
+        const noteInput = document.getElementById('dailyNotes');
+
+        // Sincronizzazione NOTE con Firebase
+        db.ref('note_convitto').on('value', (snapshot) => {
+            if (snapshot.exists()) noteInput.value = snapshot.val();
+        });
+
+        noteInput.addEventListener('input', () => {
+            db.ref('note_convitto').set(noteInput.value);
+        });
+
+        function cancellaNote() {
+            if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
+                db.ref('note_convitto').remove();
+                noteInput.value = '';
+            }
+        }
+
+        // Funzione RESET modificata per Firebase
         function resetDati() {
-            if(confirm("Sei sicuro? Questo cancellerà tutte le uscite e le assenze inserite oggi ⚠")) {
-                localStorage.removeItem('datiConvitto');
+            if(confirm("Sei sicuro? Questo cancellerà i dati di OGGI per TUTTI gli utenti ⚠")) {
+                db.ref('statoGiornaliero').remove(); // Cancella i dati sul server
                 const ora = new Date().toLocaleString('it-IT');
-                localStorage.setItem('dataUltimoReset', ora);
+                db.ref('ultimoReset').set(ora);
                 location.reload();
             }
         }
         
-        
-        const noteInput = document.getElementById('dailyNotes');
-
-// 1. Appena la pagina si carica, recupera le note salvate
-window.addEventListener('load', () => {
-    const noteSalvate = localStorage.getItem('note_convitto');
-    if (noteSalvate) {
-        noteInput.value = noteSalvate;
-    }
-});
-
-// 2. Ogni volta che scrivi, salva il testo in tempo reale
-noteInput.addEventListener('input', () => {
-    localStorage.setItem('note_convitto', noteInput.value);
-});
-
-// 3. Funzione per la X: svuota tutto e cancella la memoria
-function cancellaNote() {
-    if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
-        noteInput.value = ''; // Svuota il campo visibile
-        localStorage.removeItem('note_convitto'); // Cancella la memoria
-    }
-}
+        // Ascolta data ultimo reset
+        db.ref('ultimoReset').on('value', (snapshot) => {
+            document.getElementById('info-reset').innerText = "Ultimo reset: " + (snapshot.val() || "MAI");
+        });
     </script>
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script>
-  // Configurazione del tuo progetto (copiala dalla console Firebase: Impostazioni Progetto > Applicazioni > Web)
-  const firebaseConfig = {
-   apiKey: "AIzaSyAKBQJYiu1ConaCKOj_rlKQSOQaGVTinCc",
-  authDomain: "cruscotto-438bc.firebaseapp.com",
-  databaseURL: "https://cruscotto-438bc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "cruscotto-438bc",
-  storageBucket: "cruscotto-438bc.firebasestorage.app",
-  messagingSenderId: "142955041436",
-  appId: "1:142955041436:web:22be8db6e293bf14c55359",
-  measurementId: "G-LK93GN5JNP"
-  };
-  
-  // Inizializza Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
-
-<script src="js/convittori.js"></script>
-<script src="js/permessi.js"></script>
-<script src="js/cruscotto-script.js"></script>  
-    
 </body>
-</html> 
+</html>
