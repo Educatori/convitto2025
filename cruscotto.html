@@ -1,11 +1,9 @@
- 
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUSCOTTO 1.0 firebase</title>
-    
+    <title>CRUSCOTTO 1.0 Firebase Realtime</title>
     <link rel="stylesheet" href="css/cruscotto-style.css">
 </head>
 <body>
@@ -13,147 +11,144 @@
     <div class="container">
         <header>
             <div>
-<h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO</a> </h1>
-                
+                <h1><a href="index.html" style="text-decoration: none; color: inherit;">CRUSCOTTO</a></h1>
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
         </header>
-<div class="note-toolbar-container">
-    <div class="note-content">
-        <span class="note-icon">📌</span>
-        <input type="text" id="dailyNotes" placeholder="Inserisci note, promemoria o comunicazioni..." class="note-input">
-       <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
-    </div>
-</div>       
+
+        <div class="note-toolbar-container">
+            <div class="note-content">
+                <span class="note-icon">📌</span>
+                <input type="text" id="dailyNotes" placeholder="Inserisci note condivise..." class="note-input">
+                <button class="clear-note-btn" id="btnCancellaNote" title="Svuota note">✕</button>
+            </div>
+        </div>       
+
         <div class="toolbar">
-             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
+            <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
             <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
             
             <div style="display:flex; align-items:center; gap:5px;">
                 <span style="font-size:0.8em; font-weight:bold; color:var(--p);">ROOM:</span>
-                <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" 
-                       onfocus="this.oldValue = this.value;" 
-                       oninput="gestisciSaltoStanze(this); validaERicerca();">
+                <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" oninput="validaERicerca()">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">DAILY RESET</button>
-         <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
-            Ultimo aggiornamento: MAI
-        </div>
-        </div>
-
-        <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;">
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-1)" onclick="setTurno(1)">1° TURNO (18:30)</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-2)" onclick="setTurno(2)">2° TURNO (19:15)</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-3)" onclick="generaPopUpStampaConvitto()">STAMPA CONVITTO</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-4)" onclick="generaPopUpStampaDinner()">STAMPA DINNER</div>
+            <button class="btn-toolbar" style="background:var(--btn-reset);" id="btnReset">DAILY RESET</button>
+            <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
+                Ultimo reset: <span id="lastResetTime">MAI</span>
+            </div>
         </div>
 
-        
         <div id="listaStudenti"></div>
     </div>
 
- <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto; display:flex; flex-direction:column;">
-
-    <!-- HEADER -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;">Gestione Convitto</h3>
-        <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
-    </div>
-
-    <hr>
-
-    <!-- 🔴 ASSENZE PROGRAMMATE -->
-    <h3 style="margin-top:10px;">Assenze Programmate</h3>
-
-    <select id="selectStudente" style="width:100%; margin-bottom:6px;">
-        <option value="">-- Seleziona Nome --</option>
-    </select>
-
-    <select id="selectClasse" style="width:100%; margin-bottom:6px;">
-        <option value="">-- Seleziona Classe --</option>
-    </select>
-
-    <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
-    <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
-
-    <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
-        ➕ Aggiungi Assenza
-    </button>
-
-    <hr style="margin:20px 0;">
-
-    <!-- 🔵 LISTA ASSENZE -->
-    <h3>Lista Assenze</h3>
-    <div id="listaAssenze" style="margin-bottom:20px;"></div>
-
-    <hr>
-
-    <!-- 🟢 PERMESSI -->
-    <h3>Permessi Permanenti</h3>
-    <div id="listaPermessiContent"></div>
-
-</div>
-
     <script src="js/convittori.js"></script>
     <script src="js/permessi.js"></script>
-    <script src="js/cruscotto-script.js"></script>
-    <script type="module" src="script.js"></script>
 
     <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        // 1. IMPORTAZIONI FIREBASE
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, writeBatch, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "TUO_API_KEY",
-  authDomain: "TUO_AUTH_DOMAIN",
-  projectId: "TUO_PROJECT_ID",
-};
+        // 2. CONFIGURAZIONE (Sostituisci "AIzaSyAz..." con la tua vera API Key se necessario)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKBQJYiu1ConaCKOj_rlKQSOQaGVTinCc",
+  authDomain: "cruscotto-438bc.firebaseapp.com",
+  databaseURL: "https://cruscotto-438bc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cruscotto-438bc",
+  storageBucket: "cruscotto-438bc.firebasestorage.app",
+  messagingSenderId: "142955041436",
+  appId: "1:142955041436:web:22be8db6e293bf14c55359",
+  measurementId: "G-LK93GN5JNP"
+        };
 
-const app = initializeApp(firebaseConfig);
-window.db = getFirestore(app);
-window.fb = { doc, setDoc, getDoc, onSnapshot };
-</script>
-    
-    
-    <script>
-        
-        function resetDati() {
-            if(confirm("Sei sicuro? Questo cancellerà tutte le uscite e le assenze inserite oggi ⚠")) {
-                localStorage.removeItem('datiConvitto');
-                const ora = new Date().toLocaleString('it-IT');
-                localStorage.setItem('dataUltimoReset', ora);
-                location.reload();
+        // 3. INIZIALIZZAZIONE
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Rendiamo db e funzioni disponibili per gli altri file JS
+        window.db = db;
+        window.fb = { doc, setDoc, getDoc, onSnapshot, serverTimestamp, updateDoc, collection };
+
+        // 4. ELEMENTI DOM
+        const noteInput = document.getElementById('dailyNotes');
+        const btnCancella = document.getElementById('btnCancellaNote');
+        const lastResetSpan = document.getElementById('lastResetTime');
+        const btnReset = document.getElementById('btnReset');
+
+        // --- LOGICA STUDENTI (REALTIME) ---
+
+        async function inizializzaStudenti() {
+            const colRef = collection(db, "studenti");
+            const snapshot = await getDocs(colRef);
+
+            if (snapshot.empty && typeof studenticonvittori !== 'undefined') {
+                console.log("Primo avvio: carico studenti su Cloud...");
+                const batch = writeBatch(db);
+                studenticonvittori.forEach((s) => {
+                    const idDoc = `${s.cognome}_${s.nome}`.replace(/\s+/g, '_').toUpperCase();
+                    batch.set(doc(db, "studenti", idDoc), {
+                        ...s,
+                        stato: "presente",
+                        ultimoAggiornamento: serverTimestamp()
+                    });
+                });
+                await batch.commit();
             }
         }
-        
-        
-        const noteInput = document.getElementById('dailyNotes');
 
-// 1. Appena la pagina si carica, recupera le note salvate
-window.addEventListener('load', () => {
-    const noteSalvate = localStorage.getItem('note_convitto');
-    if (noteSalvate) {
-        noteInput.value = noteSalvate;
-    }
-});
+        // Funzione globale per cambiare stato (usata dai bottoni)
+        window.cambiaStato = async (id, nuovoStato) => {
+            const docRef = doc(db, "studenti", id);
+            await updateDoc(docRef, { 
+                stato: nuovoStato,
+                ultimoAggiornamento: serverTimestamp()
+            });
+        };
 
-// 2. Ogni volta che scrivi, salva il testo in tempo reale
-noteInput.addEventListener('input', () => {
-    localStorage.setItem('note_convitto', noteInput.value);
-});
+        // --- LOGICA NOTE (REALTIME) ---
 
-// 3. Funzione per la X: svuota tutto e cancella la memoria
-function cancellaNote() {
-    if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
-        noteInput.value = ''; // Svuota il campo visibile
-        localStorage.removeItem('note_convitto'); // Cancella la memoria
-    }
-}
+        noteInput.addEventListener('input', () => {
+            setDoc(doc(db, "dashboard", "note_generali"), { 
+                testo: noteInput.value 
+            }, { merge: true });
+        });
+
+        onSnapshot(doc(db, "dashboard", "note_generali"), (snap) => {
+            if (snap.exists() && document.activeElement !== noteInput) {
+                noteInput.value = snap.data().testo || "";
+            }
+        });
+
+        btnCancella.onclick = () => {
+            if(confirm("Cancellare le note per tutti?")) {
+                setDoc(doc(db, "dashboard", "note_generali"), { testo: "" });
+            }
+        };
+
+        // --- LOGICA RESET & STATO SISTEMA ---
+
+        btnReset.onclick = async () => {
+            if(confirm("Eseguire il reset giornaliero? Questo azzera gli orari inseriti.")) {
+                const ora = new Date().toLocaleString('it-IT');
+                await setDoc(doc(db, "dashboard", "stato_sistema"), { ultimoReset: ora });
+                // Opzionale: aggiungi qui logica per resettare tutti gli studenti a "presente"
+            }
+        };
+
+        onSnapshot(doc(db, "dashboard", "stato_sistema"), (snap) => {
+            if (snap.exists()) {
+                lastResetSpan.innerText = snap.data().ultimoReset;
+            }
+        });
+
+        // Avvio inizializzazione
+        inizializzaStudenti();
+
     </script>
 
-    
-    
+    <script src="js/cruscotto-script.js"></script>
+
 </body>
-</html> 
+</html>
