@@ -1,5 +1,4 @@
-
-/* STYLE.CSS - CRUSCOTTO 1.0 */
+/* STYLE.CSS - CRUSCOTTO 1.0 - Optimized */
 
 :root {
     /* Palette Principale */
@@ -32,15 +31,16 @@
 
 /* --- BASE --- */
 body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
     background: var(--bg); 
     margin: 0; 
     padding: 20px; 
     color: var(--text-dark); 
+    line-height: 1.4;
 }
 
 .container { 
-    max-width: 1200px; 
+    max-width: 1300px; 
     margin: auto; 
 }
 
@@ -53,7 +53,8 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(88, 162, 168, 0.3);
 }
 
 .toolbar { 
@@ -65,18 +66,27 @@ header {
     margin-bottom: 20px; 
     align-items: center; 
     box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    flex-wrap: wrap;
 }
 
 #search, #roomInput { 
     border: 2px solid var(--border-color); 
     border-radius: 12px; 
     outline: none; 
-    padding: 10px; 
+    padding: 10px 15px; 
     transition: 0.3s; 
+    font-size: 0.95em;
 }
 
-#search:focus, #roomInput:focus { border-color: var(--e); }
-#search { flex: 1; }
+#search:focus, #roomInput:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(88, 162, 168, 0.1); }
+#search { flex: 2; min-width: 200px; }
+#roomInput { width: 80px; text-align: center; }
+
+/* Bottoni Toolbar Specifici */
+.btn-1830 { background: var(--btn-color-1) !important; }
+.btn-1915 { background: var(--btn-color-2) !important; }
+.btn-convitto { background: var(--btn-color-3) !important; }
+.btn-dinner { background: var(--btn-color-4) !important; }
 
 .btn-toolbar { 
     border: none; 
@@ -84,125 +94,101 @@ header {
     cursor: pointer; 
     font-weight: bold; 
     color: white; 
-    padding: 10px 18px; 
-    transition: 0.2s; 
+    padding: 12px 20px; 
+    transition: all 0.2s ease; 
 }
 
 .btn-toolbar:hover { 
     opacity: 0.9; 
-    transform: translateY(-1px); 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-
-
+/* --- NOTE SECTION --- */
 .note-toolbar-container {
     background: #fff9c4;
     width: 100%;
-    max-width: 500px; /* Larghezza bilanciata per la griglia */
-    margin: 0 auto 40px auto;
-    padding: 12 12px;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+    padding: 8px;
     border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .note-content {
-    background: var(--card-light);
-    backdrop-filter: blur(20px);
-    border-radius: 15px;
+    background: white;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    padding: 12px 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
-}
-
-.note-icon {
-    font-size: 1.2rem;
-    margin-right: 12px;
+    padding: 8px 15px;
 }
 
 .note-input {
     flex: 1;
-    background: transparent;
     border: none;
     outline: none;
-    font-family: inherit;
     font-size: 14px;
-    color: var(--primary);
-    font-weight: 500;
+    font-weight: 600;
+    color: #444;
+    padding: 5px;
 }
-
-.note-input::placeholder {
-    color: var(--primary);
-    opacity: 0.5;
-}
-
-.clear-note-btn {
-    background: rgba(0,0,0,0.05);
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    font-weight: bold;
-}
-
-.clear-note-btn:hover {
-    background: rgba(255, 0, 0, 0.1);
-    color: #d00;
-}
-
-/* In Dark Mode */
-@media (prefers-color-scheme: dark) {
-    .note-content { background: var(--card-dark); }
-    .note-input { color: white; }
-    .note-input::placeholder { color: rgba(255,255,255,0.4); }
-}
-
-
 
 /* --- GRID STUDENTI --- */
 #listaStudenti { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
     gap: 15px; 
 }
 
 .student-row { 
     background: var(--card-bg); 
     border-radius: 18px; 
-    padding: 20px; 
-    border-bottom: 5px solid var(--s); 
-    transition: 0.2s; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02); 
+    padding: 18px; 
+    border-bottom: 6px solid var(--s); 
+    transition: all 0.2s ease; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
+
+.student-row:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
 
 /* Stati Card */
 .student-row.dinner-no { border-bottom-color: var(--e); background: #f0faff; }
-.student-row.assente { border-bottom-color: var(--d); background: #fff9f4; }
-.student-row.highlight-lab { background: var(--highlight-lab) !important; border-bottom-color: var(--d) !important; }
+.student-row.assente { border-bottom-color: var(--d); background: #fff9f4; opacity: 0.85; }
+.student-row.highlight-lab { background: var(--highlight-lab) !important; border-bottom-color: var(--lab-text) !important; }
 
 /* Elementi Card */
-.st-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-.room-badge { background: var(--btn-inactive); padding: 2px 8px; border-radius: 6px; font-weight: bold; font-size: 0.7em; }
-.lab-badge { color: var(--lab-text); font-weight: bold; font-size: 0.8em; animation: pulse 3s infinite; }
+.st-header { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: flex-start; }
+.room-badge { background: #eee; padding: 3px 10px; border-radius: 8px; font-weight: 800; font-size: 0.75em; color: #555; }
 
-.inputs { display: flex; gap: 5px; margin: 10px 0; }
-.inputs input { width: 50%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8em; }
+.student-name { font-size: 1.1em; margin-bottom: 10px; }
+.percorso-icon { font-size: 1.2em; margin-left: 4px; }
 
-.btns { display: flex; gap: 5px; }
+.inputs { display: flex; gap: 8px; margin: 12px 0; }
+.inputs input { 
+    width: 50%; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 10px; 
+    font-size: 0.85em; 
+    text-align: center;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.inputs input:focus { border-color: var(--p); background: #fdfdfd; outline: none; }
+
+.btns { display: flex; gap: 6px; margin-top: auto; }
 .btns button { 
     flex: 1; 
-    padding: 8px; 
+    padding: 10px 5px; 
     border: none; 
-    border-radius: 8px; 
+    border-radius: 10px; 
     cursor: pointer; 
     font-size: 0.75em; 
-    font-weight: bold; 
+    font-weight: 800; 
     background: var(--btn-inactive); 
     color: var(--text-muted); 
     transition: 0.2s; 
@@ -222,29 +208,56 @@ header {
     display: flex; 
     align-items: center; 
     justify-content: center; 
+    font-size: 1.1em;
+    transition: 0.3s;
 }
-.btn-switch.modificato { background: var(--cambiati) !important; color: white; }
+.btn-switch.modificato { background: var(--cambiati) !important; color: white; transform: rotate(180deg); }
 
-/* --- SIDEBAR & PANNELLI --- */
-.day-box { 
-    background: var(--card-bg); 
-    padding: 10px; 
-    text-align: center; 
-    border-radius: 12px; 
-    font-size: 0.8em; 
-    cursor: pointer; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    flex: 1;
+/* Badge LAB animato */
+.lab-badge { 
+    background: var(--lab-text); 
+    color: white; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    font-size: 0.7em; 
+    margin-left: 5px;
+    animation: pulse 2s infinite; 
 }
 
-#sidePanel h3 { border-bottom: 1px solid #eee; padding-bottom: 10px; }
+/* --- SIDEBAR PANEL --- */
+#sidePanel {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 320px;
+    height: 100%;
+    background: white;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    transition: 0.4s;
+    z-index: 1000;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+#sidePanel h3 { 
+    color: var(--p); 
+    border-bottom: 2px solid var(--bg); 
+    padding-bottom: 10px; 
+    margin-top: 0;
+}
 
 /* --- ANIMAZIONI --- */
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); } }
 
 /* --- MEDIA QUERIES --- */
 @media (max-width: 768px) {
-    #listaStudenti { grid-template-columns: 1fr 1fr; }
-    header { flex-direction: column; text-align: center; gap: 10px; }
-    .toolbar { flex-wrap: wrap; }
-} 
+    #listaStudenti { grid-template-columns: 1fr 1fr; gap: 10px; }
+    header { flex-direction: column; text-align: center; gap: 15px; padding: 20px; }
+    .toolbar { justify-content: center; }
+    #search { width: 100%; order: 1; }
+}
+
+@media (max-width: 480px) {
+    #listaStudenti { grid-template-columns: 1fr; }
+    body { padding: 10px; }
+}
