@@ -1,10 +1,10 @@
 /**
- * SCRIPT.JS - cruscotto 1.1 (FIX FIREBASE STABILE)
+ * SCRIPT.JS - Versione Integrale + Firebase
  */
 
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
-let updatingFromFirebase = false; // 🔥 anti-loop
+let updatingFromFirebase = false;
 
 // --- 1. INIZIALIZZAZIONE ---
 function init() {
@@ -44,16 +44,16 @@ function init() {
                     <button class="btn-switch" onclick="toggleSwitchTurno(this)">⇄</button>
                 </div>
                 <span style="font-size:0.75em; color:#666; font-weight:bold;">
-                    ${s.classe} ${s.percorso || ''} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
+                    ${s.classe} ${s.percorso ? s.percorso : ''} ${s.gruppo || ''} ${isLab ? '<span class="lab-badge">LAB</span>' : ''} 
                 </span>
             </div>
             <b style="font-size:1.1em">${s.cognome}</b> ${s.nome}
             <div class="inputs">
-                <input type="text" placeholder="ESCE" class="in-u" 
-                       onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
-                <input type="text" placeholder="ENTRA" class="in-i" 
-                       oninput="controllaDinnerAutomatico(this.closest('.student-row'))" 
-                       onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
+                <input type="text" placeholder="ESCE" class="in-u"
+                    onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
+                <input type="text" placeholder="ENTRA" class="in-i"
+                    oninput="controllaDinnerAutomatico(this.closest('.student-row'))"
+                    onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
             </div>
             <div class="btns">
                 <button class="btn-ass" onclick="toggleAssenza(this)">ASSENTE</button>
@@ -64,23 +64,110 @@ function init() {
             r.classList.add('assente');
             r.dataset.dinnerno = "1";
         }
-        
+
         lista.appendChild(r);
     });
-    
-    ascoltaCambiamentiFirebase(); 
+
+    ascoltaCambiamentiFirebase(); // 🔥
     mostraDataReset();
 }
 
-// --- 2. LOGICA TURNI ---
+// --- FIREBASE SAVE (ex localStorage) ---
+function salvaDatiLocale() {
+    if (updatingFromFirebase) return;
+
+    const dati = {};
+    document.querySelectorAll('.student-row').forEach(r => {
+        dati[r.dataset.cognome] = {
+            esce: r.querySelector('.in-u').value,
+            entra: r.querySelector('.in-i').value,
+            assente: r.classList.contains('assente'),
+            dinnerno: r.dataset.dinnerno,
+            switch: cambiTurnoManuali[r.dataset.cognome] || false
+        };
+    });
+
+    Object.entries(dati).forEach(([cognome, val]) => {
+        db.ref('statoGiornaliero/' + cognome).update(val);
+    });
+}
+
+// --- FIREBASE LISTENER ---
+function ascoltaCambiamentiFirebase() {
+    db.ref('statoGiornaliero').on('value', snapshot => {
+        updatingFromFirebase = true;
+
+        const dati = snapshot.val() || {};
+        document.querySelectorAll('.student-row').forEach(r => {
+            const cognome = r.dataset.cognome;
+            const d = dati[cognome];
+
+            if (d) {
+                const inU = r.querySelector('.in-u');
+                const inI = r.querySelector('.in-i');
+
+                if (document.activeElement !== inU) inU.value = d.esce || "";
+                if (document.activeElement !== inI) inI.value = d.entra || "";
+
+                if (d.assente) {
+                    r.classList.add('assente');
+                    r.querySelector('.btn-ass')?.classList.add('active-ass');
+                } else {
+                    r.classList.remove('assente');
+                    r.querySelector('.btn-ass')?.classList.remove('active-ass');
+                }
+
+                r.dataset.dinnerno = d.dinnerno || "0";
+                if (d.dinnerno === "1") {
+                    r.classList.add('dinner-no');
+                    r.querySelector('.btn-din')?.classList.add('active-din');
+                } else {
+                    r.classList.remove('dinner-no');
+                    r.querySelector('.btn-din')?.classList.remove('active-din');
+                }
+
+                cambiTurnoManuali[cognome] = d.switch || false;
+                const btnSwitch = r.querySelector('.btn-switch');
+                if (d.switch) btnSwitch?.classList.add('modificato');
+                else btnSwitch?.classList.remove('modificato');
+
+                controllaDinnerAutomatico(r); // 🔥
+            }
+        });
+
+        updatingFromFirebase = false;
+    });
+}
+
+// --- ASSENZE (Firebase) ---
+function salvaAssenzeProgrammate() {
+    db.ref('assenzeProgrammate').set(assenzeProgrammate);
+}
+
+function caricaAssenzeProgrammate() {
+    db.ref('assenzeProgrammate').on('value', snapshot => {
+        assenzeProgrammate = snapshot.val() || {};
+        renderListaAssenze();
+    });
+}
+
+// --- 2. LOGICA TURNI E OVERRIDE ---
 function turnoStudente(classe, cognome) {
     const oggi = new Date();
     const giornoSettimana = oggi.getDay(); 
     const cgn = cognome.toUpperCase();
+
     if (OVERRIDE_TURNI_DINNER[cgn] && OVERRIDE_TURNI_DINNER[cgn][giornoSettimana]) {
         return OVERRIDE_TURNI_DINNER[cgn][giornoSettimana];
     }
     return TURNI_DINNER[1].includes(classe) ? 1 : 2;
+}
+
+function setTurno(turno) {
+    const classi = TURNI_DINNER[turno];
+    document.querySelectorAll('.student-row').forEach(r => {
+        r.style.display = classi.includes(r.dataset.classe) ? 'block' : 'none';
+    });
 }
 
 function toggleSwitchTurno(btn) {
@@ -91,7 +178,42 @@ function toggleSwitchTurno(btn) {
     salvaDatiLocale();
 }
 
-// --- 3. INPUT ---
+// --- 3. FILTRI E RICERCA ---
+function applicaFiltri() {
+    const s = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.student-row').forEach(r => {
+        const testo = (
+            r.dataset.cognome + " " +
+            r.dataset.nomeCompleto + " " +
+            r.dataset.classe + " " +
+            r.dataset.room + " " +
+            r.dataset.gruppo + " " +
+            r.dataset.percorso
+        ).toLowerCase();
+        r.style.display = testo.includes(s) ? 'block' : 'none';
+    });
+}
+
+function validaERicerca() {
+    const rVal = document.getElementById('roomInput').value;
+    const searchInput = document.getElementById('search');
+    if (rVal !== "") {
+        searchInput.value = ""; 
+        document.querySelectorAll('.student-row').forEach(card => {
+            card.style.display = (card.dataset.room === rVal) ? 'block' : 'none';
+        });
+    } else { applicaFiltri(); }
+}
+
+function gestisciSaltoStanze(el) {
+    let val = parseInt(el.value);
+    let old = parseInt(el.oldValue) || 0;
+    if (val > 125 && val < 201 && val > old) el.value = 201;
+    else if (val > 125 && val < 201 && val < old) el.value = 125;
+    el.oldValue = el.value;
+}
+
+// --- 4. LOGICA INPUT ---
 function normalizzaOrario(valore) {
     valore = valore.trim().toLowerCase().replace(".", ":").replace(",", ":");
     if (/^\d{2}$/.test(valore)) valore += ":00";
@@ -103,15 +225,25 @@ function controllaDinnerAutomatico(riga) {
     const classe = riga.dataset.classe;
     const cognome = riga.dataset.cognome;
     const giornoSettimana = new Date().getDay();
+
     let entra = normalizzaOrario(riga.querySelector('.in-i').value);
-    let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
+    let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) 
+        ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
+
     let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
 
-    const paroleNo = ["no", "non", "nor", "no rientro", "x"];
-    const isTardi = (o) => o.includes(":") && o > limite;
-    const isNo = (o) => paroleNo.includes(o);
+    const paroleNo = ["n", "no", "non", "nor", "no rientro", "x"];
 
-    if (riga.classList.contains('assente') || isNo(entra) || isNo(ppIn) || isTardi(entra) || isTardi(ppIn)) {
+    const isTardi = (orario) => orario.includes(":") && orario > limite;
+    const isNoRientro = (orario) => paroleNo.includes(orario);
+
+    if (
+        riga.classList.contains('assente') ||
+        isNoRientro(entra) ||
+        isNoRientro(ppIn) ||
+        isTardi(entra) ||
+        isTardi(ppIn)
+    ) {
         riga.dataset.dinnerno = "1";
         riga.classList.add('dinner-no');
     } else {
@@ -136,95 +268,65 @@ function toggleDinnerNo(btn) {
     salvaDatiLocale();
 }
 
-// --- 4. FIREBASE SAVE ---
-function salvaDatiLocale() {
-    if (updatingFromFirebase) return; // 🔥 anti-loop
-
-    const updates = {};
+// --- 5. STAMPA DINNER COMPLETA ---
+function generaPopUpStampaDinner() {
+    let a1=0, p1=0, a2=0, p2=0, n1=[], n2=[], switch1=[], switch2=[];
+    const oggi = new Date();
+    const giornoSett = oggi.getDay();
+    const oraEsatta = oggi.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const dataOggi = oggi.toLocaleDateString('it-IT');
+    const dataTestuale = document.getElementById('todayDate').innerText;
 
     document.querySelectorAll('.student-row').forEach(r => {
         const cognome = r.dataset.cognome;
+        const nomeCompleto = r.dataset.nomeCompleto;
 
-        updates[cognome] = {
-            esce: r.querySelector('.in-u').value,
-            entra: r.querySelector('.in-i').value,
-            assente: r.classList.contains('assente'),
-            dinnerno: r.dataset.dinnerno,
-            switch: cambiTurnoManuali[cognome] || false
-        };
+        let turnoOriginale = TURNI_DINNER[1].includes(r.dataset.classe) ? 1 : 2;
+        let turnoEffettivo = turnoStudente(r.dataset.classe, cognome);
+
+        if (cambiTurnoManuali[cognome]) {
+            turnoEffettivo = (turnoEffettivo === 1) ? 2 : 1;
+        }
+
+        if (turnoEffettivo !== turnoOriginale) {
+            const nota = (turnoEffettivo === 1) ? " (da 2° a 1°)" : " (da 1° a 2°)";
+            if(turnoEffettivo === 1) switch1.push(nomeCompleto + nota);
+            else switch2.push(nomeCompleto + nota);
+        }
+
+        const isLab = isStudenteInLabOggi(r.dataset.classe, r.dataset.gruppo, oggi);
+        const isPPNoCena = isPPNoDinnerOggi(cognome, giornoSett);
+        const escluso = isLab || isPPNoCena || r.classList.contains('assente') || r.dataset.dinnerno === "1";
+
+        if (turnoEffettivo === 1) {
+            if (escluso) { a1++; n1.push(nomeCompleto + (isLab ? " (LAB)" : "")); } else p1++;
+        } else {
+            if (escluso) { a2++; n2.push(nomeCompleto + (isLab ? " (LAB)" : "")); } else p2++;
+        }
     });
 
-    Object.entries(updates).forEach(([cognome, val]) => {
-        db.ref('statoGiornaliero/' + cognome).update(val);
-    });
-}
-
-// --- 5. FIREBASE LISTENER ---
-function ascoltaCambiamentiFirebase() {
-    db.ref('statoGiornaliero').on('value', (snapshot) => {
-        updatingFromFirebase = true;
-
-        const dati = snapshot.val() || {};
-
-        document.querySelectorAll('.student-row').forEach(r => {
-            const cognome = r.dataset.cognome;
-            const d = dati[cognome];
-
-            if (d) {
-                const inU = r.querySelector('.in-u');
-                const inI = r.querySelector('.in-i');
-
-                if (document.activeElement !== inU) inU.value = d.esce || "";
-                if (document.activeElement !== inI) inI.value = d.entra || "";
-
-                r.classList.toggle('assente', d.assente);
-                r.querySelector('.btn-ass')?.classList.toggle('active-ass', d.assente);
-
-                r.dataset.dinnerno = d.dinnerno || "0";
-                r.classList.toggle('dinner-no', d.dinnerno === "1");
-                r.querySelector('.btn-din')?.classList.toggle('active-din', d.dinnerno === "1");
-
-                cambiTurnoManuali[cognome] = d.switch || false;
-                r.querySelector('.btn-switch')?.classList.toggle('modificato', d.switch);
-
-                // 🔥 RICALCOLO AUTOMATICO
-                controllaDinnerAutomatico(r);
-            }
-        });
-
-        updatingFromFirebase = false;
-    });
-}
-
-// --- 6. ASSENZE ---
-function salvaAssenzeProgrammate() {
-    db.ref('assenzeProgrammate').set(assenzeProgrammate);
-}
-
-function caricaAssenzeProgrammate() {
-    db.ref('assenzeProgrammate').on('value', (snapshot) => {
-        assenzeProgrammate = snapshot.val() || {};
-        renderListaAssenze();
-    });
+    const popup = window.open('', '_blank', 'width=900,height=800');
+    popup.document.write(`
+        <html><body>
+        <h2>Riepilogo Dinner</h2>
+        <div>${dataTestuale}</div>
+        <div>1° Turno: Assenti ${a1} - Presenti ${p1}</div>
+        <div>2° Turno: Assenti ${a2} - Presenti ${p2}</div>
+        </body></html>
+    `);
 }
 
 // --- UTILITY ---
-function isAssenteProgrammato(cognome, data) {
-    const lista = assenzeProgrammate[cognome.toUpperCase()];
-    if (!lista) return false;
-    const oggi = new Date(data.toISOString().split('T')[0]);
-    return lista.some(p => oggi >= new Date(p.dal) && oggi <= new Date(p.al));
-}
-
-function isStudenteInLabOggi(classe, gruppo, data) {
-    const dataKey = data.toLocaleDateString('it-IT');
-    const giorno = data.getDay();
+function isStudenteInLabOggi(classe, gruppo, dataOggetto) {
+    const dataKey = dataOggetto.toLocaleDateString('it-IT');
+    const giorno = dataOggetto.getDay();
     const gLab = CALENDARIO_GRUPPI_DINNER[dataKey];
 
-    if ({1:["2P"],3:["2B"],4:["2A"]}[giorno]?.includes(classe)) return true;
+    if ({ 1: ["2P"], 3: ["2B"], 4: ["2A"] }[giorno]?.includes(classe)) return true;
 
-    if ((classe==="5A"||classe==="5B") && gLab) {
-        return (gLab==="gr1" && gruppo==="G1") || (gLab==="gr2" && gruppo==="G2");
+    if ((classe === "5A" || classe === "5B") && gLab) {
+        return (gLab === "gr1" && gruppo === "G1") ||
+               (gLab === "gr2" && gruppo === "G2");
     }
 
     return false;
@@ -235,13 +337,11 @@ function isPPNoDinnerOggi(cognome, giorno) {
 }
 
 function updateClock() {
-    const el = document.getElementById('digitalClock');
-    if (el) el.innerText = new Date().toLocaleTimeString('it-IT');
+    document.getElementById('digitalClock').innerText =
+        new Date().toLocaleTimeString('it-IT');
 }
 
 function mostraDataReset() {
     const dReset = localStorage.getItem('dataUltimoReset');
     if (dReset) document.getElementById('info-reset').innerText = `Update: ${dReset}`;
 }
-
-window.onload = init;
