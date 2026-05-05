@@ -1,4 +1,5 @@
- /**
+
+/**
  * SCRIPT.JS - cruscotto 1.0
  */
 
@@ -50,9 +51,12 @@ function init() {
             </div>
             <b style="font-size:1.1em">${s.cognome}</b> ${s.nome}
             <div class="inputs">
-                <input type="text" placeholder="ESCE" class="in-u" onchange="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
-                <input type="text" placeholder="ENTRA" class="in-i" oninput="controllaDinnerAutomatico(this.closest('.student-row'))" onchange="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
-            </div>
+                <<input type="text" placeholder="ESCE" class="in-u" 
+       onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
+                <input type="text" placeholder="ENTRA" class="in-i" 
+       oninput="controllaDinnerAutomatico(this.closest('.student-row'))" 
+       onblur="this.value=normalizzaOrario(this.value); salvaDatiLocale();">
+       function ascoltaCambiamentiFirebase() {</div>
             <div class="btns">
                 <button class="btn-ass" onclick="toggleAssenza(this)">ASSENTE</button>
                 <button class="btn-din" onclick="toggleDinnerNo(this)">NON CENA</button>
@@ -68,7 +72,7 @@ function init() {
         lista.appendChild(r);
     });
     
-    caricaDatiLocale();
+    ascoltaCambiamentiFirebase(); 
     mostraDataReset();
 }
 
@@ -158,7 +162,7 @@ function controllaDinnerAutomatico(riga) {
     let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
 
     let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
-    const paroleNo = ["n", "no", "non", "nor", "no rientro", "x", ];
+    const paroleNo = ["no", "non", "nor", "no rientro", "x"];
 
     const isTardi = (orario) => orario.includes(":") && orario > limite;
     const isNoRientro = (orario) => paroleNo.includes(orario);
@@ -365,7 +369,10 @@ function generaPopUpStampaConvitto() {
 
 // --- 6. UTILITY E PERSISTENZA ---
 function salvaAssenzeProgrammate() {
-    db.ref('assenzeProgrammate').set(assenzeProgrammate);
+    db.ref('assenzeProgrammate').set(assenzeProgrammate).then(() => {
+        // Opzionale: ricarica la logica dinner per tutti dopo un'assenza programmata
+        location.reload(); 
+    });
 }
 
 function caricaAssenzeProgrammate() {
@@ -551,12 +558,16 @@ function ascoltaCambiamentiFirebase() {
     db.ref('statoGiornaliero').on('value', (snapshot) => {
         const dati = snapshot.val() || {};
         document.querySelectorAll('.student-row').forEach(r => {
-            const d = dati[r.dataset.cognome];
+            const cognome = r.dataset.cognome;
+            const d = dati[cognome];
             if (d) {
-                r.querySelector('.in-u').value = d.esce || "";
-                r.querySelector('.in-i').value = d.entra || "";
+                // Sincronizza testi senza resettare il cursore se l'utente sta scrivendo
+                const inputEsce = r.querySelector('.in-u');
+                const inputEntra = r.querySelector('.in-i');
+                if (document.activeElement !== inputEsce) inputEsce.value = d.esce || "";
+                if (document.activeElement !== inputEntra) inputEntra.value = d.entra || "";
                 
-                // Aggiorna classi CSS senza attivare loop di salvataggio
+                // Sincronizza Assenza
                 if (d.assente) { 
                     r.classList.add('assente'); 
                     r.querySelector('.btn-ass')?.classList.add('active-ass'); 
@@ -565,15 +576,21 @@ function ascoltaCambiamentiFirebase() {
                     r.querySelector('.btn-ass')?.classList.remove('active-ass');
                 }
                 
+                // Sincronizza Dinner
+                r.dataset.dinnerno = d.dinnerno || "0";
                 if (d.dinnerno === "1") { 
                     r.classList.add('dinner-no'); 
                     r.querySelector('.btn-din')?.classList.add('active-din'); 
-                    r.dataset.dinnerno = "1"; 
                 } else {
                     r.classList.remove('dinner-no'); 
                     r.querySelector('.btn-din')?.classList.remove('active-din'); 
-                    r.dataset.dinnerno = "0";
                 }
+
+                // Sincronizza Switch Turno (Mancava!)
+                cambiTurnoManuali[cognome] = d.switch || false;
+                const btnSwitch = r.querySelector('.btn-switch');
+                if (d.switch) btnSwitch?.classList.add('modificato');
+                else btnSwitch?.classList.remove('modificato');
             }
         });
     });
