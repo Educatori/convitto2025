@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cruscotto 1.0</title>
+    <title>Cruscotto SYNC - Convitto e Dinner</title>
+    
     <link rel="stylesheet" href="css/cruscotto-style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
     <div class="container">
         <header>
             <div>
-                <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO REALTIME </a> </h1>
+                <h1><a href="index.html" style="text-decoration: none; color: inherit;">CRUSCOTTO</a></h1>
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
@@ -24,7 +29,7 @@
                 <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
             </div>
         </div>       
-
+        
         <div class="toolbar">
             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
             <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
@@ -36,9 +41,10 @@
                        oninput="gestisciSaltoStanze(this); validaERicerca();">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">RESET</button>
-            <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
-                Ultimo aggiornamento: MAI
+            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">DAILY RESET</button>
+            
+            <div id="connection-status" style="font-size:0.7em; padding:5px 10px; border-radius:20px; background:#d4edda; color:#155724;">
+                🟢 Connesso
             </div>
         </div>
 
@@ -58,12 +64,18 @@
             <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
         </div>
         <hr>
-        <h3>Assenze Programmate</h3>
-        <select id="selectStudente" style="width:100%; margin-bottom:6px;"><option value="">-- Seleziona Nome --</option></select>
-        <select id="selectClasse" style="width:100%; margin-bottom:6px;"><option value="">-- Seleziona Classe --</option></select>
+        <h3 style="margin-top:10px;">Assenze Programmate</h3>
+        <select id="selectStudente" style="width:100%; margin-bottom:6px;">
+            <option value="">-- Seleziona Nome --</option>
+        </select>
+        <select id="selectClasse" style="width:100%; margin-bottom:6px;">
+            <option value="">-- Seleziona Classe --</option>
+        </select>
         <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
         <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
-        <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">➕ Aggiungi Assenza</button>
+        <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
+            ➕ Aggiungi Assenza
+        </button>
         <hr style="margin:20px 0;">
         <h3>Lista Assenze</h3>
         <div id="listaAssenze" style="margin-bottom:20px;"></div>
@@ -72,105 +84,15 @@
         <div id="listaPermessiContent"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKBQJYiu1ConaCKOj_rlKQSOQaGVTinCc",
-            authDomain: "cruscotto-438bc.firebaseapp.com",
-            databaseURL: "https://cruscotto-438bc-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "cruscotto-438bc",
-            storageBucket: "cruscotto-438bc.firebasestorage.app",
-            messagingSenderId: "142955041436",
-            appId: "1:142955041436:web:22be8db6e293bf14c55359",
-            measurementId: "G-LK93GN5JNP"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-    </script>
+    <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
+        Ultimo aggiornamento: MAI
+    </div>
 
     <script src="js/convittori.js"></script>
     <script src="js/permessi.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-sync.js"></script>
     <script src="js/cruscotto-script.js"></script>
 
-    <script>
-        const noteInput = document.getElementById('dailyNotes');
-
-        // Sincronizzazione NOTE con Firebase
-        db.ref('note_convitto').on('value', (snapshot) => {
-            if (snapshot.exists()) noteInput.value = snapshot.val();
-        });
-
-        noteInput.addEventListener('input', () => {
-            db.ref('note_convitto').set(noteInput.value);
-        });
-
-        function cancellaNote() {
-            if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
-                db.ref('note_convitto').remove();
-                noteInput.value = '';
-            }
-        }
-
-        // Funzione RESET modificata per Firebase
-        function resetDati() {
-            if(confirm("Sei sicuro? Questo cancellerà i dati di OGGI per TUTTI gli utenti ⚠")) {
-                db.ref('statoGiornaliero').remove(); // Cancella i dati sul server
-                const ora = new Date().toLocaleString('it-IT');
-                db.ref('ultimoReset').set(ora);
-                location.reload();
-            }
-        }
-        
-        // Ascolta data ultimo reset
-        db.ref('ultimoReset').on('value', (snapshot) => {
-            document.getElementById('info-reset').innerText = "Ultimo reset: " + (snapshot.val() || "MAI");
-        });
-        
-        // --- SINCRONIZZAZIONE STATI STUDENTI (Click, Assenze, Entra/Esce) ---
-
-// Questa funzione ascolta ogni cambiamento allo 'statoGiornaliero' su Firebase
-db.ref('statoGiornaliero').on('value', (snapshot) => {
-    const dati = snapshot.val() || {};
-    
-    // NOTA: Qui dobbiamo chiamare una funzione che ridisegna la tua lista.
-    // Supponendo che in cruscotto-script.js tu abbia una funzione che genera la lista:
-    if (typeof applicaFiltri === "function") {
-        applicaFiltri(); 
-    }
-    
-    // Se la tua logica colora i bottoni in base ai dati, 
-    // assicurati che 'applicaFiltri' o 'mostraStudenti' legga da Firebase e non da variabili locali.
-});
-
-// --- SINCRONIZZAZIONE ASSENZE PROGRAMMATE (Side Panel) ---
-
-db.ref('assenze_programmate').on('value', (snapshot) => {
-    const assenze = snapshot.val();
-    const listaDiv = document.getElementById('listaAssenze');
-    if (!listaDiv) return;
-
-    listaDiv.innerHTML = ""; // Pulisce la lista
-    for (let id in assenze) {
-        const ass = assenze[id];
-        listaDiv.innerHTML += `
-            <div style="background:#f9f9f9; padding:5px; border-radius:3px; margin-bottom:5px; font-size:0.8em; border-left:3px solid #e74c3c;">
-                <strong>${ass.studente}</strong> (${ass.classe})<br>
-                Dal: ${ass.dal} Al: ${ass.al}
-                <button onclick="rimuoviAssenza('${id}')" style="float:right; border:none; background:none; color:red; cursor:pointer;">&times;</button>
-            </div>`;
-    }
-});
-
-// Funzione per rimuovere assenza da Firebase (sarà immediato per tutti)
-function rimuoviAssenza(id) {
-    if(confirm("Rimuovere questa assenza?")) {
-        db.ref('assenze_programmate').child(id).remove();
-    }
-}
-        
-        
-    </script>
 </body>
 </html>
