@@ -1,5 +1,5 @@
 /**
- * SCRIPT.JS - Versione Integrale + Firebase
+ * SCRIPT.JS - cruscotto 1.0 + Firebase
  */
 
 let cambiTurnoManuali = {};
