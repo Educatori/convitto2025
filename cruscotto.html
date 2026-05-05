@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <div>
-                <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO </a> </h1>
+                <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> CRUSCOTTO REALTIME </a> </h1>
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
@@ -127,6 +127,50 @@
         db.ref('ultimoReset').on('value', (snapshot) => {
             document.getElementById('info-reset').innerText = "Ultimo reset: " + (snapshot.val() || "MAI");
         });
+        
+        // --- SINCRONIZZAZIONE STATI STUDENTI (Click, Assenze, Entra/Esce) ---
+
+// Questa funzione ascolta ogni cambiamento allo 'statoGiornaliero' su Firebase
+db.ref('statoGiornaliero').on('value', (snapshot) => {
+    const dati = snapshot.val() || {};
+    
+    // NOTA: Qui dobbiamo chiamare una funzione che ridisegna la tua lista.
+    // Supponendo che in cruscotto-script.js tu abbia una funzione che genera la lista:
+    if (typeof applicaFiltri === "function") {
+        applicaFiltri(); 
+    }
+    
+    // Se la tua logica colora i bottoni in base ai dati, 
+    // assicurati che 'applicaFiltri' o 'mostraStudenti' legga da Firebase e non da variabili locali.
+});
+
+// --- SINCRONIZZAZIONE ASSENZE PROGRAMMATE (Side Panel) ---
+
+db.ref('assenze_programmate').on('value', (snapshot) => {
+    const assenze = snapshot.val();
+    const listaDiv = document.getElementById('listaAssenze');
+    if (!listaDiv) return;
+
+    listaDiv.innerHTML = ""; // Pulisce la lista
+    for (let id in assenze) {
+        const ass = assenze[id];
+        listaDiv.innerHTML += `
+            <div style="background:#f9f9f9; padding:5px; border-radius:3px; margin-bottom:5px; font-size:0.8em; border-left:3px solid #e74c3c;">
+                <strong>${ass.studente}</strong> (${ass.classe})<br>
+                Dal: ${ass.dal} Al: ${ass.al}
+                <button onclick="rimuoviAssenza('${id}')" style="float:right; border:none; background:none; color:red; cursor:pointer;">&times;</button>
+            </div>`;
+    }
+});
+
+// Funzione per rimuovere assenza da Firebase (sarà immediato per tutti)
+function rimuoviAssenza(id) {
+    if(confirm("Rimuovere questa assenza?")) {
+        db.ref('assenze_programmate').child(id).remove();
+    }
+}
+        
+        
     </script>
 </body>
 </html>
