@@ -1,9 +1,10 @@
-/* STYLE.CSS - cruscotto 1.0
+/* STYLE.CSS - Cruscotto 
+    Organizzazione: Palette -> Base -> Layout -> Card -> Elementi Speciali
 */
 
 :root {
     /* Palette Principale */
-    --p: #6197cc;               /* Header e Testi principali */
+    --p: #973081;               /* Header e Testi principali */
     --s: #27ae60;               /* Presente / OK (Verde Smeraldo) */
     --d: #ed5a3a;               /* Assente (Arancio) */
     --e: #3498db;               /* Non Cena (Blu Cielo) */
@@ -93,19 +94,17 @@ header {
     transform: translateY(-1px); 
 }
 
-
-
 .note-toolbar-container {
     background: #fff9c4;
     width: 100%;
-    max-width: 500px; /* Larghezza bilanciata per la griglia */
+    max-width: 500px;
     margin: 0 auto 40px auto;
-    padding: 12 12px;
+    padding: 12px;
     border-radius: 15px;
 }
 
 .note-content {
-    background: var(--card-light);
+    background: rgba(255,255,255,0.9);
     backdrop-filter: blur(20px);
     border-radius: 15px;
     display: flex;
@@ -127,12 +126,12 @@ header {
     outline: none;
     font-family: inherit;
     font-size: 14px;
-    color: var(--primary);
+    color: var(--p);
     font-weight: 500;
 }
 
 .note-input::placeholder {
-    color: var(--primary);
+    color: var(--p);
     opacity: 0.5;
 }
 
@@ -143,7 +142,7 @@ header {
     width: 24px;
     height: 24px;
     cursor: pointer;
-    color: var(--primary);
+    color: var(--p);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -155,15 +154,6 @@ header {
     background: rgba(255, 0, 0, 0.1);
     color: #d00;
 }
-
-/* In Dark Mode */
-@media (prefers-color-scheme: dark) {
-    .note-content { background: var(--card-dark); }
-    .note-input { color: white; }
-    .note-input::placeholder { color: rgba(255,255,255,0.4); }
-}
-
-
 
 /* --- GRID STUDENTI --- */
 #listaStudenti { 
@@ -247,4 +237,4 @@ header {
     #listaStudenti { grid-template-columns: 1fr 1fr; }
     header { flex-direction: column; text-align: center; gap: 10px; }
     .toolbar { flex-wrap: wrap; }
-} 
+}
