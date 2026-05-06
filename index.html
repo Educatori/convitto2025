@@ -23,7 +23,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* Cambiato in min-height per scrolling su mobile */
+            min-height: 100vh;
             transition: 0.4s;
         }
 
@@ -32,8 +32,8 @@
             body { background: var(--bg-dark); color: white; }
             .link-card { background: var(--card-dark); }
             .link-card span { color: white; }
-            .link-card svg { stroke: #e2e8f0; }
-            #todayDate { color: #cbd5e1; } /* Colore data in dark mode */
+            .link-card svg { stroke: #e2e8f0; fill: none; }
+            #todayDate { color: #cbd5e1; }
         }
 
         /* HEADER & CLOCK */
@@ -107,10 +107,26 @@
 
         .link-card:hover::before { top: 100%; left: 100%; }
 
-        .link-card svg { width: 50px; height: 43px; stroke: var(--primary); transition: 0.3s; }
-        .link-card span { font-size: 13px; font-weight: 500; color: var(--primary); }
+        .link-card svg { 
+            width: 42px; 
+            height: 42px; 
+            stroke: var(--primary); 
+            stroke-width: 1.8;
+            fill: none;
+            transition: 0.3s; 
+        }
+        
+        .link-card span { 
+            font-size: 13px; 
+            font-weight: 500; 
+            color: var(--primary); 
+        }
 
-        .link-card:hover { transform: translateY(-10px) scale(1.07); box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
+        .link-card:hover { 
+            transform: translateY(-10px) scale(1.07); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25); 
+        }
+        
         .link-card:active { transform: scale(0.95); }
 
         @media (max-width: 600px) {
@@ -127,39 +143,67 @@
     </div>
 
     <div class="links-grid">
+        <!-- Dashboard - Icona cruscotto/dashboard -->
         <a href="dashboard.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14v4M12 10v8M17 6v12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="8" height="8" rx="1"/>
+                <rect x="13" y="3" width="8" height="8" rx="1"/>
+                <rect x="3" y="13" width="8" height="8" rx="1"/>
+                <rect x="13" y="13" width="8" height="8" rx="1"/>
+            </svg>
             <span>Dashboard</span>
         </a>
 
+        <!-- Cloud - Icona nuvola più elegante -->
         <a href="roomcloud.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 014-4 5 5 0 019.9-1A4 4 0 1121 15H3z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M17.5 19H6.5C4.01472 19 2 16.9853 2 14.5C2 12.0147 4.01472 10 6.5 10C6.82789 10 7.14658 10.0364 7.45315 10.1058C8.28548 8.26313 10.1514 7 12.3036 7C15.176 7 17.5285 9.15521 17.8305 11.9581C17.8861 11.9858 17.9429 12 18 12C20.2091 12 22 13.7909 22 16C22 18.2091 20.2091 20 18 20H17.5Z"/>
+            </svg>
             <span>Cloud</span>
         </a>
 
+        <!-- Bus - Icona autobus moderna -->
         <a href="bus.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 17H20M4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7V17M4 17V19M20 17V19M6 9H10M14 9H18M6 13H12M16 13H18M6.5 8.5H9.5M14.5 8.5H17.5"/>
+                <circle cx="7" cy="17" r="2"/>
+                <circle cx="17" cy="17" r="2"/>
+            </svg>
             <span>Bus</span>
         </a>
 
+        <!-- Uscita - Icona porta/uscita -->
         <a href="uscita.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M15 12H3M12 15L15 12L12 9M9 5V4C9 3.44772 9.44772 3 10 3H19C19.5523 3 20 3.44772 20 4V20C20 20.5523 19.5523 21 19 21H10C9.44772 21 9 20.5523 9 20V19"/>
+            </svg>
             <span>Uscita</span>
         </a>
 
+        <!-- Rooming - Icona stanza/letto con chiave -->
         <a href="rooming.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h18v7H3z"/><path d="M7 10V7h4v3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M3 7V21H21V7M3 7L12 3L21 7M3 7H21M7 11H17M7 14H17M7 17H13"/>
+            </svg>
             <span>Rooming</span>
         </a>
 
+        <!-- Transfer - Icona navetta/trasferimento -->
         <a href="transfer.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7h13l3 4v6H3z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 12H20M20 12L17 9M20 12L17 15M8 6L5 9M5 9L8 12M5 9H19M16 18L19 15M19 15L16 12"/>
+            </svg>
             <span>Transfer</span>
         </a>
         
+        <!-- Cruscotto - Icona dashboard/controllo -->
         <a href="cruscotto.html" class="link-card">
-            <svg fill="none" stroke-width="2" viewBox="0 0 24 24" style="width:24px; height:24px;">
-  <circle cx="12" cy="13" r="8"/> <path d="M12 5V2m-3 0h6"/> <path d="M12 13l2-4"/> </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 8V12L14 14"/>
+                <path d="M6 3L3 6"/>
+                <path d="M18 3L21 6"/>
+            </svg>
             <span>Cruscotto</span>
         </a>
     </div>
