@@ -15,7 +15,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f5f5;
-            padding: 20px;
+            padding: 10px; /* Ridotto per la stampa */
         }
 
         /* Login */
@@ -65,45 +65,59 @@
             text-align: center;
         }
 
-        /* App principale */
+        /* App principale - spazi ridotti per stampa */
         .app-header {
             background: white;
-            padding: 20px;
+            padding: 12px 15px; /* ridotto */
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
 
         .app-header h1 {
             color: #2c3e50;
-            font-size: 24px;
+            font-size: 18px;
+            margin: 0;
+            display: inline-block;
+        }
+        .header-title {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .current-date {
+            font-size: 14px;
+            font-weight: normal;
+            color: #2c3e50;
+            opacity: 0.8;
         }
 
         .stats {
             background: #3498db;
             color: white;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
         }
 
@@ -126,41 +140,42 @@
             opacity: 0.9;
         }
 
-        /* Griglia camere */
+        /* Griglia camere - gap ridotto */
         .rooms-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
         }
 
         .room-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .room-title {
             background: #34495e;
             color: white;
-            padding: 12px;
-            font-size: 18px;
+            padding: 8px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
         }
 
         .students-list {
-            padding: 10px;
+            padding: 6px;
         }
 
         .student-item {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
             user-select: none;
             background-color: white;
+            font-size: 12px;
         }
 
         .student-item:active {
@@ -169,24 +184,24 @@
 
         .student-name {
             font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
+            font-size: 13px;
+            margin-bottom: 2px;
         }
 
         .student-class {
-            font-size: 12px;
+            font-size: 11px;
             color: #7f8c8d;
         }
 
         /* Badge (etichetta in alto a destra) */
         .student-status {
             position: absolute;
-            right: 12px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 12px;
         }
 
@@ -203,22 +218,22 @@
 
         /* COLORI INTERA CASELLA */
         .student-item.stato-assente {
-            background: #fff9c4;        /* giallo stand-by */
+            background: #fff9c4;
             border-left: 4px solid #f1c40f;
         }
         .student-item.stato-confermato {
-            background: #ffebee;        /* rosso assente */
+            background: #ffebee;
             border-left: 4px solid #e74c3c;
         }
 
         /* Foresteria */
         .foresteria-input {
             width: 100%;
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 12px;
-            margin-top: 6px;
+            font-size: 11px;
+            margin-top: 4px;
         }
 
         .foresteria-occupato {
@@ -242,26 +257,27 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            padding: 25px;
-            max-width: 300px;
+            padding: 20px;
+            max-width: 280px;
             text-align: center;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
         .modal-content p {
-            margin-bottom: 20px;
-            font-size: 16px;
+            margin-bottom: 15px;
+            font-size: 15px;
         }
         .modal-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
         }
         .modal-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 13px;
         }
         .modal-btn-standby {
             background: #fff9c4;
@@ -277,17 +293,61 @@
             opacity: 0.85;
         }
 
+        /* STAMPA: margini minimi, riduzione spazi */
         @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
             .btn, .button-group, .foresteria-input, .modal {
                 display: none;
             }
-            
             .rooms-grid {
+                display: grid;
                 grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
             }
-            
+            .room-card {
+                break-inside: avoid;
+                border: 1px solid #ccc;
+            }
             .student-item {
                 break-inside: avoid;
+                padding: 6px 8px;
+            }
+            .app-header {
+                padding: 8px 10px;
+                margin-bottom: 10px;
+                box-shadow: none;
+                border-bottom: 1px solid #ccc;
+            }
+            .current-date {
+                font-size: 12px;
+            }
+            .stats {
+                background: #3498db;
+                color: white;
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .room-title {
+                padding: 6px;
+                font-size: 14px;
+            }
+            .students-list {
+                padding: 4px;
+            }
+            .student-name {
+                font-size: 11px;
+            }
+            .student-class {
+                font-size: 9px;
+            }
+            .student-status {
+                font-size: 9px;
+                padding: 2px 4px;
+                right: 4px;
             }
         }
     </style>
@@ -305,7 +365,10 @@
     <!-- App principale -->
     <div id="appScreen" style="display: none;">
         <div class="app-header">
-            <h1>Rooming Cloud 2.0</h1>
+            <div class="header-title">
+                <h1>Rooming Cloud 2.0</h1>
+                <span id="currentDate" class="current-date"></span>
+            </div>
             <div class="stats" id="statsForesteria">Posti liberi: -</div>
             <div class="button-group">
                 <button class="btn btn-primary" onclick="stampaReport()">🖨️ Stampa</button>
@@ -336,15 +399,15 @@
 
         // Config Firebase
         const firebaseConfig = {
-  apiKey: "AIzaSyAlvE48F1flTIZ1KyU_FKIV30w60pWFphE",
-  authDomain: "rooms-2ff73.firebaseapp.com",
-  databaseURL: "https://rooms-2ff73-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "rooms-2ff73",
-  storageBucket: "rooms-2ff73.firebasestorage.app",
-  messagingSenderId: "955413485941",
-  appId: "1:955413485941:web:e878ea05b066dd78bd9b3c",
-  measurementId: "G-NSGBDTEJNQ"
-};
+            apiKey: "AIzaSyAlvE48F1flTIZ1KyU_FKIV30w60pWFphE",
+            authDomain: "rooms-2ff73.firebaseapp.com",
+            databaseURL: "https://rooms-2ff73-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "rooms-2ff73",
+            storageBucket: "rooms-2ff73.firebasestorage.app",
+            messagingSenderId: "955413485941",
+            appId: "1:955413485941:web:e878ea05b066dd78bd9b3c",
+            measurementId: "G-NSGBDTEJNQ"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -354,7 +417,7 @@
         let studentiData = [];
         let assenzeData = {};
         let currentUser = null;
-        let pendingResolve = null;   // per la Promise del modale
+        let pendingResolve = null;
 
         // Elementi DOM
         const loginScreen = document.getElementById('loginScreen');
@@ -366,6 +429,18 @@
         const modalMessage = document.getElementById('modalMessage');
         const standbyBtn = document.getElementById('modalStandbyBtn');
         const assenteBtn = document.getElementById('modalAssenteBtn');
+        const currentDateSpan = document.getElementById('currentDate');
+
+        // Funzione per aggiornare la data nel formato richiesto
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const formatted = now.toLocaleDateString('it-IT', options);
+            // Capitalizza il primo carattere del giorno (es. lunedì -> Lunedì)
+            const capitalized = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+            currentDateSpan.textContent = `| ${capitalized}`;
+        }
+        updateCurrentDate();
 
         // Funzione che mostra il modale e restituisce Promise: true = STAND-BY, false = ASSENTE
         function showChoiceDialog(studentName) {
@@ -384,15 +459,14 @@
         }
         standbyBtn.onclick = () => {
             modal.style.display = 'none';
-            if (pendingResolve) pendingResolve(true);   // STAND-BY
+            if (pendingResolve) pendingResolve(true);
             pendingResolve = null;
         };
         assenteBtn.onclick = () => {
             modal.style.display = 'none';
-            if (pendingResolve) pendingResolve(false);  // ASSENTE
+            if (pendingResolve) pendingResolve(false);
             pendingResolve = null;
         };
-        // Chiudi se clicchi fuori dal contenuto (opzionale)
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
         });
@@ -445,7 +519,6 @@
 
         // Cambia stato (STAND-BY = assente nel db, ASSENTE = confermato)
         async function toggleStato(id, scelta) {
-            // scelta: true = STAND-BY (assente), false = ASSENTE (confermato)
             const current = assenzeData[id] || {};
             let nuovoStato = {};
             if (scelta === true) {  // STAND-BY
@@ -488,14 +561,14 @@
             if (isNota) {
                 div.style.background = '#e8f5e9';
                 div.style.cursor = 'default';
-                div.innerHTML = `<div class="student-name">📝 ${studente.nome}</div>`;
+                div.innerHTML = `<div class="student-name">📝 Note ${studente.nome}</div>`;
                 return div;
             }
             
             if (isForesteria) {
                 div.className = `student-item ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
-                    <div class="student-name">🛏️ ${studente.nome}</div>
+                    <div class="student-name">Foresteria ${studente.nome}</div>
                     <input type="text" class="foresteria-input" placeholder="Nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
@@ -505,9 +578,9 @@
             
             // Studente normale: colora intera casella
             if (stato.assente) {
-                div.classList.add('stato-assente');     // giallo STAND-BY
+                div.classList.add('stato-assente');
             } else if (stato.confermato) {
-                div.classList.add('stato-confermato');  // rosso ASSENTE
+                div.classList.add('stato-confermato');
             }
             
             let statusHtml = '';
@@ -523,7 +596,6 @@
                 ${statusHtml}
             `;
             
-            // Al click, mostra il modale personalizzato
             div.addEventListener('click', async (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 const scelta = await showChoiceDialog(`${studente.cognome} ${studente.nome}`);
@@ -561,7 +633,7 @@
             Object.keys(stanze).sort((a,b) => Number(a) - Number(b)).forEach(room => {
                 const card = document.createElement('div');
                 card.className = 'room-card';
-                card.innerHTML = `<div class="room-title">🏠 Camera ${room}</div>`;
+                card.innerHTML = `<div class="room-title">• ${room}</div>`;
                 
                 const list = document.createElement('div');
                 list.className = 'students-list';
