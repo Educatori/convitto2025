@@ -15,7 +15,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f5f5;
-            padding: 8px; /* Ridotto per la stampa */
+            padding: 8px;
         }
 
         /* Login */
@@ -68,7 +68,7 @@
         /* App principale - spazi ridotti per stampa */
         .app-header {
             background: white;
-            padding: 12px 15px; /* ridotto */
+            padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -140,7 +140,7 @@
             opacity: 0.9;
         }
 
-        /* Griglia camere - gap ridotto */
+        /* Griglia camere */
         .rooms-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -193,7 +193,7 @@
             color: #7f8c8d;
         }
 
-        /* Badge (etichetta in alto a destra) */
+        /* Badge */
         .student-status {
             position: absolute;
             right: 8px;
@@ -293,7 +293,11 @@
             opacity: 0.85;
         }
 
-        /* STAMPA: margini minimi, riduzione spazi */
+        /* INTERRUZIONE DI PAGINA IN STAMPA */
+        .page-break {
+            display: none;
+        }
+
         @media print {
             body {
                 padding: 0;
@@ -323,7 +327,7 @@
                 border-bottom: 1px solid #ccc;
             }
             .current-date {
-                font-size: 15px;
+                font-size: 18px;
             }
             .stats {
                 background: #3498db;
@@ -333,19 +337,19 @@
             }
             .room-title {
                 padding: 6px;
-                font-size: 16px;
+                font-size: 18px;
             }
             .students-list {
                 padding: 4px;
             }
             .student-name {
-                font-size: 16px;
+                font-size: 18px;
             }
             .student-class {
-                font-size: 11px;
+                font-size: 12px;
             }
             .student-status {
-                font-size: 11px;
+                font-size: 12px;
                 padding: 2px 4px;
                 right: 4px;
             }
@@ -436,7 +440,6 @@
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             const formatted = now.toLocaleDateString('it-IT', options);
-            // Capitalizza il primo carattere del giorno (es. lunedì -> Lunedì)
             const capitalized = formatted.charAt(0).toUpperCase() + formatted.slice(1);
             currentDateSpan.textContent = `| ${capitalized}`;
         }
@@ -568,7 +571,7 @@
             if (isForesteria) {
                 div.className = `student-item ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
-                    <div class="student-name">Foresteria ${studente.nome}</div>
+                    <div class="student-name">For ${studente.nome}</div>
                     <input type="text" class="foresteria-input" placeholder="Nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
@@ -607,7 +610,7 @@
             return div;
         }
 
-        // Genera griglia camere
+        // Genera griglia camere con interruzione di pagina dopo la camera 125
         function generaGriglia() {
             if (!studentiData.length) return;
             
@@ -630,7 +633,22 @@
             statsForesteria.textContent = `Posti liberi: ${liberi}/${postiForesteriaTotali}`;
             
             roomsGrid.innerHTML = '';
-            Object.keys(stanze).sort((a,b) => Number(a) - Number(b)).forEach(room => {
+            
+            // Ordina le camere numericamente
+            const sortedRooms = Object.keys(stanze).sort((a,b) => Number(a) - Number(b));
+            let breakInserted = false;
+            
+            sortedRooms.forEach(room => {
+                // Se la camera è >= 200 e non abbiamo ancora inserito il break, lo inseriamo PRIMA di questa camera
+                if (!breakInserted && Number(room) >= 200) {
+                    const breakDiv = document.createElement('div');
+                    breakDiv.className = 'page-break';
+                    breakDiv.style.width = '100%';
+                    breakDiv.style.height = '0';
+                    roomsGrid.appendChild(breakDiv);
+                    breakInserted = true;
+                }
+                
                 const card = document.createElement('div');
                 card.className = 'room-card';
                 card.innerHTML = `<div class="room-title">• ${room}</div>`;
