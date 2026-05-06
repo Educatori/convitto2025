@@ -1,10 +1,10 @@
-/* STYLE.CSS - Cruscotto 
+/* STYLE.CSS - Dashboard Convitto 
     Organizzazione: Palette -> Base -> Layout -> Card -> Elementi Speciali
 */
 
 :root {
     /* Palette Principale */
-    --p: #973081;               /* Header e Testi principali */
+    --p: #b59d1f;               /* Header e Testi principali */
     --s: #27ae60;               /* Presente / OK (Verde Smeraldo) */
     --d: #ed5a3a;               /* Assente (Arancio) */
     --e: #3498db;               /* Non Cena (Blu Cielo) */
@@ -126,7 +126,7 @@ header {
     outline: none;
     font-family: inherit;
     font-size: 14px;
-    color: var(--p);
+    color: darkslategrey;
     font-weight: 500;
 }
 
