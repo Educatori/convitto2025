@@ -315,7 +315,7 @@ if (window.cancellaNoteOriginal) {
 
 // ========== FUNZIONE RESET CON FIREBASE ==========
 window.resetDati = function() {
-    if (confirm("⚠️ Sei sicuro? Questo cancellerà tutte le uscite e le assenze inserite oggi ⚠")) {
+    if (confirm("⚠️ Sei sicuro? Questo cancellerà tutte le variazioni sulle card studenti ovvero le uscite e le assenze inserite ⚠")) {
         const oggi = new Date();
         const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
         
