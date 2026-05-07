@@ -122,8 +122,8 @@
         }
 
         .btn-primary { background: #53bb20; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
         .btn-secondary { background: #ff9700; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
         .btn:hover { opacity: 0.9; }
 
         /* Griglia camere */
@@ -141,8 +141,8 @@
         }
 
         .room-title {
-            background: #a4a4a4;
-            color: white;
+            background: rgba(205, 205, 205, 0.8);
+            color: black;
             padding: 8px;
             font-size: 16px;
             font-weight: bold;
@@ -202,9 +202,9 @@
             border-radius: 12px;
         }
 
-        .status-assente { background: #ffeaa7; color: #606060; }
-        .status-confermato { background: #fab1a0; color: #606060; }
-        .status-attivita { background: #b2dfdb; color: #00695c; }
+        .status-assente { background: white; color: #606060; } /*background #ffeaa7*/
+        .status-confermato { background: white; color: #606060; } /*background #fab1a0*/
+        .status-attivita { background: white; color: #606060; } /*background #b2dfdb*/
 
         .student-item.stato-assente { background: #fff9c4; border-left: 4px solid #f1c40f; }
         .student-item.stato-confermato { background: #ffebee; border-left: 4px solid #e74c3c; }
@@ -479,14 +479,14 @@
             
             if (isNota) {
                 div.style.background = '#e8f5e9';
-                div.innerHTML = `<div class="student-name">📝 Note: ${studente.nome}</div>`;
+                div.innerHTML = `<div class="student-name"> Status: ${studente.nome}</div>`;
                 return div;
             }
             
             if (isForesteria) {
                 div.className = `student-item foresteria-row ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
-                    <span class="student-name">🛏️ Letto ${studente.nome}</span>
+                    <span class="student-name">Foresteria ${studente.nome}</span>
                     <input type="text" class="foresteria-input" placeholder="Inserire nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
