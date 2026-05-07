@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooming Cloud v2.1.0</title>
+    <title>Rooming Cloud v2.2.1 </title>
 
     <style>
         * {
@@ -204,16 +204,18 @@
 
         .status-assente { background: #ffeaa7; color: #606060; }
         .status-confermato { background: #fab1a0; color: #606060; }
+        .status-attivita { background: #b2dfdb; color: #00695c; }
 
         .student-item.stato-assente { background: #fff9c4; border-left: 4px solid #f1c40f; }
         .student-item.stato-confermato { background: #ffebee; border-left: 4px solid #e74c3c; }
+        .student-item.stato-attivita { background: #e0f2f1; border-left: 4px solid #26a69a; }
 
         .foresteria-occupato {
             background: #e3f2fd !important;
             border-left: 4px solid #2196f3;
         }
 
-        /* Modale con 3 pulsanti */
+        /* Modale con 4 pulsanti */
         .modal {
             display: none;
             position: fixed;
@@ -227,7 +229,7 @@
             background: white;
             border-radius: 15px;
             padding: 20px;
-            max-width: 300px;
+            max-width: 320px;
             text-align: center;
         }
         .modal-buttons {
@@ -245,9 +247,10 @@
             font-weight: bold;
             font-size: 13px;
         }
-        .modal-btn-standby { background: #fff9c4; color: #606060; border: 1px solid #606060; }
-        .modal-btn-assente { background: #ffebee; color: #606060; border: 1px solid #606060; }
-        .modal-btn-cancel { background: #d9fbf2; color: #606060; border: 1px solid #606060; }
+        .modal-btn-standby { background: #fff9c4; color: #606060; border: 1px solid #d4ac0d; }
+        .modal-btn-assente { background: #ffebee; color: #606060; border: 1px solid #e74c3c; }
+        .modal-btn-attivita { background: #e0f2f1; color: #00695c; border: 1px solid #26a69a; }
+        .modal-btn-cancel { background: #ffffff; color: #606060; border: 1px solid #777; }
 
         .page-break { display: none; }
 
@@ -292,28 +295,29 @@
     <div id="appScreen" style="display: none;">
         <div class="app-header">
             <div class="header-title">
-                <h1>Rooming Cloud 2.0</h1>
+                <h1>Rooming Cloud 2.2</h1>
                 <span id="currentDate" class="current-date"></span>
             </div>
             <div class="stats" id="statsForesteria">Posti liberi: -</div>
             <div class="button-group">
-                <button class="btn btn-primary" onclick="stampaReport()"> Stampa</button>
-                <button class="btn btn-secondary" onclick="resetAssenze()"> Reset</button>
-                <button class="btn btn-danger" onclick="logout()"> Esci</button>
+                <button class="btn btn-primary" onclick="stampaReport()">Stampa</button>
+                <button class="btn btn-secondary" onclick="resetAssenze()">Reset</button>
+                <button class="btn btn-danger" onclick="logout()">Esci</button>
             </div>
         </div>
         <div id="roomsGrid" class="rooms-grid"></div>
         <div id="printTimestamp" class="print-timestamp"></div>
     </div>
 
-    <!-- MODALE con 3 pulsanti: STAND-BY, ASSENTE, ANNULLA -->
+    <!-- MODALE con 4 pulsanti: STAND-BY, ASSENTE, ATTIVITÀ, ANNULLA -->
     <div id="actionModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage">Scegli azione</p>
             <div class="modal-buttons">
                 <button id="modalStandbyBtn" class="modal-btn modal-btn-standby">❓ STAND-BY</button>
                 <button id="modalAssenteBtn" class="modal-btn modal-btn-assente">❌ ASSENTE</button>
-                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel"> ANNULLA</button>
+                <button id="modalAttivitaBtn" class="modal-btn modal-btn-attivita">⚙️ ATTIVITÀ</button>
+                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel">↪️ ANNULLA</button>
             </div>
         </div>
     </div>
@@ -351,6 +355,7 @@
         const modalMessage = document.getElementById('modalMessage');
         const standbyBtn = document.getElementById('modalStandbyBtn');
         const assenteBtn = document.getElementById('modalAssenteBtn');
+        const attivitaBtn = document.getElementById('modalAttivitaBtn');
         const cancelBtn = document.getElementById('modalCancelBtn');
         const currentDateSpan = document.getElementById('currentDate');
 
@@ -376,18 +381,62 @@
             }
         }
 
-        // Pulsanti modale
-        standbyBtn.onclick = () => closeModal(true);   // STAND-BY
-        assenteBtn.onclick = () => closeModal(false); // ASSENTE
-        cancelBtn.onclick = () => closeModal(null);   // ANNULLA -> nessuna modifica
+        // GESTIONE PULSANTI MODALE
+        standbyBtn.onclick = () => closeModal('standby');
+        assenteBtn.onclick = () => closeModal('assente');
+        attivitaBtn.onclick = () => closeModal('attivita');
+        cancelBtn.onclick = () => closeModal(null);
 
-        // Chiudi cliccando fuori dal modale (equivale a Annulla)
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal(null);
         });
 
         function getStudentId(studente, room) {
             return `${studente.cognome}_${studente.nome}_${room}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+        }
+
+        // Funzione con TOGGLE: se lo stato è già attivo, lo rimuove; altrimenti lo imposta.
+        async function setStatoStudente(id, scelta) {
+            // scelta può essere 'standby', 'assente', 'attivita' o null (annulla)
+            if (scelta === null) return;
+            
+            const statoCorrente = assenzeData[id] || {};
+            
+            let isAlreadyActive = false;
+            if (scelta === 'standby' && statoCorrente.assente === true) isAlreadyActive = true;
+            else if (scelta === 'assente' && statoCorrente.confermato === true) isAlreadyActive = true;
+            else if (scelta === 'attivita' && statoCorrente.attivita === true) isAlreadyActive = true;
+            
+            let nuovoStato = { assente: false, confermato: false, attivita: false };
+            
+            if (isAlreadyActive) {
+                // Toggle off -> rimuovi completamente lo stato
+                nuovoStato = null;
+            } else {
+                // Imposta solo lo stato scelto
+                switch (scelta) {
+                    case 'standby':
+                        nuovoStato.assente = true;
+                        break;
+                    case 'assente':
+                        nuovoStato.confermato = true;
+                        break;
+                    case 'attivita':
+                        nuovoStato.attivita = true;
+                        break;
+                }
+            }
+            
+            await set(ref(db, `assenze/${id}`), nuovoStato);
+        }
+
+        async function salvaForesteria(id, nome) {
+            const path = ref(db, `assenze/${id}`);
+            if (nome.trim()) {
+                await set(path, { occupato: true, nomeOccupante: nome.trim() });
+            } else {
+                await set(path, null);
+            }
         }
 
         window.login = async () => {
@@ -399,9 +448,8 @@
 
         window.logout = async () => { if (confirm('Vuoi uscire?')) await signOut(auth); };
 
-        // Reset corretto: usa update() per cancellare solo i nodi delle assenze, senza toccare anagrafica
         window.resetAssenze = async () => {
-            if (!confirm('Resettare tutte le assenze, conferme e nominativi in foresteria?')) return;
+            if (!confirm('Resettare tutte le assenze, conferme, attività e foresteria?')) return;
             const updates = {};
             Object.keys(assenzeData).forEach(id => {
                 updates[`assenze/${id}`] = null;
@@ -409,7 +457,7 @@
             if (Object.keys(updates).length > 0) {
                 await update(ref(db), updates);
             } else {
-                alert("Nessuna assenza registrata da resettare.");
+                alert("Nessuna registrazione presente.");
             }
         };
 
@@ -419,29 +467,6 @@
             document.getElementById('printTimestamp').textContent = `Aggiornamento ${dataOggi} ore ${oraEsatta}`;
             window.print();
         };
-
-        async function toggleStato(id, scelta) {
-            // scelta = true -> STAND-BY (assente = true, confermato = false)
-            // scelta = false -> ASSENTE (confermato = true, assente = false)
-            const current = assenzeData[id] || {};
-            let nuovoStato = {};
-            if (scelta === true) {
-                nuovoStato = { assente: !current.assente, confermato: false };
-            } else {
-                nuovoStato = { assente: false, confermato: !current.confermato };
-            }
-            const daSalvare = (nuovoStato.assente || nuovoStato.confermato) ? nuovoStato : null;
-            await set(ref(db, `assenze/${id}`), daSalvare);
-        }
-
-        async function salvaForesteria(id, nome) {
-            const path = ref(db, `assenze/${id}`);
-            if (nome.trim()) {
-                await set(path, { occupato: true, nomeOccupante: nome.trim() });
-            } else {
-                await set(path, null);
-            }
-        }
 
         function creaStudenteElement(studente, room) {
             const id = getStudentId(studente, room);
@@ -454,14 +479,14 @@
             
             if (isNota) {
                 div.style.background = '#e8f5e9';
-                div.innerHTML = `<div class="student-name"> Note: ${studente.nome}</div>`;
+                div.innerHTML = `<div class="student-name">📝 Note: ${studente.nome}</div>`;
                 return div;
             }
             
             if (isForesteria) {
                 div.className = `student-item foresteria-row ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
-                    <span class="student-name">Letto ${studente.nome}</span>
+                    <span class="student-name">🛏️ Letto ${studente.nome}</span>
                     <input type="text" class="foresteria-input" placeholder="Inserire nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
@@ -469,13 +494,15 @@
                 return div;
             }
             
-            // Studente normale
+            // Gestione badge per studente normale
             if (stato.assente) div.classList.add('stato-assente');
             else if (stato.confermato) div.classList.add('stato-confermato');
+            else if (stato.attivita) div.classList.add('stato-attivita');
             
             let statusHtml = '';
             if (stato.assente) statusHtml = '<div class="student-status status-assente">❓ STAND-BY</div>';
             else if (stato.confermato) statusHtml = '<div class="student-status status-confermato">❌ ASSENTE</div>';
+            else if (stato.attivita) statusHtml = '<div class="student-status status-attivita">🏃 ATTIVITÀ</div>';
             
             div.innerHTML = `
                 <div class="student-name">${studente.cognome} ${studente.nome}</div>
@@ -486,9 +513,8 @@
             div.addEventListener('click', async (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 const scelta = await showChoiceDialog(`${studente.cognome} ${studente.nome}`);
-                // scelta può essere true (STAND-BY), false (ASSENTE) oppure null (ANNULLA)
                 if (scelta !== null) {
-                    await toggleStato(id, scelta);
+                    await setStatoStudente(id, scelta);
                 }
             });
             
@@ -525,7 +551,7 @@
                 
                 const card = document.createElement('div');
                 card.className = 'room-card';
-                card.innerHTML = `<div class="room-title">• ${room}</div>`;
+                card.innerHTML = `<div class="room-title"> ${room}</div>`;
                 const list = document.createElement('div');
                 list.className = 'students-list';
                 stanze[room].forEach(studente => { list.appendChild(creaStudenteElement(studente, room)); });
@@ -534,7 +560,7 @@
             });
         }
 
-        // Auth e realtime
+        // Realtime auth + dati
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginScreen.style.display = 'none';
