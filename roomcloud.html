@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooming Cloud V2.035</title>
+    <title>Rooming Cloud v2.1.0</title>
 
     <style>
         * {
@@ -162,7 +162,7 @@
             font-size: 12px;
         }
 
-        /* --- CORREZIONE FORESTERIA --- */
+        /* Foresteria in riga */
         .student-item.foresteria-row {
             display: flex;
             align-items: center;
@@ -170,20 +170,19 @@
         }
 
         .foresteria-input {
-            flex: 1; /* Prende lo spazio rimanente */
+            flex: 1;
             padding: 4px 6px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 11px;
         }
-        /* ---------------------------- */
 
         .student-item:active { transform: scale(0.98); }
 
         .student-name {
             font-weight: 600;
             font-size: 13px;
-            white-space: nowrap; /* Evita che "Letto X" vada a capo */
+            white-space: nowrap;
         }
 
         .student-class {
@@ -203,8 +202,8 @@
             border-radius: 12px;
         }
 
-        .status-assente { background: #ffeaa7; color: #d63031; }
-        .status-confermato { background: #fab1a0; color: #e17055; text-decoration: line-through; }
+        .status-assente { background: #ffeaa7; color: #606060; }
+        .status-confermato { background: #fab1a0; color: #606060; }
 
         .student-item.stato-assente { background: #fff9c4; border-left: 4px solid #f1c40f; }
         .student-item.stato-confermato { background: #ffebee; border-left: 4px solid #e74c3c; }
@@ -214,7 +213,7 @@
             border-left: 4px solid #2196f3;
         }
 
-        /* Modale */
+        /* Modale con 3 pulsanti */
         .modal {
             display: none;
             position: fixed;
@@ -228,17 +227,30 @@
             background: white;
             border-radius: 15px;
             padding: 20px;
-            max-width: 280px;
+            max-width: 300px;
             text-align: center;
         }
-        .modal-buttons { display: flex; gap: 12px; justify-content: center; }
-        .modal-btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .modal-btn-standby { background: #fff9c4; color: #d63031; border: 1px solid #f1c40f; }
-        .modal-btn-assente { background: #ffebee; color: #c0392b; border: 1px solid #e74c3c; }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .modal-btn-standby { background: #fff9c4; color: #606060; border: 1px solid #606060; }
+        .modal-btn-assente { background: #ffebee; color: #606060; border: 1px solid #606060; }
+        .modal-btn-cancel { background: #d9fbf2; color: #606060; border: 1px solid #606060; }
 
         .page-break { display: none; }
 
-        /* Stile per il timestamp in fondo alla stampa */
         .print-timestamp {
             display: none;
         }
@@ -253,8 +265,6 @@
             .student-item { padding: 3px 4px; break-inside: avoid; }
             .student-name { font-size: 9.5px; }
             .student-class { font-size: 7px; }
-            /* .page-break { display: block; break-before: page; height: 0; } */
-            /* Nascondi bordo input in stampa se vuoto o gestisci visibilità */
             .foresteria-input { border: none; background: transparent; padding: 0; }
 
             .print-timestamp {
@@ -296,12 +306,14 @@
         <div id="printTimestamp" class="print-timestamp"></div>
     </div>
 
+    <!-- MODALE con 3 pulsanti: STAND-BY, ASSENTE, ANNULLA -->
     <div id="actionModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage">Scegli azione</p>
             <div class="modal-buttons">
-                <button id="modalStandbyBtn" class="modal-btn modal-btn-standby">STAND-BY</button>
-                <button id="modalAssenteBtn" class="modal-btn modal-btn-assente">ASSENTE</button>
+                <button id="modalStandbyBtn" class="modal-btn modal-btn-standby">❓ STAND-BY</button>
+                <button id="modalAssenteBtn" class="modal-btn modal-btn-assente">❌ ASSENTE</button>
+                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel"> ANNULLA</button>
             </div>
         </div>
     </div>
@@ -339,6 +351,7 @@
         const modalMessage = document.getElementById('modalMessage');
         const standbyBtn = document.getElementById('modalStandbyBtn');
         const assenteBtn = document.getElementById('modalAssenteBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
         const currentDateSpan = document.getElementById('currentDate');
 
         function updateCurrentDate() {
@@ -355,9 +368,24 @@
             return new Promise((resolve) => { pendingResolve = resolve; });
         }
 
-        standbyBtn.onclick = () => { modal.style.display = 'none'; if (pendingResolve) pendingResolve(true); pendingResolve = null; };
-        assenteBtn.onclick = () => { modal.style.display = 'none'; if (pendingResolve) pendingResolve(false); pendingResolve = null; };
-        
+        function closeModal(resolveValue = null) {
+            modal.style.display = 'none';
+            if (pendingResolve) {
+                pendingResolve(resolveValue);
+                pendingResolve = null;
+            }
+        }
+
+        // Pulsanti modale
+        standbyBtn.onclick = () => closeModal(true);   // STAND-BY
+        assenteBtn.onclick = () => closeModal(false); // ASSENTE
+        cancelBtn.onclick = () => closeModal(null);   // ANNULLA -> nessuna modifica
+
+        // Chiudi cliccando fuori dal modale (equivale a Annulla)
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(null);
+        });
+
         function getStudentId(studente, room) {
             return `${studente.cognome}_${studente.nome}_${room}`.replace(/[^a-zA-Z0-9_-]/g, '_');
         }
@@ -371,19 +399,19 @@
 
         window.logout = async () => { if (confirm('Vuoi uscire?')) await signOut(auth); };
 
+        // Reset corretto: usa update() per cancellare solo i nodi delle assenze, senza toccare anagrafica
         window.resetAssenze = async () => {
-    if (!confirm('Resettare tutte le modifiche, assenze e nomi in foresteria?')) return;
-    const updates = {};
-    Object.keys(assenzeData).forEach(id => {
-        updates[`assenze/${id}`] = null;
-    });
-    if (Object.keys(updates).length > 0) {
-        // Usa update() per cancellare solo i nodi specificati, senza toccare anagrafica
-        await update(ref(db), updates);
-    } else {
-        alert("Nessun dato da resettare.");
-    }
-};
+            if (!confirm('Resettare tutte le assenze, conferme e nominativi in foresteria?')) return;
+            const updates = {};
+            Object.keys(assenzeData).forEach(id => {
+                updates[`assenze/${id}`] = null;
+            });
+            if (Object.keys(updates).length > 0) {
+                await update(ref(db), updates);
+            } else {
+                alert("Nessuna assenza registrata da resettare.");
+            }
+        };
 
         window.stampaReport = () => {
             const oraEsatta = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -393,9 +421,17 @@
         };
 
         async function toggleStato(id, scelta) {
+            // scelta = true -> STAND-BY (assente = true, confermato = false)
+            // scelta = false -> ASSENTE (confermato = true, assente = false)
             const current = assenzeData[id] || {};
-            let nuovoStato = scelta ? { assente: !current.assente, confermato: false } : { assente: false, confermato: !current.confermato };
-            await set(ref(db, `assenze/${id}`), (nuovoStato.assente || nuovoStato.confermato) ? nuovoStato : null);
+            let nuovoStato = {};
+            if (scelta === true) {
+                nuovoStato = { assente: !current.assente, confermato: false };
+            } else {
+                nuovoStato = { assente: false, confermato: !current.confermato };
+            }
+            const daSalvare = (nuovoStato.assente || nuovoStato.confermato) ? nuovoStato : null;
+            await set(ref(db, `assenze/${id}`), daSalvare);
         }
 
         async function salvaForesteria(id, nome) {
@@ -418,27 +454,28 @@
             
             if (isNota) {
                 div.style.background = '#e8f5e9';
-                div.innerHTML = `<div class="student-name">📝 Note ${studente.nome}</div>`;
+                div.innerHTML = `<div class="student-name"> Note: ${studente.nome}</div>`;
                 return div;
             }
             
             if (isForesteria) {
-                // APPLICAZIONE CORREZIONE: Stessa riga via Flexbox
                 div.className = `student-item foresteria-row ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
                     <span class="student-name">Letto ${studente.nome}</span>
-                    <input type="text" class="foresteria-input" placeholder="Nome ospite..." value="${stato.nomeOccupante || ''}">
+                    <input type="text" class="foresteria-input" placeholder="Inserire nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
                 input.addEventListener('change', (e) => salvaForesteria(id, e.target.value));
                 return div;
             }
             
+            // Studente normale
             if (stato.assente) div.classList.add('stato-assente');
             else if (stato.confermato) div.classList.add('stato-confermato');
             
-            let statusHtml = stato.assente ? '<div class="student-status status-assente">⏳ STAND-BY</div>' : 
-                             (stato.confermato ? '<div class="student-status status-confermato">❌ ASSENTE</div>' : '');
+            let statusHtml = '';
+            if (stato.assente) statusHtml = '<div class="student-status status-assente">❓ STAND-BY</div>';
+            else if (stato.confermato) statusHtml = '<div class="student-status status-confermato">❌ ASSENTE</div>';
             
             div.innerHTML = `
                 <div class="student-name">${studente.cognome} ${studente.nome}</div>
@@ -449,7 +486,10 @@
             div.addEventListener('click', async (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 const scelta = await showChoiceDialog(`${studente.cognome} ${studente.nome}`);
-                if (scelta !== null) await toggleStato(id, scelta);
+                // scelta può essere true (STAND-BY), false (ASSENTE) oppure null (ANNULLA)
+                if (scelta !== null) {
+                    await toggleStato(id, scelta);
+                }
             });
             
             return div;
@@ -494,6 +534,7 @@
             });
         }
 
+        // Auth e realtime
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginScreen.style.display = 'none';
@@ -509,7 +550,6 @@
                 appScreen.style.display = 'none';
             }
         });
-        
     </script>
 </body>
 </html>
