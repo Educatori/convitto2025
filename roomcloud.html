@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooming Cloud V2.02</title>
+    <title>Rooming Cloud V2.034</title>
 
     <style>
         * {
@@ -65,7 +65,7 @@
             text-align: center;
         }
 
-        /* App principale - spazi ridotti per stampa */
+        /* App principale */
         .app-header {
             background: white;
             padding: 12px 15px;
@@ -121,24 +121,10 @@
             font-weight: 600;
         }
 
-        .btn-primary {
-            background: #53bb20;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #ff9700;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
+        .btn-primary { background: #53bb20; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-secondary { background: #ff9700; color: white; }
+        .btn:hover { opacity: 0.9; }
 
         /* Griglia camere */
         .rooms-grid {
@@ -163,9 +149,7 @@
             text-align: center;
         }
 
-        .students-list {
-            padding: 6px;
-        }
+        .students-list { padding: 6px; }
 
         .student-item {
             padding: 8px 10px;
@@ -178,14 +162,28 @@
             font-size: 12px;
         }
 
-        .student-item:active {
-            transform: scale(0.98);
+        /* --- CORREZIONE FORESTERIA --- */
+        .student-item.foresteria-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .foresteria-input {
+            flex: 1; /* Prende lo spazio rimanente */
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        /* ---------------------------- */
+
+        .student-item:active { transform: scale(0.98); }
 
         .student-name {
             font-weight: 600;
             font-size: 13px;
-            margin-bottom: 2px;
+            white-space: nowrap; /* Evita che "Letto X" vada a capo */
         }
 
         .student-class {
@@ -193,7 +191,7 @@
             color: #7f8c8d;
         }
 
-        /* Badge */
+        /* Badge Stati */
         .student-status {
             position: absolute;
             right: 8px;
@@ -205,50 +203,22 @@
             border-radius: 12px;
         }
 
-        .status-assente {
-            background: #ffeaa7;
-            color: #d63031;
-        }
+        .status-assente { background: #ffeaa7; color: #d63031; }
+        .status-confermato { background: #fab1a0; color: #e17055; text-decoration: line-through; }
 
-        .status-confermato {
-            background: #fab1a0;
-            color: #e17055;
-            text-decoration: line-through;
-        }
-
-        /* COLORI INTERA CASELLA */
-        .student-item.stato-assente {
-            background: #fff9c4;
-            border-left: 4px solid #f1c40f;
-        }
-        .student-item.stato-confermato {
-            background: #ffebee;
-            border-left: 4px solid #e74c3c;
-        }
-
-        /* Foresteria */
-        .foresteria-input {
-            width: 100%;
-            padding: 6px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 11px;
-            margin-top: 4px;
-        }
+        .student-item.stato-assente { background: #fff9c4; border-left: 4px solid #f1c40f; }
+        .student-item.stato-confermato { background: #ffebee; border-left: 4px solid #e74c3c; }
 
         .foresteria-occupato {
-            background: #e3f2fd;
+            background: #e3f2fd !important;
             border-left: 4px solid #2196f3;
         }
 
-        /* MODALE PERSONALIZZATO */
+        /* Modale */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
@@ -260,169 +230,55 @@
             padding: 20px;
             max-width: 280px;
             text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
-        .modal-content p {
-            margin-bottom: 15px;
-            font-size: 15px;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        .modal-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .modal-btn-standby {
-            background: #fff9c4;
-            color: #d63031;
-            border: 1px solid #f1c40f;
-        }
-        .modal-btn-assente {
-            background: #ffebee;
-            color: #c0392b;
-            border: 1px solid #e74c3c;
-        }
-        .modal-btn-standby:hover, .modal-btn-assente:hover {
-            opacity: 0.85;
-        }
+        .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+        .modal-btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .modal-btn-standby { background: #fff9c4; color: #d63031; border: 1px solid #f1c40f; }
+        .modal-btn-assente { background: #ffebee; color: #c0392b; border: 1px solid #e74c3c; }
 
-        /* INTERRUZIONE DI PAGINA IN STAMPA */
-        .page-break {
+        .page-break { display: none; }
+
+        /* Stile per il timestamp in fondo alla stampa */
+        .print-timestamp {
             display: none;
         }
 
-       @media print {
+        @media print {
+            @page { size: A4 portrait; margin: 6mm; }
+            body { padding: 0; margin: 0; background: white; zoom: 0.85; -webkit-print-color-adjust: exact; }
+            .btn, .button-group, .modal { display: none !important; }
+            .app-header { padding: 4px 6px; margin-bottom: 6px; box-shadow: none; border-bottom: 1px solid #ccc; }
+            .rooms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+            .room-card { break-inside: avoid; border: 1px solid #bbb; }
+            .student-item { padding: 3px 4px; break-inside: avoid; }
+            .student-name { font-size: 9.5px; }
+            .student-class { font-size: 7px; }
+            /* .page-break { display: block; break-before: page; height: 0; } */
+            /* Nascondi bordo input in stampa se vuoto o gestisci visibilità */
+            .foresteria-input { border: none; background: transparent; padding: 0; }
 
-    @page {
-        size: A4 portrait;
-        margin: 6mm;
-    }
-
-    body {
-        padding: 0;
-        margin: 0;
-        background: white;
-        zoom: 1.2; /*  leggermente tutto */
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    .btn,
-    .button-group,
-    .foresteria-input,
-    .modal {
-        display: none !important;
-    }
-
-    .app-header {
-        padding: 4px 6px;
-        margin-bottom: 6px;
-        box-shadow: none;
-        border-bottom: 1px solid #ccc;
-        break-inside: avoid;
-    }
-
-    .app-header h1 {
-        font-size: 16px;
-    }
-
-    .current-date {
-        font-size: 12px;
-    }
-
-    .stats {
-        padding: 2px 6px;
-        font-size: 10px;
-    }
-
-    /* DA 3 A 4 COLONNE */
-    .rooms-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-        align-items: start;
-    }
-
-    .room-card {
-        break-inside: avoid;
-        border: 1px solid #bbb;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .room-title {
-        padding: 3px;
-        font-size: 11px;
-        line-height: 1.1;
-    }
-
-    .students-list {
-        padding: 1px;
-    }
-
-    .student-item {
-        padding: 3px 4px;
-        min-height: auto;
-        break-inside: avoid;
-    }
-
-    .student-name {
-        font-size: 9.5px;
-        line-height: 1.1;
-        margin-bottom: 0;
-        font-weight: 600;
-    }
-
-    .student-class {
-        font-size: 7px;
-        line-height: 1;
-    }
-
-    .student-status {
-        font-size: 7px;
-        padding: 1px 3px;
-        right: 2px;
-    }
-
-    /* Riduce spessore bordi colorati */
-    .student-item.stato-assente,
-    .student-item.stato-confermato,
-    .foresteria-occupato {
-        border-left-width: 2px;
-    }
-
-    /* Evita spazi inutili */
-    .student-item:last-child {
-        border-bottom: none;
-    }
-
-    /* Page break */
-    .page-break {
-        display: block;
-        break-before: page;
-        height: 0;
-    }
-}
+            .print-timestamp {
+                display: block;
+                text-align: right;
+                font-size: 10px;
+                color: #555;
+                margin-top: 20px;
+                border-top: 1px solid #eee;
+                padding-top: 5px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Schermata login -->
     <div id="loginScreen" class="login-container">
         <h2>Rooming Cloud</h2>
-        <input type="email" id="email" placeholder="Email" autocomplete="username">
-        <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
         <button onclick="login()">Accedi</button>
         <div id="loginError" class="error"></div>
     </div>
 
-    <!-- App principale -->
     <div id="appScreen" style="display: none;">
         <div class="app-header">
             <div class="header-title">
@@ -431,16 +287,15 @@
             </div>
             <div class="stats" id="statsForesteria">Posti liberi: -</div>
             <div class="button-group">
-                <button class="btn btn-primary" onclick="stampaReport()">🖨️ Stampa</button>
-                <button class="btn btn-secondary" onclick="resetAssenze()">🔁 Reset</button>
-                <button class="btn btn-danger" onclick="logout()">📴 Esci</button>
+                <button class="btn btn-primary" onclick="stampaReport()"> Stampa</button>
+                <button class="btn btn-secondary" onclick="resetAssenze()"> Reset</button>
+                <button class="btn btn-danger" onclick="logout()"> Esci</button>
             </div>
         </div>
-
         <div id="roomsGrid" class="rooms-grid"></div>
+        <div id="printTimestamp" class="print-timestamp"></div>
     </div>
 
-    <!-- Modale personalizzato -->
     <div id="actionModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage">Scegli azione</p>
@@ -452,12 +307,10 @@
     </div>
 
     <script type="module">
-        // Firebase imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Config Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAlvE48F1flTIZ1KyU_FKIV30w60pWFphE",
             authDomain: "rooms-2ff73.firebaseapp.com",
@@ -473,13 +326,10 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Variabili globali
         let studentiData = [];
         let assenzeData = {};
-        let currentUser = null;
         let pendingResolve = null;
 
-        // Elementi DOM
         const loginScreen = document.getElementById('loginScreen');
         const appScreen = document.getElementById('appScreen');
         const loginError = document.getElementById('loginError');
@@ -491,123 +341,65 @@
         const assenteBtn = document.getElementById('modalAssenteBtn');
         const currentDateSpan = document.getElementById('currentDate');
 
-        // Funzione per aggiornare la data nel formato richiesto
         function updateCurrentDate() {
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             const formatted = now.toLocaleDateString('it-IT', options);
-            const capitalized = formatted.charAt(0).toUpperCase() + formatted.slice(1);
-            currentDateSpan.textContent = `| ${capitalized}`;
+            currentDateSpan.textContent = `| ${formatted.charAt(0).toUpperCase() + formatted.slice(1)}`;
         }
         updateCurrentDate();
 
-        // Funzione che mostra il modale e restituisce Promise: true = STAND-BY, false = ASSENTE
         function showChoiceDialog(studentName) {
             modalMessage.textContent = `Scegli stato per ${studentName}`;
             modal.style.display = 'flex';
-            return new Promise((resolve) => {
-                pendingResolve = resolve;
-            });
+            return new Promise((resolve) => { pendingResolve = resolve; });
         }
 
-        // Gestione pulsanti modale
-        function closeModal() {
-            modal.style.display = 'none';
-            if (pendingResolve) pendingResolve(null);
-            pendingResolve = null;
-        }
-        standbyBtn.onclick = () => {
-            modal.style.display = 'none';
-            if (pendingResolve) pendingResolve(true);
-            pendingResolve = null;
-        };
-        assenteBtn.onclick = () => {
-            modal.style.display = 'none';
-            if (pendingResolve) pendingResolve(false);
-            pendingResolve = null;
-        };
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        // Utils
+        standbyBtn.onclick = () => { modal.style.display = 'none'; if (pendingResolve) pendingResolve(true); pendingResolve = null; };
+        assenteBtn.onclick = () => { modal.style.display = 'none'; if (pendingResolve) pendingResolve(false); pendingResolve = null; };
+        
         function getStudentId(studente, room) {
             return `${studente.cognome}_${studente.nome}_${room}`.replace(/[^a-zA-Z0-9_-]/g, '_');
         }
 
-        // Login
         window.login = async () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            loginError.textContent = '';
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-            } catch (error) {
-                loginError.textContent = 'Email o password non validi';
-            }
+            try { await signInWithEmailAndPassword(auth, email, password); } 
+            catch (e) { loginError.textContent = 'Email o password non validi'; }
         };
 
-        // Logout
-        window.logout = async () => {
-            if (confirm('Vuoi uscire?')) {
-                await signOut(auth);
-            }
-        };
+        window.logout = async () => { if (confirm('Vuoi uscire?')) await signOut(auth); };
 
-        // Reset assenze
         window.resetAssenze = async () => {
             if (!confirm('Resettare tutte le assenze e conferme?')) return;
             const updates = {};
-            Object.keys(assenzeData).forEach(id => {
-                updates[`assenze/${id}`] = null;
-            });
-            if (Object.keys(updates).length > 0) {
-                await set(ref(db), updates);
-            }
+            Object.keys(assenzeData).forEach(id => { updates[`assenze/${id}`] = null; });
+            if (Object.keys(updates).length > 0) await set(ref(db), updates);
         };
 
-        // Stampa
         window.stampaReport = () => {
-            const originalTitle = document.title;
-            const now = new Date();
-            const dataStr = now.toLocaleDateString('it-IT');
-            document.title = `Rooming Cloud - ${dataStr}`;
+            const oraEsatta = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            const dataOggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('printTimestamp').textContent = `Aggiornamento ${dataOggi} ore ${oraEsatta}`;
             window.print();
-            setTimeout(() => { document.title = originalTitle; }, 100);
         };
 
-        // Cambia stato (STAND-BY = assente nel db, ASSENTE = confermato)
         async function toggleStato(id, scelta) {
             const current = assenzeData[id] || {};
-            let nuovoStato = {};
-            if (scelta === true) {  // STAND-BY
-                nuovoStato = {
-                    assente: !current.assente,
-                    confermato: false
-                };
-            } else {  // ASSENTE
-                nuovoStato = {
-                    assente: false,
-                    confermato: !current.confermato
-                };
-            }
-            const daSalvare = (nuovoStato.assente || nuovoStato.confermato) ? nuovoStato : null;
-            await set(ref(db, `assenze/${id}`), daSalvare);
+            let nuovoStato = scelta ? { assente: !current.assente, confermato: false } : { assente: false, confermato: !current.confermato };
+            await set(ref(db, `assenze/${id}`), (nuovoStato.assente || nuovoStato.confermato) ? nuovoStato : null);
         }
 
-        // Salva nome foresteria
         async function salvaForesteria(id, nome) {
+            const path = ref(db, `assenze/${id}`);
             if (nome.trim()) {
-                await set(ref(db, `assenze/${id}`), {
-                    occupato: true,
-                    nomeOccupante: nome.trim()
-                });
+                await set(path, { occupato: true, nomeOccupante: nome.trim() });
             } else {
-                await set(ref(db, `assenze/${id}`), null);
+                await set(path, null);
             }
         }
 
-        // Crea elemento studente
         function creaStudenteElement(studente, room) {
             const id = getStudentId(studente, room);
             const stato = assenzeData[id] || {};
@@ -619,15 +411,15 @@
             
             if (isNota) {
                 div.style.background = '#e8f5e9';
-                div.style.cursor = 'default';
                 div.innerHTML = `<div class="student-name">📝 Note ${studente.nome}</div>`;
                 return div;
             }
             
             if (isForesteria) {
-                div.className = `student-item ${stato.occupato ? 'foresteria-occupato' : ''}`;
+                // APPLICAZIONE CORREZIONE: Stessa riga via Flexbox
+                div.className = `student-item foresteria-row ${stato.occupato ? 'foresteria-occupato' : ''}`;
                 div.innerHTML = `
-                    <div class="student-name">For ${studente.nome}</div>
+                    <span class="student-name">Letto ${studente.nome}</span>
                     <input type="text" class="foresteria-input" placeholder="Nome ospite..." value="${stato.nomeOccupante || ''}">
                 `;
                 const input = div.querySelector('input');
@@ -635,19 +427,11 @@
                 return div;
             }
             
-            // Studente normale: colora intera casella
-            if (stato.assente) {
-                div.classList.add('stato-assente');
-            } else if (stato.confermato) {
-                div.classList.add('stato-confermato');
-            }
+            if (stato.assente) div.classList.add('stato-assente');
+            else if (stato.confermato) div.classList.add('stato-confermato');
             
-            let statusHtml = '';
-            if (stato.assente) {
-                statusHtml = '<div class="student-status status-assente">⏳ STAND-BY</div>';
-            } else if (stato.confermato) {
-                statusHtml = '<div class="student-status status-confermato">❌ ASSENTE</div>';
-            }
+            let statusHtml = stato.assente ? '<div class="student-status status-assente">⏳ STAND-BY</div>' : 
+                             (stato.confermato ? '<div class="student-status status-confermato">❌ ASSENTE</div>' : '');
             
             div.innerHTML = `
                 <div class="student-name">${studente.cognome} ${studente.nome}</div>
@@ -658,49 +442,36 @@
             div.addEventListener('click', async (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 const scelta = await showChoiceDialog(`${studente.cognome} ${studente.nome}`);
-                if (scelta !== null) {
-                    await toggleStato(id, scelta);
-                }
+                if (scelta !== null) await toggleStato(id, scelta);
             });
             
             return div;
         }
 
-        // Genera griglia camere con interruzione di pagina dopo la camera 125
         function generaGriglia() {
             if (!studentiData.length) return;
-            
             const stanze = {};
-            let postiForesteriaTotali = 0;
-            let postiForesteriaOccupati = 0;
+            let fTot = 0, fOcc = 0;
             
             studentiData.forEach(s => {
                 if (!stanze[s.room]) stanze[s.room] = [];
                 stanze[s.room].push(s);
-                
                 if (s.classe === 'Foresteria') {
-                    postiForesteriaTotali++;
-                    const id = getStudentId(s, s.room);
-                    if (assenzeData[id]?.occupato) postiForesteriaOccupati++;
+                    fTot++;
+                    if (assenzeData[getStudentId(s, s.room)]?.occupato) fOcc++;
                 }
             });
             
-            const liberi = postiForesteriaTotali - postiForesteriaOccupati;
-            statsForesteria.textContent = `Posti liberi: ${liberi}/${postiForesteriaTotali}`;
-            
+            statsForesteria.textContent = `Posti liberi: ${fTot - fOcc}/${fTot}`;
             roomsGrid.innerHTML = '';
             
-            // Ordina le camere numericamente
             const sortedRooms = Object.keys(stanze).sort((a,b) => Number(a) - Number(b));
             let breakInserted = false;
             
             sortedRooms.forEach(room => {
-                // Se la camera è >= 200 e non abbiamo ancora inserito il break, lo inseriamo PRIMA di questa camera
                 if (!breakInserted && Number(room) >= 201) {
                     const breakDiv = document.createElement('div');
                     breakDiv.className = 'page-break';
-                    breakDiv.style.width = '100%';
-                    breakDiv.style.height = '0';
                     roomsGrid.appendChild(breakDiv);
                     breakInserted = true;
                 }
@@ -708,50 +479,30 @@
                 const card = document.createElement('div');
                 card.className = 'room-card';
                 card.innerHTML = `<div class="room-title">• ${room}</div>`;
-                
                 const list = document.createElement('div');
                 list.className = 'students-list';
-                
-                stanze[room].forEach(studente => {
-                    list.appendChild(creaStudenteElement(studente, room));
-                });
-                
+                stanze[room].forEach(studente => { list.appendChild(creaStudenteElement(studente, room)); });
                 card.appendChild(list);
                 roomsGrid.appendChild(card);
             });
         }
 
-        // Carica dati Firebase
-        function caricaDati() {
-            onValue(ref(db, 'anagrafica'), (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    studentiData = Array.isArray(data) ? data.filter(s => s && s.cognome && s.nome) : Object.values(data).filter(s => s && s.cognome && s.nome);
-                    generaGriglia();
-                }
-            });
-            
-            onValue(ref(db, 'assenze'), (snapshot) => {
-                assenzeData = snapshot.val() || {};
-                generaGriglia();
-            });
-        }
-
-        // Auth state
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                currentUser = user;
                 loginScreen.style.display = 'none';
                 appScreen.style.display = 'block';
-                caricaDati();
+                onValue(ref(db, 'anagrafica'), (s) => { 
+                    const d = s.val(); 
+                    studentiData = d ? (Array.isArray(d) ? d : Object.values(d)).filter(x => x && x.cognome) : [];
+                    generaGriglia();
+                });
+                onValue(ref(db, 'assenze'), (s) => { assenzeData = s.val() || {}; generaGriglia(); });
             } else {
-                currentUser = null;
                 loginScreen.style.display = 'block';
                 appScreen.style.display = 'none';
-                studentiData = [];
-                assenzeData = {};
             }
         });
+        
     </script>
 </body>
 </html>
