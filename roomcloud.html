@@ -155,7 +155,7 @@
         }
 
         .room-title {
-            background: #7c7c7c;
+            background: #a4a4a4;
             color: white;
             padding: 8px;
             font-size: 16px;
@@ -298,62 +298,118 @@
             display: none;
         }
 
-        @media print {
-            body {
-                padding: 0;
-                margin: 0;
-                background: white;
-            }
-            .btn, .button-group, .foresteria-input, .modal {
-                display: none;
-            }
-            .rooms-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 5px;
-            }
-            .room-card {
-                break-inside: avoid;
-                border: 1px solid #ccc;
-            }
-            .student-item {
-                break-inside: avoid;
-                padding: 6px 8px;
-            }
-            .app-header {
-                padding: 8px 10px;
-                margin-bottom: 10px;
-                box-shadow: none;
-                border-bottom: 1px solid #ccc;
-            }
-            .current-date {
-                font-size: 18px;
-            }
-            .stats {
-                background: #3498db;
-                color: white;
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-            .room-title {
-                padding: 6px;
-                font-size: 18px;
-            }
-            .students-list {
-                padding: 4px;
-            }
-            .student-name {
-                font-size: 18px;
-            }
-            .student-class {
-                font-size: 12px;
-            }
-            .student-status {
-                font-size: 12px;
-                padding: 2px 4px;
-                right: 4px;
-            }
-        }
+       @media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 6mm;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+        background: white;
+        zoom: 1.2; /*  leggermente tutto */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .btn,
+    .button-group,
+    .foresteria-input,
+    .modal {
+        display: none !important;
+    }
+
+    .app-header {
+        padding: 4px 6px;
+        margin-bottom: 6px;
+        box-shadow: none;
+        border-bottom: 1px solid #ccc;
+        break-inside: avoid;
+    }
+
+    .app-header h1 {
+        font-size: 16px;
+    }
+
+    .current-date {
+        font-size: 12px;
+    }
+
+    .stats {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+
+    /* DA 3 A 4 COLONNE */
+    .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        align-items: start;
+    }
+
+    .room-card {
+        break-inside: avoid;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .room-title {
+        padding: 3px;
+        font-size: 11px;
+        line-height: 1.1;
+    }
+
+    .students-list {
+        padding: 1px;
+    }
+
+    .student-item {
+        padding: 3px 4px;
+        min-height: auto;
+        break-inside: avoid;
+    }
+
+    .student-name {
+        font-size: 9.5px;
+        line-height: 1.1;
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+
+    .student-class {
+        font-size: 7px;
+        line-height: 1;
+    }
+
+    .student-status {
+        font-size: 7px;
+        padding: 1px 3px;
+        right: 2px;
+    }
+
+    /* Riduce spessore bordi colorati */
+    .student-item.stato-assente,
+    .student-item.stato-confermato,
+    .foresteria-occupato {
+        border-left-width: 2px;
+    }
+
+    /* Evita spazi inutili */
+    .student-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Page break */
+    .page-break {
+        display: block;
+        break-before: page;
+        height: 0;
+    }
+}
     </style>
 </head>
 <body>
@@ -640,7 +696,7 @@
             
             sortedRooms.forEach(room => {
                 // Se la camera è >= 200 e non abbiamo ancora inserito il break, lo inseriamo PRIMA di questa camera
-                if (!breakInserted && Number(room) >= 200) {
+                if (!breakInserted && Number(room) >= 201) {
                     const breakDiv = document.createElement('div');
                     breakDiv.className = 'page-break';
                     breakDiv.style.width = '100%';
