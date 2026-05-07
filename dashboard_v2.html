@@ -1,12 +1,10 @@
 
-
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Convitto e Dinner</title>
+    <title>Dashboard Convitto & Dinner v2.0.a</title>
     
     <link rel="stylesheet" href="css/dashboard-style.css">
 </head>
@@ -15,7 +13,8 @@
     <div class="container">
         <header>
             <div>
-                <h1>  CONVITTO & DINNER  </h1>
+<h1>  CONVITTO & DINNER   </h1>
+                
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
@@ -28,7 +27,7 @@
     </div>
 </div>       
         <div class="toolbar">
-             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">VARIABILI</button>
+             <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">P⚡PP</button>
             <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
             
             <div style="display:flex; align-items:center; gap:5px;">
@@ -38,7 +37,7 @@
                        oninput="gestisciSaltoStanze(this); validaERicerca();">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()">AZZERA</button>
+            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()"> AZZERA</button>
          <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
             Ultimo aggiornamento: MAI
         </div>
@@ -59,14 +58,14 @@
 
     <!-- HEADER -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;">Gestione Convitto</h3>
+        <h3 style="margin:0;">Gestione Permessi</h3>
         <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
     </div>
 
     <hr>
 
     <!-- 🔴 ASSENZE PROGRAMMATE -->
-    <h3 style="margin-top:10px;">Assenze Programmate</h3>
+    <h3 style="margin-top:10px;">Programma Assenze</h3>
 
     <select id="selectStudente" style="width:100%; margin-bottom:6px;">
         <option value="">-- Seleziona Nome --</option>
@@ -103,7 +102,7 @@
 
     <script>
         function resetDati() {
-            if(confirm("Sei sicuro? Questo cancellerà tutte le uscite e le assenze inserite oggi ⚠")) {
+            if(confirm("⚠ SEI SICURO? QUESTA AZIONE CANCELLERA' I DATI INSERITI SULLE CARD STUDENTI IN QUESTA SESSIONE ⚠")) {
                 localStorage.removeItem('datiConvitto');
                 const ora = new Date().toLocaleString('it-IT');
                 localStorage.setItem('dataUltimoReset', ora);
@@ -129,7 +128,7 @@ noteInput.addEventListener('input', () => {
 
 // 3. Funzione per la X: svuota tutto e cancella la memoria
 function cancellaNote() {
-    if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
+    if(confirm("⚠️ QUESTO CANCELLERA' DEFINITIVAMENTE LE NOTE ⚠️")) {
         noteInput.value = ''; // Svuota il campo visibile
         localStorage.removeItem('note_convitto'); // Cancella la memoria
     }
@@ -139,4 +138,4 @@ function cancellaNote() {
     
     
 </body>
-</html>
+</html> 
