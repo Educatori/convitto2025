@@ -553,4 +553,106 @@ window.addEventListener('beforeunload', () => {
     if (currentNoteListener) {
         database.ref('note/convitto').off('value', currentNoteListener);
     }
+    
+    // ========== RESET DATI ==========
+window.resetDati = function(modalita = 'soloManuali') {
+    console.log("🔧 resetDati chiamata - modalità:", modalita);
+    
+    let conferma;
+    if (modalita === 'completo') {
+        conferma = confirm("⚠️ RESET COMPLETO: cancellerà TUTTI i dati (assenze programmate, permessi, note e variazioni). Sei sicuro? ⚠");
+    } else {
+        conferma = confirm("⚠️ Sei sicuro? Questo cancellerà SOLO le variazioni giornaliere (uscite, ingressi, assenze del giorno). Le assenze programmate e i permessi rimarranno. ⚠");
+    }
+    
+    if (!conferma) return;
+    
+    const oggi = new Date();
+    const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
+    
+    // 1. RESET DATI GIORNALIERI (sempre)
+    localStorage.removeItem('datiConvitto');
+    
+    // 2. Reset variabili globali
+    if (typeof cambiTurnoManuali !== 'undefined') {
+        Object.keys(cambiTurnoManuali).forEach(key => {
+            cambiTurnoManuali[key] = false;
+        });
+    }
+    
+    // 3. Reset visivo
+    document.querySelectorAll('.student-row').forEach(row => {
+        const inputU = row.querySelector('.in-u');
+        const inputI = row.querySelector('.in-i');
+        if (inputU) inputU.value = '';
+        if (inputI) inputI.value = '';
+        
+        row.classList.remove('assente');
+        row.classList.remove('dinner-no');
+        row.dataset.dinnerno = "0";
+        
+        const btnAss = row.querySelector('.btn-ass');
+        const btnDin = row.querySelector('.btn-din');
+        const btnSwitch = row.querySelector('.btn-switch');
+        
+        if (btnAss) btnAss.classList.remove('active-ass');
+        if (btnDin) btnDin.classList.remove('active-din');
+        if (btnSwitch) btnSwitch.classList.remove('modificato');
+        
+        // Riapplica assenze programmate se presenti
+        if (typeof isAssenteProgrammato === 'function' && 
+            isAssenteProgrammato(row.dataset.cognome, oggi)) {
+            row.classList.add('assente');
+            if (btnAss) btnAss.classList.add('active-ass');
+            row.dataset.dinnerno = "1";
+        }
+    });
+    
+    // 4. Reset COMPLETO (opzionale)
+    if (modalita === 'completo') {
+        localStorage.removeItem('assenzeProgrammate');
+        localStorage.removeItem('permessiPermanenti');
+        localStorage.removeItem('note_convitto');
+        
+        if (typeof assenzeProgrammate !== 'undefined') {
+            Object.keys(assenzeProgrammate).forEach(k => delete assenzeProgrammate[k]);
+        }
+        
+        // Resetta anche su Firebase
+        if (typeof database !== 'undefined' && database) {
+            Promise.all([
+                database.ref('assenze/programmate').remove(),
+                database.ref('permessi/permanenti').remove(),
+                database.ref('note/convitto').remove(),
+                database.ref(`convitto/${dateKey}`).remove()
+            ]).then(() => console.log("Firebase reset completo"));
+        }
+    } else {
+        // Solo reset giornaliero
+        if (typeof database !== 'undefined' && database) {
+            database.ref(`convitto/${dateKey}`).remove();
+        }
+    }
+    
+    // 5. Aggiorna timestamp
+    const ora = new Date().toLocaleString('it-IT');
+    localStorage.setItem('dataUltimoReset', ora);
+    const resetDiv = document.getElementById('info-reset');
+    if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
+    
+    // 6. Ricarica dati
+    if (typeof window.caricaDatiLocale === 'function') {
+        window.caricaDatiLocale();
+    }
+    
+    // 7. Ricalcola dinner
+    document.querySelectorAll('.student-row').forEach(row => {
+        if (typeof controllaDinnerAutomatico === 'function') {
+            controllaDinnerAutomatico(row);
+        }
+    });
+    
+    alert(modalita === 'completo' ? '✅ Reset completo effettuato!' : '✅ Reset giornaliero effettuato!');
+};
+    
 });
