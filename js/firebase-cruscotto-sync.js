@@ -354,7 +354,29 @@ window.resetDati = function() {
         const oggi = new Date();
         const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
         
-        database.ref(`convitto/${dateKey}`).remove().then(() => {
+        // Usa la variabile database globale
+        if (typeof database !== 'undefined' && database) {
+            database.ref(`convitto/${dateKey}`).remove().then(() => {
+                localStorage.removeItem('datiConvitto');
+                const ora = new Date().toLocaleString('it-IT');
+                localStorage.setItem('dataUltimoReset', ora);
+                
+                if (typeof window.caricaDatiLocaleOriginal === 'function') {
+                    window.caricaDatiLocaleOriginal();
+                }
+                if (typeof aggiornaStatiUI === 'function') {
+                    aggiornaStatiUI();
+                }
+                
+                const resetDiv = document.getElementById('info-reset');
+                if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
+                alert('✅ Dati resettati con successo!');
+            }).catch(error => {
+                console.error('Errore reset Firebase:', error);
+                alert('❌ Errore durante il reset. Riprova.');
+            });
+        } else {
+            // Fallback: reset solo locale
             localStorage.removeItem('datiConvitto');
             const ora = new Date().toLocaleString('it-IT');
             localStorage.setItem('dataUltimoReset', ora);
@@ -368,11 +390,8 @@ window.resetDati = function() {
             
             const resetDiv = document.getElementById('info-reset');
             if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
-            alert('✅ Dati resettati con successo!');
-        }).catch(error => {
-            console.error('Errore reset Firebase:', error);
-            alert('❌ Errore durante il reset. Riprova.');
-        });
+            alert('✅ Dati resettati localmente!');
+        }
     }
 };
 
