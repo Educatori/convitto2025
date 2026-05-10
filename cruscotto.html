@@ -185,12 +185,21 @@
     </div>
 
    
+<script src="js/convittori.js"></script>
+<script src="js/permessi.js"></script>
+<script src="js/firebase-cruscotto-config.js"></script>
+<script src="js/cruscotto-script.js"></script>
+<script src="js/firebase-cruscotto-sync.js"></script>
 
-    <script src="js/convittori.js"></script>
-    <script src="js/permessi.js"></script>
-    <script src="js/firebase-cruscotto-config.js"></script>
-    <script src="js/firebase-cruscotto-sync.js"></script>
-    <script src="js/cruscotto-script.js"></script>
-
+     <script>
+        // Debug: verifica che resetDati sia definita
+        window.addEventListener('load', function() {
+            if (typeof resetDati === 'function') {
+                console.log('✅ resetDati è definita correttamente');
+            } else {
+                console.error('❌ resetDati NON è definita!');
+            }
+        });
+    </script>
 </body>
-</html> 
+</html>
