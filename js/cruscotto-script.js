@@ -12,12 +12,17 @@ function init() {
     const d = new Date();
     caricaAssenzeProgrammate();
     
+   
+    
     const dateEl = document.getElementById('todayDate');
     if (dateEl) dateEl.innerText = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
     updateClock();
-    setInterval(updateClock, 1000);
+    let clockInterval = null;
 
+     if (clockInterval) clearInterval(clockInterval);
+clockInterval = setInterval(updateClock, 1000);
+    
     const lista = document.getElementById('listaStudenti');
     if (!lista) return;
     lista.innerHTML = "";
@@ -581,9 +586,8 @@ function login() {
     firebase.auth().signInWithEmailAndPassword(email, password)
 
     .then(() => {
-        document.getElementById('loginScreen').style.display = 'none';
-        init();
-    })
+    document.getElementById('loginScreen').style.display = 'none';
+})
 
     .catch((error) => {
         document.getElementById('loginError').innerText =
