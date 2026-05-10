@@ -350,13 +350,23 @@ if (typeof window.salvaAssenzeProgrammateOriginal === 'undefined') {
 
 // ========== FUNZIONE RESET CON FIREBASE ==========
 window.resetDati = function() {
-    if (confirm("⚠️ Sei sicuro? Questo cancellerà tutte le variazioni sulle card studenti ovvero le uscite e le assenze inserite ⚠")) {
+    console.log("resetDati chiamato!");  // <-- Debug
+    
+    const conferma = confirm("⚠️ Sei sicuro? Questo cancellerà tutte le variazioni sulle card studenti ovvero le uscite e le assenze inserite ⚠");
+    console.log("Conferma utente:", conferma);  // <-- Debug
+    
+    if (conferma) {
         const oggi = new Date();
         const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
         
-        // Usa la variabile database globale
+        console.log("Reset per data:", dateKey);  // <-- Debug
+        
+        // Controlla se database è disponibile
         if (typeof database !== 'undefined' && database) {
+            console.log("Database disponibile, eseguo reset su Firebase...");  // <-- Debug
+            
             database.ref(`convitto/${dateKey}`).remove().then(() => {
+                console.log("Firebase reset completato");  // <-- Debug
                 localStorage.removeItem('datiConvitto');
                 const ora = new Date().toLocaleString('it-IT');
                 localStorage.setItem('dataUltimoReset', ora);
@@ -373,10 +383,10 @@ window.resetDati = function() {
                 alert('✅ Dati resettati con successo!');
             }).catch(error => {
                 console.error('Errore reset Firebase:', error);
-                alert('❌ Errore durante il reset. Riprova.');
+                alert('❌ Errore durante il reset. Riprova.\n\nDettaglio: ' + error.message);
             });
         } else {
-            // Fallback: reset solo locale
+            console.log("Database NON disponibile, reset solo locale");  // <-- Debug
             localStorage.removeItem('datiConvitto');
             const ora = new Date().toLocaleString('it-IT');
             localStorage.setItem('dataUltimoReset', ora);
@@ -390,8 +400,10 @@ window.resetDati = function() {
             
             const resetDiv = document.getElementById('info-reset');
             if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
-            alert('✅ Dati resettati localmente!');
+            alert('✅ Dati resettati localmente! (Firebase non connesso)');
         }
+    } else {
+        console.log("Reset annullato dall'utente");  // <-- Debug
     }
 };
 
