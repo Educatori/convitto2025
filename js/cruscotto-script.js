@@ -2,26 +2,26 @@
  * CRUSCOTTO-SCRIPT.JS - Versione Integrale con Firebase Sync
  */
 
-
-
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
+
+// Salva riferimenti alle funzioni originali per override
+window.caricaDatiLocaleOriginal = caricaDatiLocale;
+window.popolaListaPermessiOriginal = popolaListaPermessi;
+window.renderListaAssenzeOriginal = renderListaAssenze;
 
 // --- 1. INIZIALIZZAZIONE ---
 function init() {
     const d = new Date();
     caricaAssenzeProgrammate();
     
-   
-    
     const dateEl = document.getElementById('todayDate');
     if (dateEl) dateEl.innerText = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
     updateClock();
     let clockInterval = null;
-
-     if (clockInterval) clearInterval(clockInterval);
-clockInterval = setInterval(updateClock, 1000);
+    if (clockInterval) clearInterval(clockInterval);
+    clockInterval = setInterval(updateClock, 1000);
     
     const lista = document.getElementById('listaStudenti');
     if (!lista) return;
@@ -365,6 +365,9 @@ function generaPopUpStampaConvitto() {
 // --- 6. GESTIONE ASSENZE PROGRAMMATE ---
 function salvaAssenzeProgrammate() {
     localStorage.setItem('assenzeProgrammate', JSON.stringify(assenzeProgrammate));
+    if (typeof syncAssenzeToFirebase === 'function') {
+        syncAssenzeToFirebase();
+    }
 }
 
 function caricaAssenzeProgrammate() {
@@ -529,6 +532,10 @@ function salvaDatiLocale() {
         };
     });
     localStorage.setItem('datiConvitto', JSON.stringify(dati));
+    
+    if (typeof triggerSync === 'function') {
+        triggerSync();
+    }
 }
 
 function caricaDatiLocale() { 
@@ -542,18 +549,26 @@ function caricaDatiLocale() {
                 r.classList.add('assente'); 
                 const btnAss = r.querySelector('.btn-ass');
                 if (btnAss) btnAss.classList.add('active-ass');
+            } else {
+                r.classList.remove('assente');
+                const btnAss = r.querySelector('.btn-ass');
+                if (btnAss) btnAss.classList.remove('active-ass');
             }
             if (d.dinnerno === "1") { 
                 r.classList.add('dinner-no'); 
                 const btnDin = r.querySelector('.btn-din');
                 if (btnDin) btnDin.classList.add('active-din');
                 r.dataset.dinnerno = "1"; 
+            } else {
+                r.classList.remove('dinner-no');
+                const btnDin = r.querySelector('.btn-din');
+                if (btnDin) btnDin.classList.remove('active-din');
+                r.dataset.dinnerno = "0";
             }
-            if (d.switch) { 
-                cambiTurnoManuali[r.dataset.cognome] = true; 
-                const btnSwitch = r.querySelector('.btn-switch');
-                if (btnSwitch) btnSwitch.classList.add('modificato');
-            }
+        }
+        if (cambiTurnoManuali[r.dataset.cognome]) { 
+            const btnSwitch = r.querySelector('.btn-switch');
+            if (btnSwitch) btnSwitch.classList.add('modificato');
         }
     });
 }
@@ -563,7 +578,6 @@ function mostraDataReset() {
     if (dReset) document.getElementById('info-reset').innerText = `Ultimo aggiornamento: ${dReset}`; 
 }
 
-// Funzione per cancellaNote (chiamata da HTML)
 function cancellaNote() {
     if(confirm("Vuoi cancellare definitivamente tutte le note?")) {
         const noteInput = document.getElementById('dailyNotes');
@@ -575,54 +589,43 @@ function cancellaNote() {
     }
 }
 
-
+// --- AUTHENTICATION ---
 const auth = firebase.auth();
 
 function login() {
-
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
     firebase.auth().signInWithEmailAndPassword(email, password)
-
-    .then(() => {
-    document.getElementById('loginScreen').style.display = 'none';
-})
-
-    .catch((error) => {
-        document.getElementById('loginError').innerText =
-            "Email o password errati";
-        console.error(error);
-    });
+        .then(() => {
+            document.getElementById('loginScreen').style.display = 'none';
+            if (typeof startAutoSave === 'function') startAutoSave();
+        })
+        .catch((error) => {
+            document.getElementById('loginError').innerText = "Email o password errati";
+            console.error(error);
+        });
 }
 
 firebase.auth().onAuthStateChanged((user) => {
-
     if (user) {
-
         console.log("Utente autenticato:", user.email);
-
         document.getElementById('loginScreen').style.display = 'none';
-
         init();
-
+        if (typeof startAutoSave === 'function') startAutoSave();
     } else {
-
         console.log("Utente NON autenticato");
-
         document.getElementById('loginScreen').style.display = 'flex';
+        if (typeof stopAutoSave === 'function') stopAutoSave();
     }
 });
 
 function logout() {
-
+    if (typeof stopAutoSave === 'function') stopAutoSave();
     firebase.auth().signOut()
-    .then(() => {
-
-        location.reload();
-
-    });
-
+        .then(() => {
+            location.reload();
+        });
 }
 
 window.onload = () => {};
