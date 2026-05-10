@@ -1,32 +1,24 @@
 // ========== GESTIONE STATO CONNESSIONE ==========
 function updateConnectionStatus(connected) {
     const statusDiv = document.getElementById('connection-status');
-    if (connected) {
-        statusDiv.innerHTML = '🟢 Connesso';
-        statusDiv.style.background = '#d4edda';
-        statusDiv.style.color = '#155724';
-    } else {
-        statusDiv.innerHTML = '🔴 Offline - Modifica locale';
-        statusDiv.style.background = '#f8d7da';
-        statusDiv.style.color = '#721c24';
+    if (statusDiv) {
+        if (connected) {
+            statusDiv.innerHTML = '🟢 Connesso';
+            statusDiv.style.background = '#d4edda';
+            statusDiv.style.color = '#155724';
+        } else {
+            statusDiv.innerHTML = '🔴 Offline - Modifica locale';
+            statusDiv.style.background = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+        }
     }
 }
 
-// In cima al file, dopo le funzioni di connessione
-let isSyncing = false;
-let currentDataListener = null;
-let currentPermessiListener = null;
-let currentAssenzeListener = null;
-let currentNoteListener = null;
-let database = firebase.database();
-
 // ========== AUTO-SAVE INTERVAL ==========
-let autoSaveInterval = null;
-
 function startAutoSave() {
     if (autoSaveInterval) clearInterval(autoSaveInterval);
     autoSaveInterval = setInterval(() => {
-        if (firebase.auth().currentUser && navigator.onLine) {
+        if (auth.currentUser && navigator.onLine) {
             triggerSync();
         }
     }, 5000);
@@ -42,7 +34,7 @@ function stopAutoSave() {
 // ========== SINCRONIZZAZIONE DATI CONVITTO ==========
 async function syncDataToFirebase() {
     if (isSyncing) return;
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -62,7 +54,7 @@ async function syncDataToFirebase() {
 }
 
 async function loadDataFromFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -80,17 +72,13 @@ async function loadDataFromFirebase() {
                 
                 if (typeof window.caricaDatiLocaleOriginal === 'function') {
                     window.caricaDatiLocaleOriginal();
-                }
-                if (typeof aggiornaStatiUI === 'function') {
-                    aggiornaStatiUI();
+                } else if (typeof caricaDatiLocale === 'function') {
+                    caricaDatiLocale();
                 }
                 
                 setTimeout(() => { isSyncing = false; }, 100);
                 console.log('📥 Dati caricati da Firebase');
             }
-            updateConnectionStatus(true);
-        } else {
-            await syncDataToFirebase();
             updateConnectionStatus(true);
         }
     } catch (error) {
@@ -100,7 +88,7 @@ async function loadDataFromFirebase() {
 }
 
 function listenToFirebaseChanges() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -110,7 +98,7 @@ function listenToFirebaseChanges() {
     }
     
     currentDataListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && firebase.auth().currentUser) {
+        if (!isSyncing && snapshot.exists() && auth.currentUser) {
             const firebaseData = snapshot.val();
             const localData = localStorage.getItem('datiConvitto');
             
@@ -120,9 +108,8 @@ function listenToFirebaseChanges() {
                 
                 if (typeof window.caricaDatiLocaleOriginal === 'function') {
                     window.caricaDatiLocaleOriginal();
-                }
-                if (typeof aggiornaStatiUI === 'function') {
-                    aggiornaStatiUI();
+                } else if (typeof caricaDatiLocale === 'function') {
+                    caricaDatiLocale();
                 }
                 
                 setTimeout(() => { isSyncing = false; }, 100);
@@ -136,7 +123,7 @@ function listenToFirebaseChanges() {
 
 // ========== SINCRONIZZAZIONE NOTE ==========
 async function syncNoteToFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const note = localStorage.getItem('note_convitto');
     if (note !== null) {
@@ -150,7 +137,7 @@ async function syncNoteToFirebase() {
 }
 
 async function loadNoteFromFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('note/convitto').get();
@@ -171,14 +158,14 @@ async function loadNoteFromFirebase() {
 }
 
 function listenToNoteChanges() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     if (currentNoteListener) {
         database.ref('note/convitto').off('value', currentNoteListener);
     }
     
     currentNoteListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && firebase.auth().currentUser) {
+        if (!isSyncing && snapshot.exists() && auth.currentUser) {
             const firebaseNote = snapshot.val();
             const localNote = localStorage.getItem('note_convitto');
             
@@ -198,7 +185,7 @@ function listenToNoteChanges() {
 
 // ========== SINCRONIZZAZIONE ASSENZE PROGRAMMATE ==========
 async function syncAssenzeToFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const assenze = localStorage.getItem('assenzeProgrammate');
     if (assenze) {
@@ -212,7 +199,7 @@ async function syncAssenzeToFirebase() {
 }
 
 async function loadAssenzeFromFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('assenze/programmate').get();
@@ -224,9 +211,13 @@ async function loadAssenzeFromFirebase() {
                 localStorage.setItem('assenzeProgrammate', JSON.stringify(firebaseAssenze));
                 if (typeof window.caricaAssenzeProgrammate === 'function') {
                     window.caricaAssenzeProgrammate();
+                } else if (typeof caricaAssenzeProgrammate === 'function') {
+                    caricaAssenzeProgrammate();
                 }
                 if (typeof window.renderListaAssenzeOriginal === 'function') {
                     window.renderListaAssenzeOriginal();
+                } else if (typeof renderListaAssenze === 'function') {
+                    renderListaAssenze();
                 }
                 console.log('📥 Assenze caricate da Firebase');
             }
@@ -237,14 +228,14 @@ async function loadAssenzeFromFirebase() {
 }
 
 function listenToAssenzeChanges() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     if (currentAssenzeListener) {
         database.ref('assenze/programmate').off('value', currentAssenzeListener);
     }
     
     currentAssenzeListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && firebase.auth().currentUser) {
+        if (!isSyncing && snapshot.exists() && auth.currentUser) {
             const firebaseAssenze = snapshot.val();
             const localAssenze = localStorage.getItem('assenzeProgrammate');
             
@@ -253,9 +244,8 @@ function listenToAssenzeChanges() {
                 localStorage.setItem('assenzeProgrammate', JSON.stringify(firebaseAssenze));
                 if (typeof window.caricaAssenzeProgrammate === 'function') {
                     window.caricaAssenzeProgrammate();
-                }
-                if (typeof window.renderListaAssenzeOriginal === 'function') {
-                    window.renderListaAssenzeOriginal();
+                } else if (typeof caricaAssenzeProgrammate === 'function') {
+                    caricaAssenzeProgrammate();
                 }
                 setTimeout(() => { isSyncing = false; }, 100);
                 console.log('🔄 Aggiornamento assenze in tempo reale');
@@ -268,7 +258,7 @@ function listenToAssenzeChanges() {
 
 // ========== SINCRONIZZAZIONE PERMESSI ==========
 async function syncPermessiToFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     const permessi = localStorage.getItem('permessiPermanenti');
     if (permessi) {
@@ -282,7 +272,7 @@ async function syncPermessiToFirebase() {
 }
 
 async function loadPermessiFromFirebase() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('permessi/permanenti').get();
@@ -294,6 +284,8 @@ async function loadPermessiFromFirebase() {
                 localStorage.setItem('permessiPermanenti', JSON.stringify(firebasePermessi));
                 if (typeof window.popolaListaPermessiOriginal === 'function') {
                     window.popolaListaPermessiOriginal();
+                } else if (typeof popolaListaPermessi === 'function') {
+                    popolaListaPermessi();
                 }
                 console.log('📥 Permessi caricati da Firebase');
             }
@@ -304,14 +296,14 @@ async function loadPermessiFromFirebase() {
 }
 
 function listenToPermessiChanges() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     
     if (currentPermessiListener) {
         database.ref('permessi/permanenti').off('value', currentPermessiListener);
     }
     
     currentPermessiListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && firebase.auth().currentUser) {
+        if (!isSyncing && snapshot.exists() && auth.currentUser) {
             const firebasePermessi = snapshot.val();
             const localPermessi = localStorage.getItem('permessiPermanenti');
             
@@ -320,6 +312,8 @@ function listenToPermessiChanges() {
                 localStorage.setItem('permessiPermanenti', JSON.stringify(firebasePermessi));
                 if (typeof window.popolaListaPermessiOriginal === 'function') {
                     window.popolaListaPermessiOriginal();
+                } else if (typeof popolaListaPermessi === 'function') {
+                    popolaListaPermessi();
                 }
                 setTimeout(() => { isSyncing = false; }, 100);
                 console.log('🔄 Aggiornamento permessi in tempo reale');
@@ -332,32 +326,16 @@ function listenToPermessiChanges() {
 
 // ========== TRIGGER SYNC ==========
 function triggerSync() {
-    if (!firebase.auth().currentUser) return;
+    if (!auth.currentUser) return;
     syncDataToFirebase();
     syncNoteToFirebase();
     syncAssenzeToFirebase();
     syncPermessiToFirebase();
 }
 
-// ========== FUNZIONI MANCANTI ==========
-function caricaAssenzeProgrammate() {
-    const saved = localStorage.getItem('assenzeProgrammate');
-    if (saved && typeof window.assenzeProgrammate !== 'undefined') {
-        window.assenzeProgrammate = JSON.parse(saved);
-    }
-}
-
-// ========== OVERRIDE FUNZIONI SALVATAGGIO ==========
-// Salva i riferimenti originali se non esistono già
-if (typeof window.salvaDatiLocaleOriginal === 'undefined') {
-    window.salvaDatiLocaleOriginal = window.salvaDatiLocale;
-}
-if (typeof window.salvaAssenzeProgrammateOriginal === 'undefined') {
-    window.salvaAssenzeProgrammateOriginal = window.salvaAssenzeProgrammate;
-}
-
+// ========== FUNZIONE RESET DATI (SINGOLA, NON DUPLICATA) ==========
 window.resetDati = function(modalita = 'soloManuali') {
-    // modalita: 'soloManuali' (default) o 'completo'
+    console.log("🔧 resetDati chiamata - modalità:", modalita);
     
     let conferma;
     if (modalita === 'completo') {
@@ -371,17 +349,15 @@ window.resetDati = function(modalita = 'soloManuali') {
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
     
-    // 1. RESET DATI GIORNALIERI (sempre)
     localStorage.removeItem('datiConvitto');
     
-    // 2. Reset variabili globali
-    if (typeof cambiTurnoManuali !== 'undefined') {
+    if (typeof window.cambiTurnoManuali !== 'undefined') {
+        const cambiTurnoManuali = window.cambiTurnoManuali || {};
         Object.keys(cambiTurnoManuali).forEach(key => {
             cambiTurnoManuali[key] = false;
         });
     }
     
-    // 3. Reset visivo
     document.querySelectorAll('.student-row').forEach(row => {
         const inputU = row.querySelector('.in-u');
         const inputI = row.querySelector('.in-i');
@@ -400,61 +376,62 @@ window.resetDati = function(modalita = 'soloManuali') {
         if (btnDin) btnDin.classList.remove('active-din');
         if (btnSwitch) btnSwitch.classList.remove('modificato');
         
-        // Riapplica assenze programmate se presenti
-        if (typeof isAssenteProgrammato === 'function' && 
-            isAssenteProgrammato(row.dataset.cognome, oggi)) {
+        if (typeof window.isAssenteProgrammato === 'function' && 
+            window.isAssenteProgrammato(row.dataset.cognome, oggi)) {
             row.classList.add('assente');
             if (btnAss) btnAss.classList.add('active-ass');
             row.dataset.dinnerno = "1";
         }
     });
     
-    // 4. Reset COMPLETO (opzionale)
     if (modalita === 'completo') {
         localStorage.removeItem('assenzeProgrammate');
         localStorage.removeItem('permessiPermanenti');
         localStorage.removeItem('note_convitto');
         
-        if (typeof assenzeProgrammate !== 'undefined') {
+        if (typeof window.assenzeProgrammate !== 'undefined') {
+            const assenzeProgrammate = window.assenzeProgrammate;
             Object.keys(assenzeProgrammate).forEach(k => delete assenzeProgrammate[k]);
         }
         
-        // Resetta anche su Firebase
-        if (typeof database !== 'undefined' && database) {
+        if (database) {
             Promise.all([
                 database.ref('assenze/programmate').remove(),
                 database.ref('permessi/permanenti').remove(),
                 database.ref('note/convitto').remove(),
                 database.ref(`convitto/${dateKey}`).remove()
-            ]).then(() => console.log("Firebase reset completo"));
+            ]).then(() => console.log("Firebase reset completo"))
+             .catch(err => console.error("Errore reset Firebase:", err));
         }
     } else {
-        // Solo reset giornaliero
-        if (typeof database !== 'undefined' && database) {
-            database.ref(`convitto/${dateKey}`).remove();
+        if (database) {
+            database.ref(`convitto/${dateKey}`).remove()
+                .catch(err => console.error("Errore reset Firebase:", err));
         }
     }
     
-    // 5. Aggiorna timestamp
     const ora = new Date().toLocaleString('it-IT');
     localStorage.setItem('dataUltimoReset', ora);
     const resetDiv = document.getElementById('info-reset');
     if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
     
-    // 6. Ricarica dati
     if (typeof window.caricaDatiLocale === 'function') {
         window.caricaDatiLocale();
+    } else if (typeof caricaDatiLocale === 'function') {
+        caricaDatiLocale();
     }
     
-    // 7. Ricalcola dinner
     document.querySelectorAll('.student-row').forEach(row => {
-        if (typeof controllaDinnerAutomatico === 'function') {
+        if (typeof window.controllaDinnerAutomatico === 'function') {
+            window.controllaDinnerAutomatico(row);
+        } else if (typeof controllaDinnerAutomatico === 'function') {
             controllaDinnerAutomatico(row);
         }
     });
     
     alert(modalita === 'completo' ? '✅ Reset completo effettuato!' : '✅ Reset giornaliero effettuato!');
 };
+
 // ========== AGGIORNA STATI UI ==========
 function aggiornaStatiUI() {
     document.querySelectorAll('.student-row').forEach(row => {
@@ -485,7 +462,8 @@ function aggiornaStatiUI() {
                 row.dataset.dinnerno = "0";
             }
             
-            if (typeof cambiTurnoManuali !== 'undefined') {
+            if (typeof window.cambiTurnoManuali !== 'undefined') {
+                const cambiTurnoManuali = window.cambiTurnoManuali;
                 if (studenteDati.switch) {
                     cambiTurnoManuali[cognome] = true;
                     if (btnSwitch) btnSwitch.classList.add('modificato');
@@ -518,25 +496,26 @@ async function initFirebaseSync() {
         resetDiv.innerText = `Ultimo aggiornamento: ${dReset}`;
     }
     
-    // Collega salvataggio note
     const noteInput = document.getElementById('dailyNotes');
-    if (noteInput) {
+    if (noteInput && !noteInput.hasListener) {
         noteInput.addEventListener('input', () => {
             localStorage.setItem('note_convitto', noteInput.value);
             syncNoteToFirebase();
         });
+        noteInput.hasListener = true;
     }
     
     console.log('✅ Firebase Sync attivo');
 }
 
 // Avvia sync solo quando l'utente è autenticato
-firebase.auth().onAuthStateChanged((user) => {
+auth.onAuthStateChanged((user) => {
     if (user) {
         initFirebaseSync();
     }
 });
 
+// Pulisci listener alla chiusura
 window.addEventListener('beforeunload', () => {
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -553,106 +532,4 @@ window.addEventListener('beforeunload', () => {
     if (currentNoteListener) {
         database.ref('note/convitto').off('value', currentNoteListener);
     }
-    
-    // ========== RESET DATI ==========
-window.resetDati = function(modalita = 'soloManuali') {
-    console.log("🔧 resetDati chiamata - modalità:", modalita);
-    
-    let conferma;
-    if (modalita === 'completo') {
-        conferma = confirm("⚠️ RESET COMPLETO: cancellerà TUTTI i dati (assenze programmate, permessi, note e variazioni). Sei sicuro? ⚠");
-    } else {
-        conferma = confirm("⚠️ Sei sicuro? Questo cancellerà SOLO le variazioni giornaliere (uscite, ingressi, assenze del giorno). Le assenze programmate e i permessi rimarranno. ⚠");
-    }
-    
-    if (!conferma) return;
-    
-    const oggi = new Date();
-    const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
-    
-    // 1. RESET DATI GIORNALIERI (sempre)
-    localStorage.removeItem('datiConvitto');
-    
-    // 2. Reset variabili globali
-    if (typeof cambiTurnoManuali !== 'undefined') {
-        Object.keys(cambiTurnoManuali).forEach(key => {
-            cambiTurnoManuali[key] = false;
-        });
-    }
-    
-    // 3. Reset visivo
-    document.querySelectorAll('.student-row').forEach(row => {
-        const inputU = row.querySelector('.in-u');
-        const inputI = row.querySelector('.in-i');
-        if (inputU) inputU.value = '';
-        if (inputI) inputI.value = '';
-        
-        row.classList.remove('assente');
-        row.classList.remove('dinner-no');
-        row.dataset.dinnerno = "0";
-        
-        const btnAss = row.querySelector('.btn-ass');
-        const btnDin = row.querySelector('.btn-din');
-        const btnSwitch = row.querySelector('.btn-switch');
-        
-        if (btnAss) btnAss.classList.remove('active-ass');
-        if (btnDin) btnDin.classList.remove('active-din');
-        if (btnSwitch) btnSwitch.classList.remove('modificato');
-        
-        // Riapplica assenze programmate se presenti
-        if (typeof isAssenteProgrammato === 'function' && 
-            isAssenteProgrammato(row.dataset.cognome, oggi)) {
-            row.classList.add('assente');
-            if (btnAss) btnAss.classList.add('active-ass');
-            row.dataset.dinnerno = "1";
-        }
-    });
-    
-    // 4. Reset COMPLETO (opzionale)
-    if (modalita === 'completo') {
-        localStorage.removeItem('assenzeProgrammate');
-        localStorage.removeItem('permessiPermanenti');
-        localStorage.removeItem('note_convitto');
-        
-        if (typeof assenzeProgrammate !== 'undefined') {
-            Object.keys(assenzeProgrammate).forEach(k => delete assenzeProgrammate[k]);
-        }
-        
-        // Resetta anche su Firebase
-        if (typeof database !== 'undefined' && database) {
-            Promise.all([
-                database.ref('assenze/programmate').remove(),
-                database.ref('permessi/permanenti').remove(),
-                database.ref('note/convitto').remove(),
-                database.ref(`convitto/${dateKey}`).remove()
-            ]).then(() => console.log("Firebase reset completo"));
-        }
-    } else {
-        // Solo reset giornaliero
-        if (typeof database !== 'undefined' && database) {
-            database.ref(`convitto/${dateKey}`).remove();
-        }
-    }
-    
-    // 5. Aggiorna timestamp
-    const ora = new Date().toLocaleString('it-IT');
-    localStorage.setItem('dataUltimoReset', ora);
-    const resetDiv = document.getElementById('info-reset');
-    if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
-    
-    // 6. Ricarica dati
-    if (typeof window.caricaDatiLocale === 'function') {
-        window.caricaDatiLocale();
-    }
-    
-    // 7. Ricalcola dinner
-    document.querySelectorAll('.student-row').forEach(row => {
-        if (typeof controllaDinnerAutomatico === 'function') {
-            controllaDinnerAutomatico(row);
-        }
-    });
-    
-    alert(modalita === 'completo' ? '✅ Reset completo effettuato!' : '✅ Reset giornaliero effettuato!');
-};
-    
 });
