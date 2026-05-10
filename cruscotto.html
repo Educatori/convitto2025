@@ -132,8 +132,14 @@
                        oninput="gestisciSaltoStanze(this); validaERicerca();">
             </div>
 
-            <button class="btn-toolbar" style="background:var(--btn-reset);" onclick="resetDati()"> RESET</button>
-            
+            <div style="display: flex; gap: 10px; margin: 10px;">
+    <button onclick="resetDati('soloManuali')" style="background: #e67e22;">
+        🗑️ Reset Giornaliero
+    </button>
+    <button onclick="resetDati('completo')" style="background: #c0392b;">
+        ⚠️ Reset Completo
+    </button>
+</div>
             <div id="connection-status" style="font-size:0.7em; padding:5px 10px; border-radius:20px; background:#d4edda; color:#155724;">
                 🟢 Connesso
             </div>
