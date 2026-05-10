@@ -2,6 +2,8 @@
  * CRUSCOTTO-SCRIPT.JS - Versione Integrale con Firebase Sync
  */
 
+
+
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
 
@@ -568,4 +570,55 @@ function cancellaNote() {
     }
 }
 
-window.onload = init;
+
+const auth = firebase.auth();
+
+function login() {
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+
+    .then(() => {
+        document.getElementById('loginScreen').style.display = 'none';
+        init();
+    })
+
+    .catch((error) => {
+        document.getElementById('loginError').innerText =
+            "Email o password errati";
+        console.error(error);
+    });
+}
+
+firebase.auth().onAuthStateChanged((user) => {
+
+    if (user) {
+
+        console.log("Utente autenticato:", user.email);
+
+        document.getElementById('loginScreen').style.display = 'none';
+
+        init();
+
+    } else {
+
+        console.log("Utente NON autenticato");
+
+        document.getElementById('loginScreen').style.display = 'flex';
+    }
+});
+
+function logout() {
+
+    firebase.auth().signOut()
+    .then(() => {
+
+        location.reload();
+
+    });
+
+}
+
+window.onload = () => {};
