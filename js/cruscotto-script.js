@@ -369,7 +369,7 @@ function salvaAssenzeProgrammate() {
         syncAssenzeToFirebase();
     }
 }
-
+ 
 function caricaAssenzeProgrammate() {
     const saved = localStorage.getItem('assenzeProgrammate');
     assenzeProgrammate = saved ? JSON.parse(saved) : {};
