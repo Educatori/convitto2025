@@ -159,7 +159,7 @@ function controllaDinnerAutomatico(riga) {
     let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
 
     let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
-    const paroleNo = ["no", "non", "nor", "no rientro"];
+    const paroleNo = ["x", "n", "no", "non", "nor", "no rientro"];
 
     const isTardi = (orario) => orario.includes(":") && orario > limite;
     const isNoRientro = (orario) => paroleNo.includes(orario);
