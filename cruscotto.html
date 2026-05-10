@@ -122,28 +122,28 @@
         </div>
     </div>    
         <div class="toolbar">
-            <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">P ⚡ PP</button>
-            <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
-            
-            <div style="display:flex; align-items:center; gap:5px;">
-                <span style="font-size:0.8em; font-weight:bold; color:var(--p);">ROOM:</span>
-                <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" 
-                       onfocus="this.oldValue = this.value;" 
-                       oninput="gestisciSaltoStanze(this); validaERicerca();">
-            </div>
+    <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">P ⚡ PP</button>
+    <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
+    
+    <div style="display:flex; align-items:center; gap:5px;">
+        <span style="font-size:0.8em; font-weight:bold; color:var(--p);">ROOM:</span>
+        <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" 
+               onfocus="this.oldValue = this.value;" 
+               oninput="gestisciSaltoStanze(this); validaERicerca();">
+    </div>
 
-            <div style="display: flex; gap: 10px; margin: 10px;">
-    <button onclick="resetDati('soloManuali')" style="background: #e67e22;">
-        🗑️ Reset Giornaliero
+    <!-- PULSANTI RESET STILIZZATI -->
+    <button class="btn-reset" onclick="resetDati('soloManuali')" title="Reset Giornaliero (solo variazioni)">
+        🗑️ Reset Day
     </button>
-    <button onclick="resetDati('completo')" style="background: #c0392b;">
-        ⚠️ Reset Completo
+    <button class="btn-reset-complete" onclick="resetDati('completo')" title="Reset Completo (tutti i dati)">
+        ⚠️ Reset Full
     </button>
+
+    <div id="connection-status" style="font-size:0.7em; padding:5px 10px; border-radius:20px; background:#d4edda; color:#155724;">
+        🟢 Connesso
+    </div>
 </div>
-            <div id="connection-status" style="font-size:0.7em; padding:5px 10px; border-radius:20px; background:#d4edda; color:#155724;">
-                🟢 Connesso
-            </div>
-        </div>
         
         
         
