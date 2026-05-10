@@ -23,7 +23,10 @@
     --btn-color-2: #65b7ed;     /* Blu per 19:15 */
     --btn-color-3: #8e44ad;     /* Viola per CONVITTO */
     --btn-color-4: #5d7d8c;     /* Grigio per DINNER */
-    --btn-reset: #ff1800;       /* Rosso per Reset */
+   
+    --btn-reset: #e67e22;    /* Arancione per Reset Giornaliero */
+    --btn-reset-full: #c75833; /* Rosso scuro per Reset Completo */
+    
 
     /* Testo e Bordi */
     --text-dark: #2d3436;
@@ -225,6 +228,55 @@ header {
     cursor: pointer; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     flex: 1;
+}
+
+/* --- PULSANTI RESET STILIZZATI --- */
+.btn-reset, .btn-reset-complete {
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 18px;
+    transition: 0.2s;
+    font-size: 0.85em;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-reset {
+    background: var(--btn-reset, #e67e22);
+    box-shadow: 0 2px 5px rgba(230, 126, 34, 0.3);
+}
+
+.btn-reset:hover {
+    background: #d35400;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(230, 126, 34, 0.4);
+}
+
+.btn-reset-complete {
+    background: #c75833;
+    box-shadow: 0 2px 5px rgba(192, 57, 43, 0.3);
+}
+
+.btn-reset-complete:hover {
+    background: #a82313;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.4);
+}
+
+.btn-reset:active, .btn-reset-complete:active {
+    transform: translateY(1px);
+}
+
+/* Versione compatta per mobile */
+@media (max-width: 768px) {
+    .btn-reset, .btn-reset-complete {
+        padding: 8px 12px;
+        font-size: 0.75em;
+    }
 }
 
 #sidePanel h3 { border-bottom: 1px solid #eee; padding-bottom: 10px; }
