@@ -8,11 +8,84 @@
     <link rel="stylesheet" href="css/cruscotto-style.css">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
+/.login*/
+    <div id="loginScreen" style="
+    position:fixed;
+    inset:0;
+    background:#f5f5f5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+">
 
+    <div style="
+        background:white;
+        padding:40px;
+        border-radius:20px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.15);
+        width:320px;
+        text-align:center;
+    ">
+
+        <h2 style="margin-bottom:25px;">Accesso Cruscotto</h2>
+
+        <input 
+            type="email" 
+            id="loginEmail"
+            placeholder="Email"
+            style="
+                width:100%;
+                padding:12px;
+                margin-bottom:15px;
+                border:1px solid #ccc;
+                border-radius:10px;
+            "
+        >
+
+        <input 
+            type="password"
+            id="loginPassword"
+            placeholder="Password"
+            style="
+                width:100%;
+                padding:12px;
+                margin-bottom:20px;
+                border:1px solid #ccc;
+                border-radius:10px;
+            "
+        >
+
+        <button 
+            onclick="login()"
+            style="
+                width:100%;
+                padding:12px;
+                border:none;
+                border-radius:10px;
+                background:#2c7be5;
+                color:white;
+                font-weight:bold;
+                cursor:pointer;
+            "
+        >
+            ACCEDI
+        </button>
+
+        <div id="loginError" style="
+            color:red;
+            margin-top:15px;
+            font-size:0.9em;
+        "></div>
+
+    </div>
+</div>
+    
     <div class="container">
         <header>
             <div>
@@ -20,6 +93,17 @@
                 <div id="todayDate" style="font-size:0.9em; opacity:0.8;">Caricamento data...</div>
             </div>
             <div id="digitalClock" style="font-size:1.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
+            
+            <button onclick="logout()" style="
+    padding:8px 12px;
+    border:none;
+    border-radius:8px;
+    background:#dc3545;
+    color:white;
+    cursor:pointer;
+">
+    Logout
+</button>
         </header>
 
         <div class="note-toolbar-container">
