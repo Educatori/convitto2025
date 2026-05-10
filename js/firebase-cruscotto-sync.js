@@ -350,60 +350,77 @@ if (typeof window.salvaAssenzeProgrammateOriginal === 'undefined') {
 
 // ========== FUNZIONE RESET CON FIREBASE ==========
 window.resetDati = function() {
-    console.log("resetDati chiamato!");  // <-- Debug
+    console.log("resetDati chiamato!");
     
     const conferma = confirm("⚠️ Sei sicuro? Questo cancellerà tutte le variazioni sulle card studenti ovvero le uscite e le assenze inserite ⚠");
-    console.log("Conferma utente:", conferma);  // <-- Debug
     
     if (conferma) {
         const oggi = new Date();
         const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
         
-        console.log("Reset per data:", dateKey);  // <-- Debug
+        // 1. Svuota i dati in localStorage
+        localStorage.removeItem('datiConvitto');
         
-        // Controlla se database è disponibile
-        if (typeof database !== 'undefined' && database) {
-            console.log("Database disponibile, eseguo reset su Firebase...");  // <-- Debug
-            
-            database.ref(`convitto/${dateKey}`).remove().then(() => {
-                console.log("Firebase reset completato");  // <-- Debug
-                localStorage.removeItem('datiConvitto');
-                const ora = new Date().toLocaleString('it-IT');
-                localStorage.setItem('dataUltimoReset', ora);
-                
-                if (typeof window.caricaDatiLocaleOriginal === 'function') {
-                    window.caricaDatiLocaleOriginal();
-                }
-                if (typeof aggiornaStatiUI === 'function') {
-                    aggiornaStatiUI();
-                }
-                
-                const resetDiv = document.getElementById('info-reset');
-                if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
-                alert('✅ Dati resettati con successo!');
-            }).catch(error => {
-                console.error('Errore reset Firebase:', error);
-                alert('❌ Errore durante il reset. Riprova.\n\nDettaglio: ' + error.message);
+        // 2. Svuota le variabili globali dei cambi turno
+        if (typeof cambiTurnoManuali !== 'undefined') {
+            Object.keys(cambiTurnoManuali).forEach(key => {
+                cambiTurnoManuali[key] = false;
             });
-        } else {
-            console.log("Database NON disponibile, reset solo locale");  // <-- Debug
-            localStorage.removeItem('datiConvitto');
-            const ora = new Date().toLocaleString('it-IT');
-            localStorage.setItem('dataUltimoReset', ora);
-            
-            if (typeof window.caricaDatiLocaleOriginal === 'function') {
-                window.caricaDatiLocaleOriginal();
-            }
-            if (typeof aggiornaStatiUI === 'function') {
-                aggiornaStatiUI();
-            }
-            
-            const resetDiv = document.getElementById('info-reset');
-            if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
-            alert('✅ Dati resettati localmente! (Firebase non connesso)');
         }
-    } else {
-        console.log("Reset annullato dall'utente");  // <-- Debug
+        
+        // 3. Reset visivo FORZATO di tutte le card
+        document.querySelectorAll('.student-row').forEach(row => {
+            // Svuota input
+            const inputU = row.querySelector('.in-u');
+            const inputI = row.querySelector('.in-i');
+            if (inputU) inputU.value = '';
+            if (inputI) inputI.value = '';
+            
+            // Rimuovi classi di stato
+            row.classList.remove('assente');
+            row.classList.remove('dinner-no');
+            
+            // Resetta dataset
+            row.dataset.dinnerno = "0";
+            
+            // Resetta bottoni
+            const btnAss = row.querySelector('.btn-ass');
+            const btnDin = row.querySelector('.btn-din');
+            const btnSwitch = row.querySelector('.btn-switch');
+            
+            if (btnAss) btnAss.classList.remove('active-ass');
+            if (btnDin) btnDin.classList.remove('active-din');
+            if (btnSwitch) btnSwitch.classList.remove('modificato');
+        });
+        
+        // 4. Aggiorna Firebase
+        if (typeof database !== 'undefined' && database) {
+            database.ref(`convitto/${dateKey}`).remove().then(() => {
+                console.log("Firebase reset completato");
+            }).catch(error => {
+                console.warn("Errore reset Firebase:", error);
+            });
+        }
+        
+        // 5. Aggiorna timestamp del reset
+        const ora = new Date().toLocaleString('it-IT');
+        localStorage.setItem('dataUltimoReset', ora);
+        const resetDiv = document.getElementById('info-reset');
+        if (resetDiv) resetDiv.innerText = `Ultimo aggiornamento: ${ora}`;
+        
+        // 6. Ricarica i dati da localStorage (ora vuoto)
+        if (typeof window.caricaDatiLocale === 'function') {
+            window.caricaDatiLocale();
+        }
+        
+        // 7. Forza il ricalcolo del dinner automatico
+        document.querySelectorAll('.student-row').forEach(row => {
+            if (typeof controllaDinnerAutomatico === 'function') {
+                controllaDinnerAutomatico(row);
+            }
+        });
+        
+        alert('✅ Dati resettati con successo!');
     }
 };
 
