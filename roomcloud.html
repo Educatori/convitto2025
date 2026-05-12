@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooming Cloud v2.2.1 - Toggle</title>
+    <title>Rooming Cloud v3.0</title>
 
     <style>
         * {
@@ -202,9 +202,9 @@
             border-radius: 12px;
         }
 
-        .status-assente { background: white; color: #606060; } /*background #ffeaa7*/
-        .status-confermato { background: white; color: #606060; } /*background #fab1a0*/
-        .status-attivita { background: white; color: #606060; } /*background #b2dfdb*/
+        .status-assente { background: white; color: #606060; }
+        .status-confermato { background: white; color: #606060; }
+        .status-attivita { background: white; color: #606060; }
 
         .student-item.stato-assente { background: #fff9c4; border-left: 4px solid #f1c40f; }
         .student-item.stato-confermato { background: #ffebee; border-left: 4px solid #e74c3c; }
@@ -295,7 +295,7 @@
     <div id="appScreen" style="display: none;">
         <div class="app-header">
             <div class="header-title">
-                <h1> <a href="index.html" style="text-decoration: none; color: inherit;"> Rooming Cloud 2.2  </a> </h1>
+                <h1><a href="index.html" style="text-decoration: none; color: inherit;">Rooming Cloud 3.0</a></h1>
                 <span id="currentDate" class="current-date"></span>
             </div>
             <div class="stats" id="statsForesteria">Posti liberi: -</div>
@@ -309,7 +309,7 @@
         <div id="printTimestamp" class="print-timestamp"></div>
     </div>
 
-    <!-- MODALE con 4 pulsanti: STAND-BY, ASSENTE, ATTIVITÀ, ANNULLA -->
+    <!-- MODALE -->
     <div id="actionModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage">Scegli azione</p>
@@ -326,17 +326,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlvE48F1flTIZ1KyU_FKIV30w60pWFphE",
-            authDomain: "rooms-2ff73.firebaseapp.com",
-            databaseURL: "https://rooms-2ff73-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "rooms-2ff73",
-            storageBucket: "rooms-2ff73.firebasestorage.app",
-            messagingSenderId: "955413485941",
-            appId: "1:955413485941:web:e878ea05b066dd78bd9b3c",
-            measurementId: "G-NSGBDTEJNQ"
-        };
+        import { firebaseConfig } from 'js/firebase-roomcloud-config.js';
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -381,7 +371,6 @@
             }
         }
 
-        // GESTIONE PULSANTI MODALE
         standbyBtn.onclick = () => closeModal('standby');
         assenteBtn.onclick = () => closeModal('assente');
         attivitaBtn.onclick = () => closeModal('attivita');
@@ -395,9 +384,7 @@
             return `${studente.cognome}_${studente.nome}_${room}`.replace(/[^a-zA-Z0-9_-]/g, '_');
         }
 
-        // Funzione con TOGGLE: se lo stato è già attivo, lo rimuove; altrimenti lo imposta.
         async function setStatoStudente(id, scelta) {
-            // scelta può essere 'standby', 'assente', 'attivita' o null (annulla)
             if (scelta === null) return;
             
             const statoCorrente = assenzeData[id] || {};
@@ -410,10 +397,8 @@
             let nuovoStato = { assente: false, confermato: false, attivita: false };
             
             if (isAlreadyActive) {
-                // Toggle off -> rimuovi completamente lo stato
                 nuovoStato = null;
             } else {
-                // Imposta solo lo stato scelto
                 switch (scelta) {
                     case 'standby':
                         nuovoStato.assente = true;
@@ -494,7 +479,6 @@
                 return div;
             }
             
-            // Gestione badge per studente normale
             if (stato.assente) div.classList.add('stato-assente');
             else if (stato.confermato) div.classList.add('stato-confermato');
             else if (stato.attivita) div.classList.add('stato-attivita');
@@ -560,7 +544,6 @@
             });
         }
 
-        // Realtime auth + dati
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginScreen.style.display = 'none';
