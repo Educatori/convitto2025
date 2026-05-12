@@ -300,9 +300,9 @@
             </div>
             <div class="stats" id="statsForesteria">Posti liberi: -</div>
             <div class="button-group">
-                <button class="btn btn-primary" onclick="stampaReport()">Stampa</button>
-                <button class="btn btn-secondary" onclick="resetAssenze()">Reset</button>
-                <button class="btn btn-danger" onclick="logout()">Esci</button>
+                <button class="btn btn-primary" id="stampaBtn">Stampa</button>
+                <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                <button class="btn btn-danger" id="logoutBtn">Esci</button>
             </div>
         </div>
         <div id="roomsGrid" class="rooms-grid"></div>
@@ -326,7 +326,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { firebaseConfig } from 'js/firebase-roomcloud-config.js';
+        import { firebaseConfig } from './js/firebase-roomcloud-config.js';
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -544,6 +544,12 @@
             });
         }
 
+        document.getElementById('stampaBtn')?.addEventListener('click', stampaReport);
+document.getElementById('resetBtn')?.addEventListener('click', resetAssenze);
+document.getElementById('logoutBtn')?.addEventListener('click', logout);
+document.getElementById('loginBtn')?.addEventListener('click', login);
+        
+        
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginScreen.style.display = 'none';
