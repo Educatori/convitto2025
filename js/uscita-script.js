@@ -1,5 +1,6 @@
 /**
- * BUS-SCRIPT.JS / LIBERA-SCRIPT.JS - Generazione Griglia Libera
+ * / USCITA-SCRIPT.JS - - Versione Ottimizzata per studenti_25-26.js
+ * Generazione Griglia Uscita Libera
  */
 function generaGrigliaLibera() {
     if (typeof studenticonvittori === 'undefined') {
