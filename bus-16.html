@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>BUS pomeriggio v1.0</title>
+    <style>
+        /* ===== STILI PRINCIPALI ===== */
+        :root {
+            --bg-header: #2c3e50;
+            --accent-color: #2c3e50;
+            --separator-color: #1a252f;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            font-size: 10px;
+            background-color: #fff;
+        }
+
+        .header-main {
+            text-align: center;
+            border-bottom: 2px solid var(--bg-header);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+        }
+
+        h1 { 
+            margin: 0; 
+            font-size: 18px; 
+            text-transform: uppercase; 
+            color: var(--accent-color);
+        }
+
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            column-gap: 20px;
+        }
+
+        .macro-column {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .column-header, .student-row {
+            display: flex;
+            align-items: center;
+            padding: 3px 5px;
+        }
+
+        .column-header {
+            background: var(--bg-header);
+            color: white;
+            font-weight: bold;
+            border-radius: 3px 3px 0 0;
+            font-size: 8px;
+            margin-bottom: 2px;
+        }
+
+        .student-row { 
+            border: 0.5px solid #bbb; 
+            display: flex; 
+            align-items: center;
+            padding: 3px 5px;
+            margin-bottom: 1px;
+            page-break-inside: avoid;
+        }
+
+        /* Colori speciali 5A e 5B gruppi */
+        .bg-5a-g1, .bg-5b-g1 { background-color: #e7e8ea !important; } /* più scuro rispetto a prima */
+        .bg-5a-g2, .bg-5b-g2 { background-color: #f4f6f8 !important; } /* leggermente più chiaro */
+
+        /* Linea barrata per studenti assenti/ritirati */
+        .row-crossed {
+            text-decoration: line-through;
+            opacity: 0.6;
+            background-color: #ffebee !important; 
+        }
+
+        /* Larghezze celle (allineate con intestazioni) */
+        .cell-class { width: 55px; text-align: left; flex-shrink: 0; font-size: 8.5px; font-weight: bold; }
+        .cell-name { flex-grow: 1; padding: 0 6px; overflow: hidden; white-space: nowrap; }
+        .cell-room { width: 40px; text-align: center; flex-shrink: 0; font-weight: bold; }
+        .cell-check { width: 50px; text-align: center; flex-shrink: 0; }
+        .cell-notes { width: 90px; text-align: center; flex-shrink: 0; }
+
+        /* Checkbox personalizzata */
+        .check-box {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #333;
+            margin: 0 auto;
+            position: relative;
+            background-color: white;
+        }
+
+        .check-box.checked::after {
+            content: '✔';
+            display: block;
+            text-align: center;
+            line-height: 12px;
+            font-size: 10px;
+            color: #2e7d32;
+        }
+
+        .line-notes {
+            width: 90%;
+            border-bottom: 0.5px solid #999;
+            height: 12px;
+            margin: 0 auto;
+        }
+
+        /* LINEA SEPARATRICE TRA CLASSI DIVERSE (più scura) */
+        .class-separator {
+            border-top: 3px solid var(--separator-color);
+            margin: 6px 0 5px 0;
+            width: 100%;
+            opacity: 0.9;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Stampa e pulsanti */
+        .no-print { text-align: center; margin-bottom: 15px; }
+        .btn { 
+            padding: 10px 30px; 
+            background: var(--bg-header); 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 30px; 
+            font-weight: bold;
+        }
+
+        @media print {
+            .no-print { display: none; }
+            @page { 
+                size: A4 landscape; 
+                margin: 0.8cm; 
+            }
+            body { padding: 0; }
+            .class-separator {
+                border-top: 2px solid black;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn" onclick="window.print()">STAMPA LISTA BUS</button>
+</div>
+
+<div class="header-main">
+   <h1>
+    <a href="index.html" style="text-decoration: none; color: inherit;">
+        Bus Trasporti Pomeriggio
+    </a>
+</h1>
+</div>
+
+<div class="grid-wrapper" id="mainWrapper">
+    <!-- COLONNA 0 -->
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-class">Classe</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-room">Room</div>
+            <div class="cell-check">Presenza</div>
+            <div class="cell-notes">Note</div>
+        </div>
+        <div id="col0"></div>
+    </div>
+    <!-- COLONNA 1 -->
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-class">Classe</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-room">Room</div>
+            <div class="cell-check">Presenza</div>
+            <div class="cell-notes">Note</div>
+        </div>
+        <div id="col1"></div>
+    </div>
+    <!-- COLONNA 2 -->
+    <div class="macro-column">
+        <div class="column-header">
+            <div class="cell-class">Classe</div>
+            <div class="cell-name">Nome</div>
+            <div class="cell-room">Room</div>
+            <div class="cell-check">Presenza</div>
+            <div class="cell-notes">Note</div>
+        </div>
+        <div id="col2"></div>
+    </div>
+</div>
+
+<script src="js/studenti_25-26.js"></script>
+<script src="js/convittori.js"></script>
+<script src="js/bus-16-script.js"></script>
+
+</body>
+</html>
