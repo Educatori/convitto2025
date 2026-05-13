@@ -1,4 +1,3 @@
-
 const tuttiStudenti = [
     // Classe 1A
     { id: 1, cognome: "BIDO ESPIRITU", nome: "Miguel Angel", classe: "1A", room: "-" },
