@@ -1,5 +1,5 @@
 /**
- * DATABASE.JS - Gestione Dati Convitto
+ * PERMESSI.JS - Gestione Dati Convitto
  * Qui puoi aggiornare studenti, orari e calendari senza toccare il codice logico.
  */
 
@@ -95,9 +95,7 @@ const OVERRIDE_TURNI_DINNER = {
 // 4. CALENDARIO LABORATORI DINNER (G1/G2 per 5A e 5B)
 const CALENDARIO_GRUPPI_DINNER = { 
          
-    "31/03/2026": "gr2",  "09/04/2026": "gr2", "14/04/2026": "gr1", "16/04/2026": "gr1",
-    "21/04/2026": "gr2", "23/04/2026": "gr2", "28/04/2026": "gr1", "30/04/2026": "gr1",
-    "05/05/2026": "gr2", "07/05/2026": "gr2", "12/05/2026": "gr1", "14/05/2026": "gr1",
+     "12/05/2026": "gr1", "14/05/2026": "gr1",
     "19/05/2026": "gr2", "21/05/2026": "gr2", "26/05/2026": "gr1", "28/05/2026": "gr1",
     "04/06/2026": "gr2", "09/06/2026": "gr2"
 };
