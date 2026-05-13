@@ -157,6 +157,37 @@ header {
     color: #d00;
 }
 
+.simple-note-textarea {
+    width: 98%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical; /* Permette all'utente di allungarla */
+    font-family: inherit;
+}
+
+.note-container-full {
+        width: 90%;
+        margin: 20px 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* La casella di testo */
+    .full-width-textarea {
+        width: 90%;           /* Larga quanto il genitore */
+        box-sizing: border-box; /* Fondamentale: include padding e bordi nel 100% */
+        min-height: 200px;     /* Altezza generosa iniziale */
+        padding: 18px;
+        font-size: 16px;       /* Testo più leggibile */
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        resize: vertical;      /* Permette all'utente di espanderla in basso */
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
 /* In Dark Mode */
 @media (prefers-color-scheme: dark) {
     .note-content { background: var(--card-dark); }
