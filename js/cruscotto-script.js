@@ -118,7 +118,7 @@ function applicaFiltri() {
             r.dataset.classe + " " +
             r.dataset.room + " " +
             r.dataset.gruppo + " " +
-            r.dataset.percorso
+            r.dataset.percorso + " "
         ).toLowerCase();
         r.style.display = testo.includes(s) ? 'block' : 'none';
     });
