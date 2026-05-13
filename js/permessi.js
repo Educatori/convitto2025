@@ -46,14 +46,14 @@ const OVERRIDE_TURNI_DINNER = {
     "BUZZI": { 1: { out: "16:40", in: "18:00" }, 2: { out: "15:50", in: "18:00" }, 3: { out: "14:00", in: "16:30" }},
     "CASALICCHIO": { 1: { out: "18:00", in: "21:30" }, 2: { out: "18:00", in: "21:30" }, 3: { out: "18:00", in: "21:30" }, 4: { out: "18:00", in: "21:30" }},
     "CATTARINUSSI": { 2: { out: "15:00", in: "16:30" }, 3: { out: "15:15", in: "16:45" }, 4: { out: "17:30", in: "19:00" }},
-    "CHEN": { 2: { out: "16:30", in: "NO rientro" }, 4: { out: "16:30", in: "NO rientro" } },
+    "CHEN": { 2: { out: "16:30", in: "NO rientro" }, 4: { out: "16:30", in: "NO rientro" }},
     "CHESSA": { 1: { out: "17:00", in: "21:30" }, 3: { out: "17:00", in: "21:30" }, 4: { out: "17:00", in: "21:30" }}, 
     "CHIADO": { 1: { out: "16:30", in: "18:45" }, 2: { out: "16:30", in: "18:45" }, 3: { out: "16:30", in: "18:45" }, 4: { out: "16:30", in: "18:45" }},
     "CIRINA": { 4: { out: "16:00", in: "19:00" }}, 
     "CLERIN": { 2: { out: "18:00", in: "21:30" }, 4: { out: "18:00", in: "21:30" }}, 
     "COMIOTTO": { 1: { out: "20:00", in: "21:30" }, 2: { out: "16:00", in: "19:00" }, 3: { out: "17:00", in: "19:00" }, 4: { out: "16:00", in: "19:00" }},
     "COMMOD": { 1: { out: "16:40", in: "21:30" }},  
-    "DAGOSTINO": { 3: { out: "16:00", in: "21:30" }},
+    "DAGOSTINO": { 3: { out: "16:00", in: "21:30" }, 4: { out: "15:00", in: "NO rientro" }},
     "DATTRINO":  { 1: { out: "17:00", in: "18:30" }, 3: { out: "17:00", in: "18:30"}, 4: { out: "17:00", in: "18:30" }}, 
     "DI TRIA": { 1: { out: "16:40", in: "19:00" },  2: { out: "15:50", in: "19:00" }, 3: { out: "16:40", in: "19:00" }}, 
     "DUBLANC": { 1: { out: "17:00", in: "19:00" },  2: { out: "16:00", in: "18:00" }, 4: { out: "15:00", in: "17:00" }},
@@ -64,13 +64,14 @@ const OVERRIDE_TURNI_DINNER = {
     "LAZIER": { 2: { out: "17:00", in: "20:00" }},
     "LUNARDI":  { 2: { out: "17:00", in: "20:00" },  4: { out: "17:00", in: "20:00" }},     
     "MARANGELO": { 1: { out: "17:00", in: "19:00" },  2: { out: "14:45", in: "17:00" },  4: { out: "16:00", in: "19:00" }},   
-    "MENALDINO":  { 1: { out: "18:00", in: "20:15" },   4: { out: "18:00", in: "20:15" } },     
+    "MENALDINO":  { 1: { out: "18:00", in: "20:15" },   4: { out: "18:00", in: "20:15" }}, 
+    "MEYNET":  { 1: { out: "17:00", in: "19:15" }, 2: { out: "17:00", in: "19:15" }, 3: { out: "17:00", in: "19:15" }, 4: { out: "17:00", in: "19:15" }},
     "MERLET":  { 1: { out: "16:00", in: "18:00" }, 2: { out: "16:00", in: "18:00" }, 3: { out: "16:00", in: "18:00" }, 4: { out: "16:00", in: "18:00" }},  
     "OBERT": { 1: { out: "16:00", in: "19:15" }, 2: { out: "16:00", in: "19:15" }, 3: { out: "16:00", in: "19:15" }, 4: { out: "16:00", in: "19:15" }},
     "OBERTO":  { 1: { out: "16:00", in: "19:00" }, 2: { out: "16:00", in: "19:00" }, 3: { out: "16:00", in: "19:00" }, 4: { out: "16:00", in: "19:00" }},   
     "PAONESSA": { 1: { out: "16:30", in: "19:00" }, 2: { out: "16:30", in: "21:30" }, 3: { out: "16:30", in: "19:00" }, 4: { out: "16:30", in: "19:00" }},    
     "PETRIS":  { 1: { out: "15:40", in: "19:00" }, 3: { out: "15:40", in: "19:00" }, 4: { out: "15:40", in: "19:00" }},  
-    "PIGNATELLI":  { 1: { out: "17:00", in: "20:00" }, 3: { out: "17:00", in: "20:00" } }, 
+    "PIGNATELLI":  { 1: { out: "17:00", in: "20:00" }, 3: { out: "17:00", in: "20:00" }}, 
     "QUERIO GIANETTO":  { 1: { out: "17:00", in: "19:30" }, 2: { out: "17:00", in: "19:30" }, 3: { out: "17:00", in: "19:30" }, 4: { out: "17:00", in: "19:30" }},   
     "SAITTA": { 1: { out: "19:20", in: "20:40" }, 3: { out: "15:45", in: "18:45" }},   
     "SALVI":  { 1: { out: "17:00", in: "19:00" },  3: { out: "17:00", in: "19:00" }, 4: { out: "17:00", in: "19:00" }},
@@ -89,7 +90,7 @@ const OVERRIDE_TURNI_DINNER = {
     1: ['TESSARIN', 'CASALICCHIO', 'PIGNATELLI', 'MENALDINO', 'CHESSA', 'QUERIO GIANETTO'], 
     2: ['CHEN', 'COMMOD', 'CASALICCHIO', 'CLERIN', 'LAZIER', 'LUNARDI', 'GASPARD', 'PAONESSA', 'QUERIO GIANETTO', 'BOMBONATO', 'SCHIRRU', 'VILARDO'], 
     3: ['BERRUTI S', 'DAGOSTINO', 'GIOVANNELLI P', 'CASALICCHIO', 'SAITTA', 'PIGNATELLI', 'CHESSA', 'QUERIO GIANETTO', 'BOMBONATO', 'SCHIRRU', 'VILARDO'], 
-    4: ['BERRUTI A', 'CHEN', 'CASALICCHIO', 'CLERIN', 'MENALDINO', 'CHESSA', 'QUERIO GIANETTO', 'BOMBONATO', 'SCHIRRU', 'VILARDO'] 
+    4: ['BERRUTI A', 'CHEN', 'CASALICCHIO', 'CLERIN', 'DAGOSTINO', 'MENALDINO', 'CHESSA', 'QUERIO GIANETTO', 'BOMBONATO', 'SCHIRRU', 'VILARDO'] 
 };
 
 // 4. CALENDARIO LABORATORI DINNER (G1/G2 per 5A e 5B)
