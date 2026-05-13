@@ -1,3 +1,4 @@
+
 /**
  * TRANSFER-SCRIPT.JS - Versione Ottimizzata per studenti_25-26.js
  * Contiene già sia convittori (room 101-221) che esterni (room - o altri)
