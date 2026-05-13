@@ -1,5 +1,4 @@
 
-
 // 1. ANAGRAFICA STUDENTI CONVITTORI
 const studenticonvittori = [
     // 1A tot 6
