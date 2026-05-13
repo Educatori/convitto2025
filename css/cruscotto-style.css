@@ -4,7 +4,7 @@
 
 :root {
     /* Palette Principale */
-    --p: olive;               /* Header e Testi principali */
+    --p: #b59d1f;               /* Header e Testi principali */
     --s: #27ae60;               /* Presente / OK (Verde Smeraldo) */
     --d: #ed5a3a;               /* Assente (Arancio) */
     --e: #3498db;               /* Non Cena (Blu Cielo) */
@@ -20,12 +20,12 @@
     
     /* Colori Bottoni Toolbar */
     --btn-color-1: #16d867;     /* Verde per 18:30 */
-    --btn-color-2: #5d7d8c;     /* Grigio per 19:15 */
-    --btn-color-3: #bf6ce2;     /* Viola per CONVITTO */
-    --btn-color-4: #65b7ed;     /* Blu per DINNER */
+    --btn-color-2: #65b7ed;     /* Blu per 19:15 */
+    --btn-color-3: #8e44ad;     /* Viola per CONVITTO */
+    --btn-color-4: #5d7d8c;     /* Grigio per DINNER */
    
-    --btn-reset: #f28c33;    /* Arancione per Reset Giornaliero */
-    --btn-reset-complete: #f25555; /* Arancione scuro per Reset Completo */
+    --btn-reset: #e67e22;    /* Arancione per Reset Giornaliero */
+    --btn-reset-full: #c75833; /* Rosso scuro per Reset Completo */
     
 
     /* Testo e Bordi */
@@ -118,12 +118,12 @@ header {
 }
 
 .note-icon {
-    font-size: 2.0rem;
+    font-size: 1.2rem;
     margin-right: 12px;
 }
 
 .note-input {
-    flex: 2;
+    flex: 1;
     background: transparent;
     border: none;
     outline: none;
@@ -246,7 +246,7 @@ header {
 }
 
 .btn-reset {
-    background: var(--btn-reset);
+    background: var(--btn-reset, #e67e22);
     box-shadow: 0 2px 5px rgba(230, 126, 34, 0.3);
 }
 
@@ -257,7 +257,7 @@ header {
 }
 
 .btn-reset-complete {
-    background: var(--btn-reset-complete);
+    background: #c75833;
     box-shadow: 0 2px 5px rgba(192, 57, 43, 0.3);
 }
 
