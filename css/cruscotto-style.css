@@ -100,10 +100,11 @@ header {
 .note-toolbar-container {
     background: #fff9c4;
     width: 100%;
-    max-width: 500px;
     margin: 0 auto 40px auto;
     padding: 12px;
     border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-sizing: border-box;
 }
 
 .note-content {
@@ -111,15 +112,15 @@ header {
     backdrop-filter: blur(20px);
     border-radius: 15px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 12px 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    gap: 12px;
     border: 1px solid rgba(255,255,255,0.3);
 }
 
 .note-icon {
     font-size: 1.2rem;
-    margin-right: 12px;
+    margin-top: 4px;
 }
 
 .note-input {
@@ -131,6 +132,9 @@ header {
     font-size: 14px;
     color: darkslategrey;
     font-weight: 500;
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5;
 }
 
 .note-input::placeholder {
@@ -142,8 +146,8 @@ header {
     background: rgba(0,0,0,0.05);
     border: none;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
     color: var(--p);
     display: flex;
@@ -151,11 +155,25 @@ header {
     justify-content: center;
     transition: 0.2s;
     font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 4px;
 }
 
 .clear-note-btn:hover {
     background: rgba(255, 0, 0, 0.1);
     color: #d00;
+}
+
+
+.note-toolbar-container {
+    background: #fffaec;
+    border-left: 8px solid #ffd966;
+    transform: rotate(-0.5deg);
+    transition: transform 0.2s ease;
+}
+
+.note-toolbar-container:hover {
+    transform: rotate(0deg);
 }
 
 /* --- GRID STUDENTI --- */
