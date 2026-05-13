@@ -583,7 +583,7 @@ function cancellaNote() {
         const noteInput = document.getElementById('dailyNotes');
         if (noteInput) {
             noteInput.value = '';
-            localStorage.removeItem('note_convitto');
+            localStorage.setItem('note_convitto', '');
             if (typeof syncNoteToFirebase === 'function') syncNoteToFirebase();
         }
     }
