@@ -1,4 +1,4 @@
-:root {
+ :root {
     --bg-header: #2c3e50;
     --accent-color: #2c3e50;
 }
@@ -65,38 +65,11 @@ h1 {
     background-color: #ffebee !important; 
 }
 
-.cell-class {
-    width: 60px;
-    text-align: left;
-    font-size: 8.5px;
-    font-weight: bold;
-}
-
-.cell-name {
-    flex-grow: 2;
-    padding: 0 6px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.cell-room {
-    width: 40px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.cell-check {
-    width: 50px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.cell-notes {
-    width: 90px;
-    text-align: center;
-    font-weight: bold;
-}
+.cell-room { width: 30px; font-weight: bold; border-right: 1px solid #eee; }
+.cell-name { flex-grow: 1; padding-left: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cell-class { width: 45px; text-align: right; font-size: 8.5px; }
+.cell-check { width: 40px; text-align: center; font-weight: bold; }
+.cell-notes { width: 60px; text-align: center; font-weight: bold; }
 
 .check-box {
     width: 12px;
