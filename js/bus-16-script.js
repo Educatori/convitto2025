@@ -1,4 +1,4 @@
-
+ 
     function generaGrigliaBus() {
         if (typeof studenticonvittori === 'undefined') {
             console.error("Errore: convittori.js non caricato correttamente.");
@@ -79,22 +79,27 @@
             const row = document.createElement('div'); 
             row.className = `student-row ${bgClass}`;
             row.innerHTML = `
-                <div class="cell-class">${infoClasse}</div>
-                <div class="cell-name" style="cursor:pointer"><b>${s.cognome}</b> ${s.nome}</div>
-                <div class="cell-room">${s.room || ''}</div>
-                <div class="cell-check"><div class="check-box" style="cursor:pointer"></div></div>
-                <div class="cell-notes"><div class="line-notes"></div></div>
-            `;
+    <div class="cell-class">${infoClasse}</div>
+    <div class="cell-name" style="cursor:pointer"><b>${s.cognome}</b> ${s.nome}</div>
+
+    <div class="cell-check"><div class="check-box" style="cursor:pointer"></div></div>
+    <div class="cell-check"><div class="check-box" style="cursor:pointer"></div></div>
+    <div class="cell-check"><div class="check-box" style="cursor:pointer"></div></div>
+    <div class="cell-check"><div class="check-box" style="cursor:pointer"></div></div>
+`;
 
             // Eventi: click sul nome (barrato) e click sulla checkbox (presenza)
             const nameCell = row.querySelector('.cell-name');
-            const checkBox = row.querySelector('.check-box');
-            
-            nameCell.addEventListener('click', () => row.classList.toggle('row-crossed'));
-            checkBox.addEventListener('click', (e) => {
-                e.stopPropagation();
-                checkBox.classList.toggle('checked');
-            });
+            const checkBoxes = row.querySelectorAll('.check-box');
+
+nameCell.addEventListener('click', () => row.classList.toggle('row-crossed'));
+
+checkBoxes.forEach(checkBox => {
+    checkBox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        checkBox.classList.toggle('checked');
+    });
+});
 
             colonnaTarget.appendChild(row);
         });
