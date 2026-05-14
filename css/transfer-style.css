@@ -180,20 +180,103 @@ h1 {
 
 /* --- STAMPA --- */
 @media print {
-    body { 
-        background-color: white !important; 
-        padding: 0;
-    }
-    .no-print { display: none; }
-    .room-box.has-lab {
+    /* Reset completo per sfruttare al massimo la pagina */
+    * {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-        border: 2px solid var(--lab-color) !important;
     }
+    
+    body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0.15in !important;   /* Margini ridotti al minimo */
+        font-size: 8.5pt !important;   /* Testo compatto ma leggibile */
+        line-height: 1.2 !important;
+    }
+    
+    /* Nascondi elementi superflui in stampa */
+    .no-print, .logo-space, .count-badge {
+        display: none !important;
+    }
+    
+    /* Intestazione più compatta */
+    .header-container {
+        margin-bottom: 5px !important;
+        padding-bottom: 2px !important;
+        border-bottom-width: 2px !important;
+        min-height: 40px !important;
+    }
+    
+    h1 {
+        font-size: 14pt !important;
+        margin: 0 !important;
+    }
+    
+    /* Griglia a 4 colonne (massimo sfruttamento larghezza) */
+    .grid-container {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 4px !important;
+    }
+    
+    .section-title {
+        grid-column: span 4 !important;
+        font-size: 10pt !important;
+        padding: 3px !important;
+        margin-top: 6px !important;
+        margin-bottom: 2px !important;
+    }
+    
+    /* Box classe: molto compatti */
+    .room-box {
+        border: 0.5px solid #333 !important;
+        min-height: auto !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .room-info {
+        width: 45px !important;      /* Ridotta larghezza */
+        font-size: 9pt !important;
+        padding: 2px 0 !important;
+    }
+    
     .lab-badge {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        background-color: var(--lab-color) !important;
+        font-size: 6pt !important;
+        padding: 1px 2px !important;
+        margin-top: 2px !important;
     }
-    @page { size: A4 portrait; margin: 0.5cm; }
+    
+    .occupants-list {
+        padding: 0 !important;
+    }
+    
+    .row-student {
+        font-size: 7.5pt !important;    /* Ridotto per far stare più righe */
+        padding: 1px 3px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .student-name {
+        font-size: 7.5pt !important;
+        white-space: normal !important;
+        overflow: visible !important;
+    }
+    
+    .student-details {
+        font-size: 7pt !important;
+        margin-left: 4px !important;
+    }
+    
+    /* Forza l'uso di tutto lo spazio verticale senza interruzioni interne */
+    .room-box, .occupants-list, .row-student {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    @page {
+        size: A4 portrait;
+        margin: 0.2in;   /* Margini stretti */
+    }
 }
