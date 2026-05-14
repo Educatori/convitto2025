@@ -7,20 +7,14 @@ function generaGriglia() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
 
-    // --- AGGIORNAMENTO TITOLO PER STAMPA PDF ---
     impostaTitoloDinamico();
 
-    // 1. Configurazione: Classi da ESCLUDERE e Lab del giorno
     const classiDaEscludere = ["1P", "2P", "3P", "2A", "2B", "5B"];
     const oggi = new Date().getDay();
-    
-    // Configurazione LAB_PRANZO (definita in permessi.js)
     const labConfig = (typeof LAB_PRANZO !== 'undefined') ? LAB_PRANZO : {};
     const classiInLabOggi = labConfig[oggi] || [];
 
-    // 2. Caricamento dati da tuttiStudenti (database unico)
     let listaDalDatabase = [];
-    
     if (typeof tuttiStudenti !== 'undefined') {
         listaDalDatabase = [...tuttiStudenti];
     } else {
@@ -33,19 +27,11 @@ function generaGriglia() {
         return;
     }
 
-    console.log(`Transfer Lunch: ${listaDalDatabase.length} studenti totali nel database`);
-
-    // 3. Filtraggio e Raggruppamento per classe
     const classi = {};
-    
     listaDalDatabase.forEach(s => {
         if (!s.cognome || s.cognome.trim() === "") return;
-        
         const nomeClasse = s.classe ? s.classe.toUpperCase().trim() : "SENZA CLASSE";
-        
-        // Escludi classi specifiche
         if (classiDaEscludere.includes(nomeClasse)) return;
-
         if (!classi[nomeClasse]) classi[nomeClasse] = [];
         classi[nomeClasse].push(s);
     });
@@ -58,34 +44,33 @@ function generaGriglia() {
         return;
     }
 
-    // 4. Generazione HTML
     elencoClassi.forEach(nomeClasse => {
         const box = document.createElement('div');
         const haLabOggi = classiInLabOggi.includes(nomeClasse);
-        
         box.className = `room-box ${haLabOggi ? 'has-lab' : ''}`;
 
-        // Ordina gli studenti per cognome all'interno della classe
         classi[nomeClasse].sort((a, b) => a.cognome.localeCompare(b.cognome));
 
         const occupantiHtml = classi[nomeClasse].map(s => {
-            // Determina se lo studente è esterno o convittore
             const roomNum = parseInt(s.room, 10);
             const isConvittore = !isNaN(roomNum) && roomNum >= 101 && roomNum <= 221;
-            
-            // Gestisci campi opzionali
+
             const tagPercorso = s.percorso ? `<span class="percorso-tag">${s.percorso}</span>` : "";
             const tagGruppo = s.gruppo ? `• ${s.gruppo}` : "";
-            
+
+            // ---- NUOVA LOGICA PER LE ETICHETTE ----
             let roomInfo = "";
             if (isConvittore && s.room !== "-") {
-                roomInfo = `[room ${s.room}]`;
+                // Mostra solo il numero, senza "room "
+                roomInfo = `${s.room}`;
             } else if (s.room === "-") {
-                roomInfo = `[esterno]`;
+                roomInfo = `-`;   // invece di "[esterno]"
             } else if (s.room && s.room !== "-" && !isConvittore) {
-                roomInfo = `[${s.room}]`;
+                // Se è un altro valore (es. "esterno" scritto diversamente) lo mostriamo pulito
+                roomInfo = `${s.room}`;
             }
-            
+            // ---------------------------------------
+
             const dettagli = [
                 roomInfo,
                 tagPercorso,
