@@ -1,0 +1,231 @@
+:root {
+    --bg-header: #2c3e50;
+    --accent-color: #2c3e50;
+    --row-alt: #f9f9f9;
+}
+
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 0; 
+    padding: 8px; 
+    font-size: 12px;
+    background-color: #fff;
+}
+
+/* Intestazione */
+.header-main {
+    text-align: center;
+    border-bottom: 2px solid var(--bg-header);
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+}
+
+h1 { 
+    margin: 0; 
+    font-size: 18px; 
+    text-transform: uppercase; 
+    color: var(--accent-color);
+}
+
+.subtitle {
+    margin: 4px 0 0;
+    font-size: 11px;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Griglia a 3 colonne per distribuire gli studenti */
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 15px;
+    width: 100%;
+}
+
+/* Singola colonna all'interno della griglia */
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Intestazione della colonna */
+.column-header {
+    display: flex;
+    background: var(--bg-header);
+    color: white;
+    font-weight: bold;
+    padding: 8px 6px;
+    border-radius: 3px 3px 0 0;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+/* Riga studente */
+.student-row { 
+    border: 0.5px solid #bbb; 
+    display: flex; 
+    align-items: center;
+    padding: 5px 6px;
+    margin-bottom: 2px;
+    page-break-inside: avoid;
+    font-size: 11px;
+    background-color: white;
+}
+
+/* Righe alternate per leggibilità */
+.student-row:nth-child(even) {
+    background-color: var(--row-alt);
+}
+
+.row-crossed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: #ffebee !important; 
+}
+
+/* Celle */
+.cell-class { 
+    width: 50px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    padding-left: 3px;
+    flex-shrink: 0;
+}
+
+.cell-name { 
+    flex-grow: 2;
+    padding-left: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.cell-name b {
+    font-weight: 600;
+}
+
+.cell-check { 
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Checkbox */
+.check-box {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #333;
+    margin: 0 auto;
+    position: relative;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.check-box.checked::after {
+    content: '✔';
+    display: block;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+    color: #2e7d32;
+}
+
+/* Pulsante di stampa */
+.no-print { 
+    text-align: center; 
+    margin-bottom: 15px; 
+}
+
+.print-info {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #555;
+}
+
+.btn { 
+    padding: 8px 25px; 
+    background: var(--bg-header); 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 30px; 
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.btn:hover {
+    background: #1e2b38;
+}
+
+/* STAMPA: fronte/retro con layout a 3 colonne */
+@media print {
+    .no-print { display: none !important; }
+    
+    @page { 
+        size: A4 landscape; 
+        margin: 0.5cm;
+    }
+    
+    body { 
+        padding: 0; 
+        font-size: 10pt;
+    }
+    
+    /* Forza il Turno 2 a iniziare sul retro */
+    .turno-2 {
+        page-break-before: page;
+        break-before: page;
+    }
+    
+    /* Evita righe spezzate */
+    .student-row {
+        page-break-inside: avoid;
+    }
+    
+    /* Stampa colori */
+    .student-row, .row-crossed {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    /* Leggero aumento caratteri in stampa */
+    .student-row {
+        font-size: 9pt;
+        padding: 3px 4px;
+    }
+    
+    .column-header {
+        font-size: 9pt;
+        padding: 5px 4px;
+    }
+    
+    .cell-class {
+        font-size: 9pt;
+        width: 45px;
+    }
+    
+    .cell-check {
+        width: 28px;
+    }
+    
+    .check-box {
+        width: 11px;
+        height: 11px;
+    }
+    
+    .check-box.checked::after {
+        line-height: 9px;
+        font-size: 8px;
+    }
+    
+    h1 {
+        font-size: 14pt;
+    }
+    
+    .grid-wrapper {
+        column-gap: 10px;
+    }
+}
