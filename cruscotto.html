@@ -1,205 +1,265 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cruscotto Operativo</title>
-    
-    <link rel="stylesheet" href="css/cruscotto-style.css">
-    
-    <!-- Firebase SDK -->
-   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indice v1.0</title>
+
+<style>
+:root {
+--bg-light: linear-gradient(135deg, #dfe9f3, #ffffff);
+--bg-dark: linear-gradient(135deg, #0f172a, #1e293b);
+--card-light: rgba(255,255,255,0.6);
+--card-dark: rgba(30,41,59,0.6);
+--primary: #1a3a5a;
+--accent: #4a90e2;
+
+}
+
+body {
+margin: 0;
+font-family: 'Segoe UI', system-ui;
+background: var(--bg-light);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+transition: 0.4s;
+}
+
+/* DARK MODE AUTO */
+@media (prefers-color-scheme: dark) {
+body { background: var(--bg-dark); color: white; }
+.link-card { background: var(--card-dark); }
+.link-card span { color: white; }
+.link-card svg { stroke: #e2e8f0; fill: none; }
+#todayDate { color: white; }
+}
+
+/* HEADER & CLOCK */
+.header-container {
+text-align: center;
+margin-bottom: 40px;
+}
+
+h1 {
+font-size: 30px;
+letter-spacing: 4px;
+margin-bottom: 10px;
+background: linear-gradient(90deg, #4a90e2, #6dd5fa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+#todayDate {
+font-size: 0.9rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(--primary);
+opacity: 0.8;
+margin-bottom: 5px;
+}
+
+#digitalClock {
+font-size: 2rem;
+font-weight: 700;
+font-family: 'Courier New', Courier, monospace;
+margin-bottom: 20px;
+}
+
+/* GRID */
+.links-grid {
+display: grid;
+grid-template-columns: repeat(3, 130px);
+gap: 30px;
+}
+
+/* CARD */
+.link-card {
+background: var(--card-light);
+backdrop-filter: blur(20px);
+border-radius: 25px;
+height: 130px;
+width: 130px;
+text-decoration: none;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 12px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+transition: all 0.35s cubic-bezier(.25,.8,.25,1);
+position: relative;
+overflow: hidden;
+}
+
+.link-card::before {
+content: "";
+position: absolute;
+width: 200%;
+height: 200%;
+background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+transform: rotate(25deg);
+top: -100%;
+left: -100%;
+transition: 0.5s;
+}
+
+.link-card:hover::before { top: 100%; left: 100%; }
+
+.link-card svg { 
+width: 42px; 
+height: 42px; 
+stroke: var(--primary); 
+stroke-width: 1.8;
+fill: none;
+transition: 0.3s; 
+}
+
+.link-card span { 
+font-size: 13px; 
+font-weight: 500; 
+color: var(--primary); 
+}
+
+.link-card:hover { 
+transform: translateY(-10px) scale(1.07); 
+box-shadow: 0 20px 40px rgba(0,0,0,0.25); 
+}
+
+.link-card:active { transform: scale(0.95); }
+
+@media (max-width: 600px) {
+.links-grid { grid-template-columns: repeat(2, 130px); }
+}
+</style>
 </head>
 <body>
-    
-<!-- login -->
-    
-    <div id="loginScreen" style="
-    position:fixed;
-    inset:0;
-    background:#f5f5f5;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:99999;
-">
 
-   <div style="
-        background:white;
-        padding:40px;
-        border-radius:20px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.15);
-        width:320px;
-        text-align:center;
-    ">
-
-        <h2 style="margin-bottom:25px;">Accesso Cruscotto</h2>
-
-        <input 
-            type="email" 
-            id="loginEmail"
-            placeholder="Email"
-            style="
-                width:100%;
-                padding:12px;
-                margin-bottom:15px;
-                border:1px solid #ccc;
-                border-radius:10px;
-            "
-        >
-
-        <input 
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-            style="
-                width:100%;
-                padding:12px;
-                margin-bottom:20px;
-                border:1px solid #ccc;
-                border-radius:10px;
-            "
-        >
-
-        <button 
-            onclick="login()"
-            style="
-                width:100%;
-                padding:12px;
-                border:none;
-                border-radius:10px;
-                background:#2c7be5;
-                color:white;
-                font-weight:bold;
-                cursor:pointer;
-            "
-        >
-            ACCEDI
-        </button>
-
-        <div id="loginError" style="
-            color:red;
-            margin-top:15px;
-            font-size:0.9em;
-        "></div>
-
-    </div>
+<div class="header-container">
+<h1>INDICE</h1>
+<div id="todayDate">Caricamento...</div>
+<div id="digitalClock">00:00:00</div>
 </div>
-    
-    <div class="container">
-        <header>
-            <div>
-                <h1><a href="index.html" style="text-decoration: none; color: inherit;">Cruscotto Operativo</a></h1>
-                <div id="todayDate" style="font-size:1.2em; opacity:0.8;">Caricamento data...</div>
-            </div>
-            <div id="digitalClock" style="font-size:2.8em; font-weight:bold; font-family:monospace;">00:00:00</div>
-            
-            <button onclick="logout()" style="
-    padding:8px 12px;
-    border:none;
-    border-radius:8px;
-    background:#000000;
-    color:white;
-    cursor:pointer;
-">
-    Logout
-</button>
-        </header>
 
-        <div class="note-toolbar-container">
-    <div class="note-content">
-        <span class="note-icon">📌</span>
-        <textarea id="dailyNotes" placeholder="Inserisci note, promemoria o comunicazioni..." class="note-input" rows="2"></textarea>
-        <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
-    </div>
-</div>     
+<div class="links-grid">
+
+
+<a href="roomcloud.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 19H9C7 19 4 18 4 14.5C4 11 7 10 7.5 10C8 7 10 5 13 5C16 5 18 7 18.5 10C21 10.5 22 12.5 22 14.5C22 17 20 19 17.5 19Z"/>
+</svg>
+<span>Cloud</span>
+</a>
+
+<a href="cruscotto.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 8v4l2 2"/>
+<path d="M7 4l-2 2M19 4l2 2"/>
+</svg>
+<span>Cruscotto</span>
+</a>
+
+
+<a href="bus-8.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 18h16M4 18v-9c0-2 2-4 4-4h8c2 0 4 2 4 4v9M4 18v2M20 18v2"/>
+                <path d="M6 9h4M14 9h4M6 13h12"/>
+                <path d="M8 9h9M14 9h1M6 13h12"/>
+<circle cx="7" cy="18" r="2"/>
+<circle cx="17" cy="18" r="2"/>
+</svg>
+<span>Bus 8</span>
+</a>
+
+
+<a href="transfer.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M7 10h12M15 6l4 4-4 4"/>
+<path d="M17 14H5M9 10l-4 4 4 4"/>
+</svg>
+<span>Transfer</span>
+</a>
+
+<a href="bus-16.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<!-- corpo esagonale del bus -->
+<polygon points="6,6 18,6 21,12 18,18 6,18 3,12" />
+<!-- tre finestrini stilizzati -->
+<rect x="7" y="10" width="3" height="3" rx="0.5" />
+
+<rect x="15" y="10" width="3" height="3" rx="0.5" />
+<!-- tre ruote: due davanti, una dietro -->
+<circle cx="7" cy="18" r="2" />
+
+<circle cx="17" cy="18" r="2" />
+</svg>
+<span>Bus 16</span>
+</a>
+
+<a href="uscita.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M15 12H3M12 15l3-3-3-3"/>
+<path d="M9 21H17c2 0 3-1 3-3V6c0-2-1-3-3-3H9"/>
+</svg>
+<span>Uscita</span>
+</a>
+
+<a href="rooming.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 10L12 3l9 7v11H3V10Z"/>
+<path d="M9 14h6M9 17h4"/>
+</svg>
+<span>Rooming</span>
+</a>
+
+ 
+        <a href="presenze-dinner.html" class="link-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Dinner</span>
+        </a>
         
-    <div>
-             <div id="info-reset" style="text-align:right; font-size:0.7em; color:#ff0000; margin-top:20px;">
-        Ultimo aggiornamento: MAI
-        </div>
-    </div>    
-        <div class="toolbar">
-    <button class="btn-toolbar" style="background:var(--p);" onclick="togglePanel()">P ⚡ PP</button>
-    <input type="text" id="search" placeholder="Cerca ..." onkeyup="applicaFiltri()">
     
-    <div style="display:flex; align-items:center; gap:5px;">
-        <span style="font-size:0.8em; font-weight:bold; color:var(--p);">ROOM:</span>
-        <input type="number" id="roomInput" placeholder="n° ↕" min="101" max="221" style="width:60px;" 
-               onfocus="this.oldValue = this.value;" 
-               oninput="gestisciSaltoStanze(this); validaERicerca();">
-    </div>
+<a href="dashboard.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="8" height="8" rx="1.5"/>
+<rect x="13" y="3" width="8" height="8" rx="1.5"/>
+<rect x="3" y="13" width="8" height="8" rx="1.5"/>
+<rect x="13" y="13" width="8" height="8" rx="1.5"/>
+</svg>
+<span>Dashboard</span>
+</a>
 
-    <!-- PULSANTI RESET STILIZZATI -->
-    <button class="btn-reset" onclick="resetDati('soloManuali')" title="Reset Giornaliero (solo variazioni)">
-        🗑️ Reset Day
-    </button>
-    <button class="btn-reset-complete" onclick="resetDati('completo')" title="Reset Completo (tutti i dati)">
-        ⚠️ Reset Full
-    </button>
 
-    <div id="connection-status" style="font-size:0.7em; padding:5px 10px; border-radius:20px; background:#d4edda; color:#155724;">
-        🟢 Connesso
-    </div>
+
+
 </div>
-        
-        
-        
 
-        <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;">
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-1)" onclick="setTurno(1)">1° TURNO (18:30)</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-2)" onclick="setTurno(2)">2° TURNO (19:15)</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-3)" onclick="generaPopUpStampaConvitto()">STAMPA CONVITTO</div>
-            <div class="day-box" style="border-bottom:4px solid var(--btn-color-4)" onclick="generaPopUpStampaDinner()">STAMPA DINNER</div>
-        </div>
+<script>
+function updateDateTime() {
+const now = new Date();
 
-        <div id="listaStudenti"></div>
-    </div>
+// Formattazione Data
+const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+document.getElementById('todayDate').textContent = now.toLocaleDateString('it-IT', options);
 
-    <div id="sidePanel" style="position:fixed; top:0; right:-350px; width:320px; height:100%; background:white; box-shadow:-5px 0 15px rgba(0,0,0,0.1); transition:0.3s; z-index:1000; padding:20px; overflow-y:auto; display:flex; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0;">Gestione Permessi</h3>
-            <button onclick="togglePanel()" style="border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
-        </div>
-        <hr>
-        <h3 style="margin-top:10px;">Programmazione Assenze</h3>
-        <select id="selectStudente" style="width:100%; margin-bottom:6px;">
-            <option value="">-- Seleziona Nome --</option>
-        </select>
-        <select id="selectClasse" style="width:100%; margin-bottom:6px;">
-            <option value="">-- Seleziona Classe --</option>
-        </select>
-        <input type="date" id="dataDal" style="width:100%; margin-bottom:6px;">
-        <input type="date" id="dataAl" style="width:100%; margin-bottom:10px;">
-        <button onclick="aggiungiAssenza()" style="width:100%; background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
-            ➕ Aggiungi Assenza
-        </button>
-        <hr style="margin:20px 0;">
-        <h3>Lista Assenze</h3>
-        <div id="listaAssenze" style="margin-bottom:20px;"></div>
-        <hr>
-        <h3>Permessi Permanenti</h3>
-        <div id="listaPermessiContent"></div>
-    </div>
+// Formattazione Ora
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+const seconds = String(now.getSeconds()).padStart(2, '0');
+document.getElementById('digitalClock').textContent = `${hours}:${minutes}:${seconds}`;
+}
 
- <script src="js/studenti_25-26.js"></script>  
-<script src="js/convittori.js"></script>
-<script src="js/permessi.js"></script>
-<script src="js/firebase-cruscotto-config.js"></script>
-<script src="js/cruscotto-script.js"></script>
-<script src="js/firebase-cruscotto-sync.js"></script>
+// Esegui subito e poi ogni secondo
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
 
-     <script>
-        // Debug: verifica che resetDati sia definita
-        window.addEventListener('load', function() {
-            if (typeof resetDati === 'function') {
-                console.log('✅ resetDati è definita correttamente');
-            } else {
-                console.error('❌ resetDati NON è definita!');
-            }
-        });
-    </script>
 </body>
 </html>
