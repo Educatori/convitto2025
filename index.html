@@ -2,207 +2,221 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indice v1.0</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indice v1.0</title>
 
-    <style>
-        :root {
-            --bg-light: linear-gradient(135deg, #dfe9f3, #ffffff);
-            --bg-dark: linear-gradient(135deg, #0f172a, #1e293b);
-            --card-light: rgba(255,255,255,0.6);
-            --card-dark: rgba(30,41,59,0.6);
-            --primary: #1a3a5a;
-            --accent: #4a90e2;
-            
-        }
+<style>
+:root {
+--bg-light: linear-gradient(135deg, #dfe9f3, #ffffff);
+--bg-dark: linear-gradient(135deg, #0f172a, #1e293b);
+--card-light: rgba(255,255,255,0.6);
+--card-dark: rgba(30,41,59,0.6);
+--primary: #1a3a5a;
+--accent: #4a90e2;
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', system-ui;
-            background: var(--bg-light);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            transition: 0.4s;
-        }
+}
 
-        /* DARK MODE AUTO */
-        @media (prefers-color-scheme: dark) {
-            body { background: var(--bg-dark); color: white; }
-            .link-card { background: var(--card-dark); }
-            .link-card span { color: white; }
-            .link-card svg { stroke: #e2e8f0; fill: none; }
-            #todayDate { color: white; }
-        }
+body {
+margin: 0;
+font-family: 'Segoe UI', system-ui;
+background: var(--bg-light);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+transition: 0.4s;
+}
 
-        /* HEADER & CLOCK */
-        .header-container {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+/* DARK MODE AUTO */
+@media (prefers-color-scheme: dark) {
+body { background: var(--bg-dark); color: white; }
+.link-card { background: var(--card-dark); }
+.link-card span { color: white; }
+.link-card svg { stroke: #e2e8f0; fill: none; }
+#todayDate { color: white; }
+}
 
-        h1 {
-            font-size: 30px;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #4a90e2, #6dd5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+/* HEADER & CLOCK */
+.header-container {
+text-align: center;
+margin-bottom: 40px;
+}
 
-        #todayDate {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--primary);
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
+h1 {
+font-size: 30px;
+letter-spacing: 4px;
+margin-bottom: 10px;
+background: linear-gradient(90deg, #4a90e2, #6dd5fa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
 
-        #digitalClock {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: 'Courier New', Courier, monospace;
-            margin-bottom: 20px;
-        }
+#todayDate {
+font-size: 0.9rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(--primary);
+opacity: 0.8;
+margin-bottom: 5px;
+}
 
-        /* GRID */
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 130px);
-            gap: 30px;
-        }
+#digitalClock {
+font-size: 2rem;
+font-weight: 700;
+font-family: 'Courier New', Courier, monospace;
+margin-bottom: 20px;
+}
 
-        /* CARD */
-        .link-card {
-            background: var(--card-light);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            height: 130px;
-            width: 130px;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transition: all 0.35s cubic-bezier(.25,.8,.25,1);
-            position: relative;
-            overflow: hidden;
-        }
+/* GRID */
+.links-grid {
+display: grid;
+grid-template-columns: repeat(3, 130px);
+gap: 30px;
+}
 
-        .link-card::before {
-            content: "";
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: rotate(25deg);
-            top: -100%;
-            left: -100%;
-            transition: 0.5s;
-        }
+/* CARD */
+.link-card {
+background: var(--card-light);
+backdrop-filter: blur(20px);
+border-radius: 25px;
+height: 130px;
+width: 130px;
+text-decoration: none;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 12px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+transition: all 0.35s cubic-bezier(.25,.8,.25,1);
+position: relative;
+overflow: hidden;
+}
 
-        .link-card:hover::before { top: 100%; left: 100%; }
+.link-card::before {
+content: "";
+position: absolute;
+width: 200%;
+height: 200%;
+background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+transform: rotate(25deg);
+top: -100%;
+left: -100%;
+transition: 0.5s;
+}
 
-        .link-card svg { 
-            width: 42px; 
-            height: 42px; 
-            stroke: var(--primary); 
-            stroke-width: 1.8;
-            fill: none;
-            transition: 0.3s; 
-        }
-        
-        .link-card span { 
-            font-size: 13px; 
-            font-weight: 500; 
-            color: var(--primary); 
-        }
+.link-card:hover::before { top: 100%; left: 100%; }
 
-        .link-card:hover { 
-            transform: translateY(-10px) scale(1.07); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25); 
-        }
-        
-        .link-card:active { transform: scale(0.95); }
+.link-card svg { 
+width: 42px; 
+height: 42px; 
+stroke: var(--primary); 
+stroke-width: 1.8;
+fill: none;
+transition: 0.3s; 
+}
 
-        @media (max-width: 600px) {
-            .links-grid { grid-template-columns: repeat(2, 130px); }
-        }
-    </style>
+.link-card span { 
+font-size: 13px; 
+font-weight: 500; 
+color: var(--primary); 
+}
+
+.link-card:hover { 
+transform: translateY(-10px) scale(1.07); 
+box-shadow: 0 20px 40px rgba(0,0,0,0.25); 
+}
+
+.link-card:active { transform: scale(0.95); }
+
+@media (max-width: 600px) {
+.links-grid { grid-template-columns: repeat(2, 130px); }
+}
+</style>
 </head>
 <body>
 
-    <div class="header-container">
-        <h1>INDICE</h1>
-        <div id="todayDate">Caricamento...</div>
-        <div id="digitalClock">00:00:00</div>
-    </div>
+<div class="header-container">
+<h1>INDICE</h1>
+<div id="todayDate">Caricamento...</div>
+<div id="digitalClock">00:00:00</div>
+</div>
 
-    <div class="links-grid">
-      
+<div class="links-grid">
 
-        <a href="roomcloud.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.5 19H9C7 19 4 18 4 14.5C4 11 7 10 7.5 10C8 7 10 5 13 5C16 5 18 7 18.5 10C21 10.5 22 12.5 22 14.5C22 17 20 19 17.5 19Z"/>
-            </svg>
-            <span>Cloud</span>
-        </a>
 
-        <a href="cruscott_o.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 8v4l2 2"/>
-                <path d="M7 4l-2 2M19 4l2 2"/>
-            </svg>
-            <span>Cruscotto</span>
-        </a>
-        
-          
-      
-        
-        <a href="bus.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 18h16M4 18v-9c0-2 2-4 4-4h8c2 0 4 2 4 4v9M4 18v2M20 18v2"/>
+<a href="roomcloud.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 19H9C7 19 4 18 4 14.5C4 11 7 10 7.5 10C8 7 10 5 13 5C16 5 18 7 18.5 10C21 10.5 22 12.5 22 14.5C22 17 20 19 17.5 19Z"/>
+</svg>
+<span>Cloud</span>
+</a>
+
+<a href="cruscotto.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 8v4l2 2"/>
+<path d="M7 4l-2 2M19 4l2 2"/>
+</svg>
+<span>Cruscotto</span>
+</a>
+
+
+<a href="bus-8.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 18h16M4 18v-9c0-2 2-4 4-4h8c2 0 4 2 4 4v9M4 18v2M20 18v2"/>
                 <path d="M6 9h4M14 9h4M6 13h12"/>
-                <circle cx="7" cy="18" r="2"/>
-                <circle cx="17" cy="18" r="2"/>
-            </svg>
-            <span>Bus</span>
-        </a>
+                <path d="M8 9h9M14 9h1M6 13h12"/>
+<circle cx="7" cy="18" r="2"/>
+<circle cx="17" cy="18" r="2"/>
+</svg>
+<span>Bus 8</span>
+</a>
 
-        <a href="uscita.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 12H3M12 15l3-3-3-3"/>
-                <path d="M9 21H17c2 0 3-1 3-3V6c0-2-1-3-3-3H9"/>
-            </svg>
-            <span>Uscita</span>
-        </a>
 
-        
+<a href="transfer.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M7 10h12M15 6l4 4-4 4"/>
+<path d="M17 14H5M9 10l-4 4 4 4"/>
+</svg>
+<span>Transfer</span>
+</a>
 
-        <a href="transfer.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 10h12M15 6l4 4-4 4"/>
-                <path d="M17 14H5M9 10l-4 4 4 4"/>
-            </svg>
-            <span>Transfer</span>
-        </a>
-        
-          <a href="rooming.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 10L12 3l9 7v11H3V10Z"/>
-                <path d="M9 14h6M9 17h4"/>
-            </svg>
-            <span>Rooming</span>
-        </a>
-        
-        
+<a href="bus-16.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<!-- corpo esagonale del bus -->
+<polygon points="6,6 18,6 21,12 18,18 6,18 3,12" />
+<!-- tre finestrini stilizzati -->
+<rect x="7" y="10" width="3" height="3" rx="0.5" />
+
+<rect x="15" y="10" width="3" height="3" rx="0.5" />
+<!-- tre ruote: due davanti, una dietro -->
+<circle cx="7" cy="18" r="2" />
+
+<circle cx="17" cy="18" r="2" />
+</svg>
+<span>Bus 16</span>
+</a>
+
+<a href="uscita.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M15 12H3M12 15l3-3-3-3"/>
+<path d="M9 21H17c2 0 3-1 3-3V6c0-2-1-3-3-3H9"/>
+</svg>
+<span>Uscita</span>
+</a>
+
+<a href="rooming.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 10L12 3l9 7v11H3V10Z"/>
+<path d="M9 14h6M9 17h4"/>
+</svg>
+<span>Rooming</span>
+</a>
+
+ 
         <a href="presenze-dinner.html" class="link-card">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/>
@@ -211,40 +225,41 @@
             <span>Dinner</span>
         </a>
         
-        <a href="dashboard.html" class="link-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="8" height="8" rx="1.5"/>
-                <rect x="13" y="3" width="8" height="8" rx="1.5"/>
-                <rect x="3" y="13" width="8" height="8" rx="1.5"/>
-                <rect x="13" y="13" width="8" height="8" rx="1.5"/>
-            </svg>
-            <span>Dashboard</span>
-        </a>
-        
-        
-        
-        
-    </div>
+    
+<a href="dashboard.html" class="link-card">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="8" height="8" rx="1.5"/>
+<rect x="13" y="3" width="8" height="8" rx="1.5"/>
+<rect x="3" y="13" width="8" height="8" rx="1.5"/>
+<rect x="13" y="13" width="8" height="8" rx="1.5"/>
+</svg>
+<span>Dashboard</span>
+</a>
 
-    <script>
-        function updateDateTime() {
-            const now = new Date();
-            
-            // Formattazione Data
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('todayDate').textContent = now.toLocaleDateString('it-IT', options);
-            
-            // Formattazione Ora
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('digitalClock').textContent = `${hours}:${minutes}:${seconds}`;
-        }
 
-        // Esegui subito e poi ogni secondo
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-    </script>
+
+
+</div>
+
+<script>
+function updateDateTime() {
+const now = new Date();
+
+// Formattazione Data
+const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+document.getElementById('todayDate').textContent = now.toLocaleDateString('it-IT', options);
+
+// Formattazione Ora
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+const seconds = String(now.getSeconds()).padStart(2, '0');
+document.getElementById('digitalClock').textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+// Esegui subito e poi ogni secondo
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
 
 </body>
 </html>
