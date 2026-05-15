@@ -2,53 +2,41 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Presenze Dinner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presenze Dinner - Turni 18:30 e 19:15</title>
     <link rel="stylesheet" href="css/presenze-dinner.css">
 </head>
 <body>
 
 <div class="no-print">
-    <button class="btn" onclick="window.print()">STAMPA</button>
+    <button class="btn" onclick="window.print()">🖨️ STAMPA (Fronte/Retro)</button>
+    
 </div>
 
-<div class="header-main">
-    <h1>Presenze Dinner</h1>
+<!-- TURNO 1 (FRONTE) -->
+<div class="turno-container turno-1">
+    <div class="header-main">
+        <h1>
+    <a href="index.html" style="text-decoration: none; color: inherit;">
+        Presenze Dinner - Turno 18:30
+    </a>
+
+        <p class="subtitle">Totale studenti: <span id="totale1">0</span></p>
+    </div>
+    <div class="grid-wrapper" id="turno1-wrapper">
+        <!-- Le 2-3 colonne verranno generate dinamicamente -->
+    </div>
 </div>
 
-<div class="dinner-wrapper">
-
-    <!-- TURNO 1 -->
-    <div class="macro-column">
-        <div class="turn-title">TURNO 1</div>
-
-        <div class="column-header">
-            <div class="cell-class">Classe</div>
-            <div class="cell-name">Nome</div>
-            <div class="cell-check">LU</div>
-            <div class="cell-check">MA</div>
-            <div class="cell-check">ME</div>
-            <div class="cell-check">GI</div>
-        </div>
-
-        <div id="turno1"></div>
+<!-- TURNO 2 (RETRO) -->
+<div class="turno-container turno-2">
+    <div class="header-main">
+        <h1>Presenze Dinner - Turno 19:15</h1>
+        <p class="subtitle">Totale studenti: <span id="totale2">0</span></p>
     </div>
-
-    <!-- TURNO 2 -->
-    <div class="macro-column">
-        <div class="turn-title">TURNO 2</div>
-
-        <div class="column-header">
-            <div class="cell-class">Classe</div>
-            <div class="cell-name">Nome</div>
-            <div class="cell-check">LU</div>
-            <div class="cell-check">MA</div>
-            <div class="cell-check">ME</div>
-            <div class="cell-check">GI</div>
-        </div>
-
-        <div id="turno2"></div>
+    <div class="grid-wrapper" id="turno2-wrapper">
+        <!-- Le 2-3 colonne verranno generate dinamicamente -->
     </div>
-
 </div>
 
 <script src="js/studenti_25-26.js"></script>
