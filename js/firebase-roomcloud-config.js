@@ -1,3 +1,4 @@
+/* FIREBASE-ROOMCLOUD-CONFIG.JS */
 // firebase-roomcloud-config.js
 export const firebaseConfig = {
   apiKey: "AIzaSyAlvE48F1flTIZ1KyU_FKIV30w60pWFphE",
