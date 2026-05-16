@@ -1,3 +1,4 @@
+/* ROOMING-SCRIPT.JS */
 function generaGrigliaRooming() {
     const grid = document.getElementById('mainGrid');
     if (!grid) return;
