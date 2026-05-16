@@ -1,7 +1,4 @@
- /**
- * SCRIPT.JS - Versione Integrale Omnicomprensiva
- * Gestione Dashboard Convitto
- */
+ /* SCRIPT.JS */
 
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
