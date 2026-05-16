@@ -1,3 +1,4 @@
+/* FIREBASE-CRUSCOTTO-CONFIG.JS */
 // Configurazione Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCujVjW7Aorn0illq_2w50u8oAgWGJEBRY",
