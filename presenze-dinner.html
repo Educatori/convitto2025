@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presenze Dinner - Turni 18:30 e 19:15</title>
-    <link rel="stylesheet" href="css/presenze-dinner.css">
+    <link rel="stylesheet" href="css/dinner-style.css">
 </head>
 <body>
 
-<div class="no-print">
-    <button class="btn" onclick="window.print()">🖨️ STAMPA (Fronte/Retro)</button>
-    
+<div class="no-print"><button class="btn" onclick="stampaFronteRetro()">STAMPA FRONTE-RETRO</button>
 </div>
 
 <!-- TURNO 1 (FRONTE) -->
@@ -18,11 +16,10 @@
     <div class="header-main">
         <h1>
     <a href="index.html" style="text-decoration: none; color: inherit;">
-        Presenze Dinner - Turno 18:30
-    </a>
-
-        <p class="subtitle">Totale studenti: <span id="totale1">0</span></p>
-    </div>
+        •••••• Presenze Dinner •••••• </a>
+        </h1>
+    <p class="subtitle"> Turno 18:30 </p>        
+        </div>
     <div class="grid-wrapper" id="turno1-wrapper">
         <!-- Le 2-3 colonne verranno generate dinamicamente -->
     </div>
@@ -31,8 +28,8 @@
 <!-- TURNO 2 (RETRO) -->
 <div class="turno-container turno-2">
     <div class="header-main">
-        <h1>Presenze Dinner - Turno 19:15</h1>
-        <p class="subtitle">Totale studenti: <span id="totale2">0</span></p>
+        <h1>Presenze Dinner </h1>
+    <p class="subtitle"> Turno 19:15 </p>
     </div>
     <div class="grid-wrapper" id="turno2-wrapper">
         <!-- Le 2-3 colonne verranno generate dinamicamente -->
@@ -41,7 +38,7 @@
 
 <script src="js/studenti_25-26.js"></script>
 <script src="js/convittori.js"></script>
-<script src="js/presenze-dinner.js"></script>
+<script src="js/dinner-script.js"></script>
 
 </body>
 </html>
