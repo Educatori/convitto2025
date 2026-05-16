@@ -1,4 +1,4 @@
- 
+/* BUS-16-SCRIPT.JS */ 
     function generaGrigliaBus() {
         if (typeof studenticonvittori === 'undefined') {
             console.error("Errore: convittori.js non caricato correttamente.");
