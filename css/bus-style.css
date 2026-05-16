@@ -1,4 +1,5 @@
- :root {
+/* BUS-STYLE.CSS */
+:root {
     --bg-header: #2c3e50;
     --accent-color: #2c3e50;
 }
@@ -67,7 +68,7 @@ h1 {
 
 .cell-room { width: 30px; font-weight: bold; border-right: 1px solid #eee; }
 .cell-name { flex-grow: 1; padding-left: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cell-class { width: 45px; text-align: right; font-size: 8.5px; }
+.cell-class { width: 45px; text-align: center; font-size: 8.5px; }
 .cell-check { width: 40px; text-align: center; font-weight: bold; }
 .cell-notes { width: 60px; text-align: center; font-weight: bold; }
 
