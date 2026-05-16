@@ -164,10 +164,7 @@ function generaDinner() {
     turno1.sort(ordinaPerClasseECognome);
     turno2.sort(ordinaPerClasseECognome);
 
-    // Aggiorna i totali
-    document.getElementById('totale1').textContent = turno1.length;
-    document.getElementById('totale2').textContent = turno2.length;
-
+   
     // Log per debug: mostra l'ordine dei primi studenti
     console.log("📚 Turno 1 - Studenti in ordine (per classe e cognome):");
     let currentClasse = "";
