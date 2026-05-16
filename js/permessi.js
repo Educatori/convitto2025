@@ -1,6 +1,5 @@
-/**
- * PERMESSI.JS - Gestione Dati Convitto
- * Qui puoi aggiornare studenti, orari e calendari senza toccare il codice logico.
+/* PERMESSI.JS 
+ * Qui puoi aggiornare studenti, orari e calendari senza toccare il codice logico
  */
 
 // x. ANAGRAFICA STUDENTI CONVITTORI ED ESTERNI
