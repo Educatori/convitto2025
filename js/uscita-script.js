@@ -1,7 +1,4 @@
-/**
- * / USCITA-SCRIPT.JS - - Versione Ottimizzata per studenti_25-26.js
- * Generazione Griglia Uscita Libera
- */
+/* USCITA-SCRIPT.JS */
 function generaGrigliaLibera() {
     if (typeof studenticonvittori === 'undefined') {
         alert("Errore: studenticonvittori non trovato!");
