@@ -1,4 +1,4 @@
-// js/convittori.js
+// CONVITTORI.JS
 // Costruisce l'array studenticonvittori a partire da tuttiStudenti (definito in studenti_25-26.js)
 // Vengono inclusi solo gli studenti con room numerica compresa tra 101 e 221 (convittori)
 
