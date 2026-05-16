@@ -1,3 +1,7 @@
+/* STUDENTI_25-26.JS 
+ * elenco completo a.a. 2025
+ */
+
 const tuttiStudenti = [
     // Classe 1A
     { id: 1, cognome: "BIDO ESPIRITU", nome: "Miguel Angel", classe: "1A", room: "-" },
