@@ -1,3 +1,4 @@
+/* DINNER-SCRIPT.JS */
 // Estrae il numero della classe E la lettera per un ordinamento corretto
 // Esempi: "1A" → { num: 1, lettera: "A" }, "3P" → { num: 3, lettera: "P" }
 function parseClasse(classe) {
