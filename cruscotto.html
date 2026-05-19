@@ -6,13 +6,16 @@
 <title>Cruscotto Operativo — SyncPanel</title>
 <link rel="stylesheet" href="css/campus-theme.css">
 <link rel="stylesheet" href="css/cruscotto-style.css">
+<!-- Firebase compat -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<!-- Configurazione Firebase (variabile globale) -->
+<script src="js/firebase-config.js"></script>
 </head>
 <body>
 
-<div class="container">
+<div class="container" style="visibility:hidden;">
     <header>
         <div>
             <h1><a href="index.html">Cruscotto Operativo</a></h1>
@@ -84,65 +87,22 @@
     <div id="listaPermessiContent"></div>
 </div>
 
-<script type="module">
-    import { firebaseConfig } from "./js/firebase-config.js";
-    firebase.initializeApp(firebaseConfig);
-    import("./js/auth.js");
-
-    // ----------------------------------------------
-    // DATI GLOBALI
-    // ----------------------------------------------
+<script>
+    // Inizializza Firebase (se non già fatto)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
     const db = firebase.database();
-    let studentiData = [];            // array di studenti dal nodo "studenti"
-    let permessiData = {};            // nodo "permessi"
-    let assenzeProgrammate = {};      // nodo "assenze_programmate"
-    let datiLocali = {};              // nodo "dati_cruscotto/YYYY-MM-DD"
-    let cambiTurnoManuali = {};       // nodo "cambi_turno/YYYY-MM-DD"
+
+    // Variabili globali
+    let studentiData = [];
+    let permessiData = {};
+    let assenzeProgrammate = {};
+    let datiLocali = {};
+    let cambiTurnoManuali = {};
     let currentTurno = 1;
     let currentDate = new Date().toISOString().slice(0,10);
-
-    // ----------------------------------------------
-    // CARICAMENTO DATI DA FIREBASE
-    // ----------------------------------------------
-    async function loadPermessi() {
-        const snap = await db.ref("permessi").once("value");
-        permessiData = snap.val() || {};
-    }
-    async function loadStudenti() {
-        const snap = await db.ref("studenti").once("value");
-        const raw = snap.val();
-        studentiData = raw ? Object.values(raw) : [];
-    }
-    async function loadAssenzeProgrammate() {
-        const snap = await db.ref("assenze_programmate").once("value");
-        assenzeProgrammate = snap.val() || {};
-    }
-    async function loadDatiLocali() {
-        const snap = await db.ref(`dati_cruscotto/${currentDate}`).once("value");
-        datiLocali = snap.val() || {};
-    }
-    async function loadCambiTurno() {
-        const snap = await db.ref(`cambi_turno/${currentDate}`).once("value");
-        cambiTurnoManuali = snap.val() || {};
-    }
-    function saveDatiLocali() {
-        db.ref(`dati_cruscotto/${currentDate}`).set(datiLocali);
-    }
-    function saveCambiTurno() {
-        db.ref(`cambi_turno/${currentDate}`).set(cambiTurnoManuali);
-    }
-    function saveAssenzeProgrammate() {
-        db.ref("assenze_programmate").set(assenzeProgrammate);
-    }
-    function saveNote() {
-        const note = document.getElementById('dailyNotes').value;
-        db.ref(`note/${currentDate}`).set(note);
-    }
-    async function loadNote() {
-        const snap = await db.ref(`note/${currentDate}`).once("value");
-        const note = snap.val() || "";
-        document.getElementById('dailyNotes').value = note;
-    }
 
     // ----------------------------------------------
     // UTILITY PER I PERMESSI (da permessiData)
@@ -198,6 +158,47 @@
     window.toggleSwitchTurno = toggleSwitchTurno;
 
     // ----------------------------------------------
+    // CARICAMENTO E SALVATAGGIO DATI
+    // ----------------------------------------------
+    async function loadPermessi() {
+        const snap = await db.ref("permessi").once("value");
+        permessiData = snap.val() || {};
+    }
+    async function loadStudenti() {
+        const snap = await db.ref("studenti").once("value");
+        const raw = snap.val();
+        studentiData = raw ? Object.values(raw) : [];
+    }
+    async function loadAssenzeProgrammate() {
+        const snap = await db.ref("assenze_programmate").once("value");
+        assenzeProgrammate = snap.val() || {};
+    }
+    async function loadDatiLocali() {
+        const snap = await db.ref(`dati_cruscotto/${currentDate}`).once("value");
+        datiLocali = snap.val() || {};
+    }
+    async function loadCambiTurno() {
+        const snap = await db.ref(`cambi_turno/${currentDate}`).once("value");
+        cambiTurnoManuali = snap.val() || {};
+    }
+    async function loadNote() {
+        const snap = await db.ref(`note/${currentDate}`).once("value");
+        document.getElementById('dailyNotes').value = snap.val() || "";
+    }
+    function saveDatiLocali() {
+        db.ref(`dati_cruscotto/${currentDate}`).set(datiLocali);
+    }
+    function saveCambiTurno() {
+        db.ref(`cambi_turno/${currentDate}`).set(cambiTurnoManuali);
+    }
+    function saveAssenzeProgrammate() {
+        db.ref("assenze_programmate").set(assenzeProgrammate);
+    }
+    function saveNote() {
+        db.ref(`note/${currentDate}`).set(document.getElementById('dailyNotes').value);
+    }
+
+    // ----------------------------------------------
     // GESTIONE ASSENZE PROGRAMMATE
     // ----------------------------------------------
     function isAssenteProgrammato(cognome, data) {
@@ -231,7 +232,7 @@
         });
         saveAssenzeProgrammate();
         renderListaAssenze();
-        renderLista(); // aggiorna la visualizzazione
+        renderLista();
     }
     window.aggiungiAssenza = aggiungiAssenza;
 
@@ -261,7 +262,7 @@
     }
 
     // ----------------------------------------------
-    // GESTIONE DINNER AUTOMATICO (checkbox NON CENA)
+    // DINNER AUTOMATICO
     // ----------------------------------------------
     function controllaDinnerAutomatico(div, s, idKey) {
         const dati = datiLocali[idKey] || {};
@@ -285,7 +286,7 @@
     }
 
     // ----------------------------------------------
-    // RENDER DELLA LISTA STUDENTI
+    // RENDER LISTA STUDENTI
     // ----------------------------------------------
     function renderLista() {
         const container = document.getElementById('listaStudenti');
@@ -299,7 +300,7 @@
             const idKey = `${s.cognome}_${s.nome}`.replace(/[^a-zA-Z0-9_-]/g, '_');
             const dati = datiLocali[idKey] || { esce: "", entra: "", assente: false, dinnerno: "0" };
             const turnoEff = turnoEffettivo(s.classe, s.cognome);
-            if (currentTurno !== turnoEff) return; // salta righe non del turno selezionato
+            if (currentTurno !== turnoEff) return;
 
             const isLab = isLabOggi(s.classe, s.gruppo, oggi);
             const isAssProg = isAssenteProgrammato(s.cognome, oggi);
@@ -600,7 +601,7 @@
                     </tr>`;
                 }).join('');
                 if (room === "125") {
-                    html += `</tbody></table><div class="page-break"></div><h2>FEMMINILE - piano 2° - ${dataStampa}</h2><table><thead><tr><th>Room</th><th>Classe</th><th class="col-cognome">Cognome</th><th>Presente</th><th>Assente</th><th>Uscita</th><th>Ingresso</th><th>PP Uscita</th><th>PP Rientro</th><th>Dinner NO</th><th>Notte SI</th><th>Notte NO</th><th>7:30</th></tr></thead><tbody>`;
+                    html += `</tbody><td><div class="page-break"></div><h2>FEMMINILE - piano 2° - ${dataStampa}</h2><table><thead><tr><th>Room</th><th>Classe</th><th class="col-cognome">Cognome</th><th>Presente</th><th>Assente</th><th>Uscita</th><th>Ingresso</th><th>PP Uscita</th><th>PP Rientro</th><th>Dinner NO</th><th>Notte SI</th><th>Notte NO</th><th>7:30</th></tr></thead><tbody>`;
                 }
                 return html;
             }).join('')}
@@ -683,7 +684,7 @@
     }
 
     // ----------------------------------------------
-    // INIZIALIZZAZIONE
+    // AUTENTICAZIONE E INIZIALIZZAZIONE
     // ----------------------------------------------
     async function init() {
         await Promise.all([loadPermessi(), loadStudenti(), loadAssenzeProgrammate(), loadDatiLocali(), loadCambiTurno(), loadNote()]);
@@ -693,14 +694,35 @@
         renderLista();
         renderListaAssenze();
         mostraDataReset();
-        // Salvataggio automatico note
-        const noteTA = document.getElementById('dailyNotes');
-        noteTA.addEventListener('input', () => saveNote());
+        document.getElementById('dailyNotes').addEventListener('input', saveNote);
+        // Mostra il container
+        document.querySelector('.container').style.visibility = 'visible';
     }
 
-    window.logout = () => { firebase.auth().signOut().then(() => location.reload()); };
+    window.logout = () => { auth.signOut().then(() => location.reload()); };
 
-    document.addEventListener("authReady", init);
+    // Controllo autenticazione e autorizzazione
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const uid = user.uid;
+            try {
+                const snapshot = await db.ref(`authoreziedUsers/${uid}`).once("value");
+                if (snapshot.exists() && snapshot.val() === true) {
+                    init();
+                } else {
+                    alert("Accesso non autorizzato. Contattare l'amministratore.");
+                    auth.signOut();
+                    window.location.href = "login.html";
+                }
+            } catch (e) {
+                console.error("Errore verifica autorizzazione:", e);
+                alert("Errore di connessione. Riprova.");
+                window.location.href = "login.html";
+            }
+        } else {
+            window.location.href = "login.html";
+        }
+    });
 </script>
 </body>
 </html>
