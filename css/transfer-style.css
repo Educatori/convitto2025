@@ -1,283 +1,143 @@
-/* TRANSFER-STYLE.CSS */
-:root {
-    --bg-page: #eef2f7; 
-    --bg-header: #1a3a5a; 
-    --bg-room: #ffffff;
-    --accent-color: #2c3e50;
-    --lab-color: #e74c3c; /* Colore Lab */
-}
-
-body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    margin: 10; 
-    padding: 10px; 
-    font-size: 12px; 
-    line-height: 1.5; 
-    background-color: var(--bg-page);
-}
-
-/* --- HEADER --- */
+/* transfer-style.css — Transfer Lunch */
 .header-container {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border-bottom: 5px solid var(--bg-header);
-    margin-bottom: 7px;
-    padding-bottom: 5px;
-    min-height: 5px;
+    border-bottom: 3px solid var(--border-2);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    min-height: 56px;
 }
-
-.logo-space {
-    position: absolute;
-    left: 0;
-    top: 20;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-space img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-h1 { 
-    margin: 0; 
-    font-size: 18px; 
-    text-transform: uppercase; 
-    color: var(--accent-color);
-    letter-spacing: 1px;
-}
-
-/* --- GRIGLIA SU 3 O 4 COLONNE --- */
-.grid-container { 
-    display: grid; 
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 6px; 
-}
-
-.section-title { 
-    grid-column: span 3; 
-    background: var(--bg-header);
-    color: white; 
-    padding: 6px; 
-    text-align: center; 
-    font-weight: bold; 
+h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-top: 12px;
-    font-size: 11.5px;
-    border-radius: 4px;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
-
-/* --- BOX CLASSE --- */
-.room-box { 
-    border: 1px solid #333; 
-    display: flex; 
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+.section-title {
+    grid-column: span 4;
+    background: var(--surface-2);
+    color: var(--text-2);
+    padding: 6px 10px;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 10px;
+    font-size: 10px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.1em;
+    border-left: 4px solid var(--accent);
+}
+.room-box {
+    border: 1px solid var(--border);
+    display: flex;
     flex-direction: row;
     align-items: stretch;
-    min-height: 35px;
-    background: var(--bg-room);
-    border-radius: 2px;
-    transition: transform 0.2s;
-    break-inside: avoid; /* Evita che una classe venga spezzata tra due pagine */
-     
+    min-height: 32px;
+    background: var(--surface);
+    border-radius: 4px;
+    break-inside: avoid;
 }
-
-/* Evidenza speciale per classi in LAB */
 .room-box.has-lab {
-    border: 2px solid var(--lab-color);
-    background-color: #fff5f5;
-    z-index: 1;
+    border: 1.5px solid var(--absent);
+    background: var(--absent-dim);
 }
-
-.room-info { 
-    width: 40px; /* Aumentato leggermente per ospitare il testo */
-    background: #d1d9e0; 
-    border-right: 1px solid #333;
+.room-info {
+    width: 42px;
+    background: var(--surface-2);
+    border-right: 1px solid var(--border);
     display: flex;
-    flex-direction: column; /* Per incolonnare Classe e Badge LAB */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-weight: bold;
-    font-size: 12px;
-    color: var(--bg-header);
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--accent);
+    font-family: var(--font-mono);
     flex-shrink: 0;
     text-align: center;
+    padding: 4px 2px;
+    border-radius: 4px 0 0 4px;
 }
-
-/* Badge Lab all'interno di room-info */
 .lab-badge {
-    background-color: var(--lab-color);
+    background: var(--absent);
     color: white;
-    font-size: 8px;
+    font-size: 7px;
     padding: 1px 3px;
     border-radius: 2px;
     margin-top: 2px;
     text-transform: uppercase;
+    font-weight: 700;
 }
-
-/* --- LISTA STUDENTI --- */
-.occupants-list { 
-    flex-grow: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-   
-     //* due colonne nella stessa box display: grid; grid-template-columns: 1fr 1fr;*/
+.count-badge {
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    margin-top: 3px;
+    font-weight: 700;
 }
-
-.row-student { 
-    font-size: 10pt;
-    display: flex; 
-    justify-content: space-between; 
+.occupants-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.row-student {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 2px 5px;
-    border-bottom: 0.5px solid #eee;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 10px;
+}
+.row-student:last-child { border-bottom: none; }
+.row-student.esterno .student-name { opacity: 0.6; }
+.student-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+}
+.student-name b { text-transform: uppercase; color: var(--text); font-weight: 700; }
+.student-details {
+    margin-left: 5px;
+    font-size: 9px;
+    color: var(--accent);
+    font-weight: 700;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
 }
 
-.row-student:last-child { 
-    border-bottom: none; 
-}
-
-.student-name { 
-    flex: 1; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    font-size: 10px; 
-}
-
-.student-name b { 
-    text-transform: uppercase; 
-    color: #000; 
-}
-
-.student-details { 
-    margin-left: 5px; 
-    font-size: 10px; 
-    color: #1a3a5a; 
-    font-weight: bold;
-}
-
-/* --- UTILITY --- */
-.no-print { 
-    text-align: center; 
-    margin: 15px; 
-}
-
-.btn { 
-    padding: 10px 30px; 
-    background: var(--bg-header); 
-    color: white; 
-    border: none; 
-    cursor: pointer; 
-    border-radius: 30px; 
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-/* --- STAMPA --- */
 @media print {
-    /* Reset completo per sfruttare al massimo la pagina */
-    * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    body {
-        background: white !important;
-        margin: 0 !important;
-        padding: 0.15in !important;   /* Margini ridotti al minimo */
-        font-size: 8.5pt !important;   /* Testo compatto ma leggibile */
-        line-height: 1.2 !important;
-    }
-    
-    /* Nascondi elementi superflui in stampa */
-    .no-print, .logo-space, .count-badge {
-        display: none !important;
-    }
-    
-    /* Intestazione più compatta */
-    .header-container {
-        margin-bottom: 5px !important;
-        padding-bottom: 2px !important;
-        border-bottom-width: 2px !important;
-        min-height: 40px !important;
-    }
-    
-    h1 {
-        font-size: 14pt !important;
-        margin: 0 !important;
-    }
-    
-    /* Griglia a 4 colonne (massimo sfruttamento larghezza) */
-    .grid-container {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 4px !important;
-    }
-    
-    .section-title {
-        grid-column: span 4 !important;
-        font-size: 10pt !important;
-        padding: 3px !important;
-        margin-top: 6px !important;
-        margin-bottom: 2px !important;
-    }
-    
-    /* Box classe: molto compatti */
-    .room-box {
-        border: 0.5px solid #333 !important;
-        min-height: auto !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-        margin-bottom: 0 !important;
-    }
-    
-    .room-info {
-        width: 45px !important;      /* Ridotta larghezza */
-        font-size: 9pt !important;
-        padding: 2px 0 !important;
-    }
-    
-    .lab-badge {
-        font-size: 6pt !important;
-        padding: 1px 2px !important;
-        margin-top: 2px !important;
-    }
-    
-    .occupants-list {
-        padding: 0 !important;
-    }
-    
+    .count-badge { display: none !important; }
+    .section-title { background: #1a2236 !important; color: white !important; }
+    .room-box { background: white !important; border: 0.5px solid #333 !important; }
+    .room-box.has-lab { border: 1px solid #dc2626 !important; background: #fff5f5 !important; }
+    .room-info { background: #d1d9e0 !important; border-right: 1px solid #333 !important; color: #1a2236 !important; }
+    .lab-badge { font-size: 6pt; }
+    .student-name b { color: black !important; }
+    .student-details { color: #1a2236 !important; }
+     .student-row,
     .row-student {
-        font-size: 7.5pt !important;    /* Ridotto per far stare più righe */
-        padding: 1px 3px !important;
-        line-height: 1.2 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 2.3 !important;   /* compatto */
+        min-height: auto !important;
     }
     
-    .student-name {
-        font-size: 7.5pt !important;
-        white-space: normal !important;
-        overflow: visible !important;
-    }
-    
-    .student-details {
-        font-size: 7pt !important;
-        margin-left: 4px !important;
-    }
-    
-    /* Forza l'uso di tutto lo spazio verticale senza interruzioni interne */
-    .room-box, .occupants-list, .row-student {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-    
-    @page {
-        size: A4 portrait;
-        margin: 0.2in;   /* Margini stretti */
-    }
+    @page { size: A4 portrait; margin: 0.2in; }
 }

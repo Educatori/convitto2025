@@ -1,117 +1,158 @@
-/* BUS-STYLE.CSS */
-:root {
-    --bg-header: #2c3e50;
-    --accent-color: #2c3e50;
-}
-
-body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    margin: 0; 
-    padding: 10px; 
-    font-size: 10px;
-    background-color: #fff;
-}
+/* bus-style.css — Griglia per Bus (mattina 8, pomeriggio 16) */
+/* Il tema base fornisce variabili, reset, pulsante .btn, .print-logo base */
 
 .header-main {
     text-align: center;
-    border-bottom: 2px solid var(--bg-header);
-    margin-bottom: 15px;
-    padding-bottom: 5px;
+    border-bottom: 2px solid var(--border-2);
+    margin-bottom: 12px;
+    padding: 8px 0 10px;
+    position: relative;
+}
+h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.subtitle {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: var(--text-2);
+    font-family: var(--font-mono);
 }
 
-h1 { 
-    margin: 0; 
-    font-size: 18px; 
-    text-transform: uppercase; 
-    color: var(--accent-color);
+/* Override logo in stampa (stessa altezza del base) */
+@media print {
+    .print-logo { height: 44px; }
 }
 
+/* Griglia */
 .grid-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    column-gap: 20px;
+    column-gap: 16px;
 }
-
 .column-header {
     display: flex;
-    background: var(--bg-header);
-    color: white;
-    font-weight: bold;
-    padding: 4px;
-    border-radius: 3px 3px 0 0;
+    background: var(--bg-2);
+    color: var(--text-2);
+    font-weight: 700;
+    padding: 5px 4px;
+    border-radius: 6px 6px 0 0;
     font-size: 8px;
     margin-bottom: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-bottom: none;
 }
-
-.student-row { 
-    border: 0.5px solid #bbb; 
-    display: flex; 
+.student-row {
+    display: flex;
     align-items: center;
     padding: 3px 5px;
     margin-bottom: 1px;
-    page-break-inside: avoid; /* Per la stampa */
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
 }
-
-/* Colori speciali 5A */
-.bg-5a-g1 { background-color: #e8e8e8 !important; } 
-.bg-5a-g2 { background-color: #f9f9f9 !important; } 
-
-/* Colori speciali 5B */
-.bg-5b-g1 { background-color: #e8e8e8 !important; } 
-.bg-5b-g2 { background-color: #f9f9f9 !important; } 
-
+.student-row:nth-child(even) { background: var(--surface-2); }
+.student-row:hover { background: var(--accent-dim); }
 .row-crossed {
     text-decoration: line-through;
-    opacity: 0.6;
-    background-color: #ffebee !important; 
+    opacity: 0.45;
+    background: var(--absent-dim) !important;
 }
-
-.cell-room { width: 30px; font-weight: bold; border-right: 1px solid #eee; }
-.cell-name { flex-grow: 1; padding-left: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cell-class { width: 45px; text-align: center; font-size: 8.5px; }
-.cell-check { width: 40px; text-align: center; font-weight: bold; }
-.cell-notes { width: 60px; text-align: center; font-weight: bold; }
-
+.bg-5a-g1 { background: var(--accent-dim) !important; }
+.bg-5a-g2 { background: var(--accent-2-dim) !important; }
+.bg-5b-g1 { background: var(--lab-dim) !important; }
+.bg-5b-g2 { background: var(--absent-dim) !important; }
+.class-separator {
+    height: 3px;
+    background: var(--border-2);
+    margin: 2px 0;
+    border-radius: 2px;
+}
+.cell-room {
+    width: 28px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    color: var(--accent);
+    border-right: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.cell-name {
+    flex-grow: 1;
+    padding-left: 5px;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cell-class {
+    width: 48px;
+    text-align: center;
+    font-size: 8px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+.cell-check {
+    width: 38px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.cell-notes {
+    width: 58px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.line-notes {
+    width: 88%;
+    border-bottom: 0.5px solid var(--border-2);
+    height: 10px;
+    margin: 0 auto;
+}
 .check-box {
     width: 12px;
     height: 12px;
-    border: 1px solid #333;
+    border: 1.5px solid var(--border-2);
+    border-radius: 2px;
     margin: 0 auto;
+    background: var(--surface-2);
+    cursor: pointer;
+    transition: all 0.15s;
     position: relative;
 }
-
+.check-box:hover { border-color: var(--ok); }
+.check-box.checked {
+    background: var(--ok-dim);
+    border-color: var(--ok);
+}
 .check-box.checked::after {
     content: '✔';
-    display: block;
-    text-align: center;
-    line-height: 12px;
-    font-size: 10px;
-    color: #2e7d32;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: var(--ok);
 }
 
-.line-notes {
-    width: 90%;
-    border-bottom: 0.5px solid #999;
-    height: 12px;
-    margin: 0 auto;
-}
-
-.no-print { text-align: center; margin-bottom: 15px; }
-.btn { 
-    padding: 10px 30px; 
-    background: var(--bg-header); 
-    color: white; 
-    border: none; 
-    cursor: pointer; 
-    border-radius: 30px; 
-    font-weight: bold;
-}
-
+/* Stampa specifica per bus (A4 landscape) */
 @media print {
-    .no-print { display: none; }
-    @page { 
-        size: A4 landscape; 
-        margin: 0.8cm; 
-    }
-    body { padding: 0; }
+    .student-row { border-color: #ccc !important; background: white !important; }
+    .student-row:nth-child(even) { background: #f5f5f5 !important; }
+    .bg-5b-g1 { background: #e8e8e8 !important; }
+    .bg-5b-g2 { background: #f2f2f2 !important; }
+    .cell-room { color: #1a2236 !important; }
+    .cell-name b { color: black !important; }
+    .check-box { border: 1.5px solid #333 !important; background: white !important; }
+    .check-box.checked::after { color: #2e7d32 !important; }
+    .class-separator { background: #1a2236 !important; }
+    @page { size: A4 landscape; margin: 0.8cm; }
 }

@@ -1,232 +1,123 @@
-/* DINNER-STYLE.CSS */
-:root {
-    --bg-header: #2c3e50;
-    --accent-color: #2c3e50;
-    --row-alt: #f9f9f9;
-}
-
-body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    margin: 0; 
-    padding: 8px; 
-    font-size: 12px;
-    background-color: #fff;
-}
-
-/* Intestazione */
+/* dinner-style.css — Turni cena 1 e 2 */
 .header-main {
     text-align: center;
-    border-bottom: 2px solid var(--bg-header);
+    border-bottom: 2px solid var(--border-2);
     margin-bottom: 12px;
-    padding-bottom: 5px;
+    padding: 8px 0 10px;
+    position: relative;
 }
-
-h1 { 
-    margin: 0; 
-    font-size: 18px; 
-    text-transform: uppercase; 
-    color: var(--accent-color);
+h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
-
 .subtitle {
     margin: 4px 0 0;
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    font-family: var(--font-mono);
 }
 
-/* Griglia a 3 colonne per distribuire gli studenti */
+.turno-container { margin-bottom: 20px; }
 .grid-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    column-gap: 15px;
-    width: 100%;
+    column-gap: 12px;
 }
-
-/* Singola colonna all'interno della griglia */
-.column {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Intestazione della colonna */
+.column { display: flex; flex-direction: column; }
 .column-header {
     display: flex;
-    background: var(--bg-header);
-    color: white;
-    font-weight: bold;
-    padding: 8px 6px;
-    border-radius: 3px 3px 0 0;
-    font-size: 11px;
-    margin-bottom: 3px;
-}
-
-/* Riga studente */
-.student-row { 
-    border: 0.5px solid #bbb; 
-    display: flex; 
-    align-items: center;
-    padding: 5px 6px;
+    background: var(--bg-2);
+    color: var(--text-2);
+    font-weight: 700;
+    padding: 6px 5px;
+    border-radius: 6px 6px 0 0;
+    font-size: 9px;
     margin-bottom: 2px;
-    page-break-inside: avoid;
-    font-size: 11px;
-    background-color: white;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-bottom: none;
 }
-
-/* Righe alternate per leggibilità */
-.student-row:nth-child(even) {
-    background-color: var(--row-alt);
+.student-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px;
+    margin-bottom: 1px;
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    font-size: 10px;
+    background: transparent;
 }
-
+.student-row:nth-child(even) { background: var(--surface-2); }
+.student-row:hover { background: var(--accent-dim); }
 .row-crossed {
     text-decoration: line-through;
-    opacity: 0.6;
-    background-color: #ffebee !important; 
+    opacity: 0.4;
+    background: var(--absent-dim) !important;
 }
-
-/* Celle */
-.cell-class { 
-    width: 50px;
+.cell-class {
+    width: 46px;
     text-align: left;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: var(--font-mono);
     padding-left: 3px;
     flex-shrink: 0;
 }
-
-.cell-name { 
+.cell-name {
     flex-grow: 2;
-    padding-left: 8px;
+    padding-left: 7px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    cursor: pointer;
+    font-size: 10px;
 }
-
-.cell-name b {
-    font-weight: 600;
-}
-
-.cell-check { 
-    width: 32px;
+.cell-check {
+    width: 30px;
     text-align: center;
     flex-shrink: 0;
 }
-
-/* Checkbox */
 .check-box {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid #333;
-    margin: 0 auto;
-    position: relative;
-    background-color: white;
-    cursor: pointer;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid var(--border-2);
     border-radius: 2px;
+    margin: 0 auto;
+    background: var(--surface-2);
+    cursor: pointer;
+    transition: all 0.15s;
 }
-
+.check-box:hover { border-color: var(--ok); }
+.check-box.checked {
+    background: var(--ok-dim);
+    border-color: var(--ok);
+}
 .check-box.checked::after {
     content: '✔';
     display: block;
     text-align: center;
-    line-height: 12px;
-    font-size: 10px;
-    color: #2e7d32;
+    font-size: 8px;
+    color: var(--ok);
 }
 
-/* Pulsante di stampa */
-.no-print { 
-    text-align: center; 
-    margin-bottom: 15px; 
-}
-
-.print-info {
-    margin-top: 6px;
-    font-size: 11px;
-    color: #555;
-}
-
-.btn { 
-    padding: 8px 25px; 
-    background: var(--bg-header); 
-    color: white; 
-    border: none; 
-    cursor: pointer; 
-    border-radius: 30px; 
-    font-weight: bold;
-    font-size: 13px;
-}
-
-.btn:hover {
-    background: #1e2b38;
-}
-
-/* STAMPA: fronte/retro con layout a 3 colonne */
 @media print {
-    .no-print { display: none !important; }
-    
-    @page { 
-        size: A4 landscape; 
-        margin: 0.5cm;
-    }
-    
-    body { 
-        padding: 0; 
-        font-size: 10pt;
-    }
-    
-    /* Forza il Turno 2 a iniziare sul retro */
     .turno-2 {
         page-break-before: page;
         break-before: page;
     }
-    
-    /* Evita righe spezzate */
-    .student-row {
-        page-break-inside: avoid;
-    }
-    
-    /* Stampa colori */
-    .student-row, .row-crossed {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    /* Leggero aumento caratteri in stampa */
-    .student-row {
-        font-size: 9pt;
-        padding: 3px 4px;
-    }
-    
-    .column-header {
-        font-size: 9pt;
-        padding: 5px 4px;
-    }
-    
-    .cell-class {
-        font-size: 9pt;
-        width: 45px;
-    }
-    
-    .cell-check {
-        width: 28px;
-    }
-    
-    .check-box {
-        width: 11px;
-        height: 11px;
-    }
-    
-    .check-box.checked::after {
-        line-height: 9px;
-        font-size: 8px;
-    }
-    
-    h1 {
-        font-size: 14pt;
-    }
-    
-    .grid-wrapper {
-        column-gap: 10px;
-    }
+    .student-row { border-color: #ccc !important; background: white !important; }
+    .student-row:nth-child(even) { background: #f8f8f8 !important; }
+    .cell-class { color: #1a2236 !important; }
+    .cell-name b { color: black !important; }
+    .check-box { border: 1.5px solid #333 !important; background: white !important; }
+    .check-box.checked::after { color: #2e7d32 !important; }
+    @page { size: A4 landscape; margin: 0.5cm; }
 }
