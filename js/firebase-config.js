@@ -1,4 +1,4 @@
-// js/FIREBASE-ROOMCLOUD-CONFIG.JS
+// js/FIREBASE-CONFIG.JS
 const firebaseConfig = {
   apiKey: "AIzaSyCujVjW7Aorn0illq_2w50u8oAgWGJEBRY",
   authDomain: "cruscotto-722bc.firebaseapp.com",
