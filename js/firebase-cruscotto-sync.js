@@ -1,4 +1,4 @@
-/* FIREBASE-CRUSCOTTO-CONFIG.JS */
+/* FIREBASE-CRUSCOTTO-SYNC.JS */
 // ========== GESTIONE STATO CONNESSIONE ==========
 function updateConnectionStatus(connected) {
     const statusDiv = document.getElementById('connection-status');

@@ -164,7 +164,8 @@ function generaDinner() {
     turno1.sort(ordinaPerClasseECognome);
     turno2.sort(ordinaPerClasseECognome);
 
-   
+    
+
     // Log per debug: mostra l'ordine dei primi studenti
     console.log("📚 Turno 1 - Studenti in ordine (per classe e cognome):");
     let currentClasse = "";

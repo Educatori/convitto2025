@@ -1,4 +1,6 @@
-/* CRUSCOTTO-SCRIPT.JS */
+/**
+ * CRUSCOTTO-SCRIPT.JS - Versione Integrale con Firebase Sync
+ */
 
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
