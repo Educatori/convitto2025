@@ -6,7 +6,6 @@
     <title>Accesso — Campus 2025</title>
     <link rel="stylesheet" href="css/campus-theme.css">
     <style>
-        /* stesso stile che avevi */
         body {
             display: flex;
             align-items: center;
@@ -35,6 +34,12 @@
         .error-msg { margin-top: 14px; padding: 10px; background: var(--absent-dim); border-radius: var(--radius-sm); color: var(--absent); display: none; }
         .error-msg.visible { display: block; }
     </style>
+    <!-- Firebase compat (non moduli) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Configurazione Firebase (deve definire firebaseConfig globale) -->
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
 <div class="login-card">
@@ -54,34 +59,48 @@
     <div class="login-footer">Accesso protetto · Solo utenti autorizzati</div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { firebaseConfig } from "./js/firebase-config.js";
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+<script>
+    // Inizializza Firebase una volta sola
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
     window.doLogin = async () => {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
         const btn = document.querySelector(".btn-login");
         const errDiv = document.getElementById("errorMsg");
-        if (!email || !password) { errDiv.textContent = "Inserisci email e password."; errDiv.classList.add("visible"); return; }
+        
+        if (!email || !password) {
+            errDiv.textContent = "Inserisci email e password.";
+            errDiv.classList.add("visible");
+            return;
+        }
         errDiv.classList.remove("visible");
-        btn.disabled = true; btn.textContent = "Accesso in corso…";
+        btn.disabled = true;
+        btn.textContent = "Accesso in corso…";
+        
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            await auth.signInWithEmailAndPassword(email, password);
+            // Reindirizza alla pagina richiesta o all'index
             const urlParams = new URLSearchParams(window.location.search);
             const redirect = urlParams.get("redirect") || "index.html";
             window.location.href = redirect;
         } catch (e) {
-            btn.disabled = false; btn.textContent = "ACCEDI";
+            btn.disabled = false;
+            btn.textContent = "ACCEDI";
             let msg = "Credenziali non valide.";
             if (e.code === "auth/user-not-found") msg = "Utente non trovato.";
             if (e.code === "auth/wrong-password") msg = "Password errata.";
-            errDiv.textContent = msg; errDiv.classList.add("visible");
+            errDiv.textContent = msg;
+            errDiv.classList.add("visible");
         }
     };
-    document.getElementById("password").addEventListener("keydown", (e) => { if (e.key === "Enter") window.doLogin(); });
+    
+    document.getElementById("password").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") window.doLogin();
+    });
 </script>
 </body>
 </html>
