@@ -5,55 +5,93 @@
     <title>BUS ore 8 — Trasporto Mattino</title>
     <link rel="stylesheet" href="css/campus-theme.css">
     <link rel="stylesheet" href="css/bus-style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
-<div class="no-print">
-    <button class="btn" onclick="window.print()">STAMPA</button>
-</div>
-
+<div class="no-print"><button class="btn" onclick="window.print()">STAMPA</button></div>
 <div class="header-main">
     <img src="assets/Logo.png" alt="Logo" class="print-logo">
-    <h1>
-        <a href="index.html">Bus Mattino</a>
-    </h1>
+    <h1><a href="index.html">Bus Mattino</a></h1>
 </div>
-
 <div class="grid-wrapper" id="mainWrapper">
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div>
-            <div class="cell-name">Nome</div>
-            <div class="cell-class">Classe</div>
-            <div class="cell-check">Presenza</div>
-            <div class="cell-notes">Note</div>
-        </div>
-        <div id="col0"></div>
-    </div>
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div>
-            <div class="cell-name">Nome</div>
-            <div class="cell-class">Classe</div>
-            <div class="cell-check">Presenza</div>
-            <div class="cell-notes">Note</div>
-        </div>
-        <div id="col1"></div>
-    </div>
-    <div class="macro-column">
-        <div class="column-header">
-            <div class="cell-room">Room</div>
-            <div class="cell-name">Nome</div>
-            <div class="cell-class">Classe</div>
-            <div class="cell-check">Presenza</div>
-            <div class="cell-notes">Note</div>
-        </div>
-        <div id="col2"></div>
-    </div>
+    <div class="macro-column"><div class="column-header"><div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div></div><div id="col0"></div></div>
+    <div class="macro-column"><div class="column-header"><div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div></div><div id="col1"></div></div>
+    <div class="macro-column"><div class="column-header"><div class="cell-room">Room</div><div class="cell-name">Nome</div><div class="cell-class">Classe</div><div class="cell-check">Presenza</div><div class="cell-notes">Note</div></div><div id="col2"></div></div>
 </div>
 
-<script src="js/studenti_25-26.js"></script>
-<script src="js/convittori.js"></script>
-<script src="js/bus-8-script.js"></script>
+<script type="module">
+    import { firebaseConfig } from "./js/firebase-config.js";
+    firebase.initializeApp(firebaseConfig);
+    import("./js/auth.js");
+
+    const db = firebase.database();
+    function getToday() { return new Date().toISOString().slice(0,10); }
+    let studentiList = [];
+    let presenzeMap = {};
+
+    function distribuisci(studenti, colonne=3) {
+        const result = [[], [], []];
+        if (!studenti.length) return result;
+        const perCol = Math.ceil(studenti.length / colonne);
+        studenti.forEach((s, idx) => { result[Math.floor(idx / perCol)].push(s); });
+        return result;
+    }
+
+    async function caricaDati() {
+        const snapStud = await db.ref("studenti").once("value");
+        const studentiRaw = snapStud.val();
+        studentiList = studentiRaw ? Object.values(studentiRaw) : [];
+        // filtro come da script originale: esclude 2A, 2B e classi con "P"
+        studentiList = studentiList.filter(s => {
+            const cls = (s.classe || "").toUpperCase();
+            return !["2A","2B"].includes(cls) && !cls.includes("P") && s.cognome;
+        });
+        // ordine: prima 5B (con gruppo), poi resto alfabetico
+        const classe5B = studentiList.filter(s => s.classe === "5B");
+        const resto = studentiList.filter(s => s.classe !== "5B");
+        resto.sort((a,b) => a.cognome.localeCompare(b.cognome));
+        classe5B.sort((a,b) => ((a.gruppo||"") + a.cognome).localeCompare((b.gruppo||"") + b.cognome));
+        studentiList = [...resto, ...classe5B];
+
+        const snapPres = await db.ref(`presenze/${getToday()}`).once("value");
+        presenzeMap = snapPres.val() || {};
+
+        renderizza();
+    }
+
+    function salvaPresenza(id, checked) {
+        db.ref(`presenze/${getToday()}/${id}`).set(checked);
+        presenzeMap[id] = checked;
+    }
+
+    function renderizza() {
+        const colonne = distribuisci(studentiList, 3);
+        for (let c=0; c<3; c++) {
+            const colDiv = document.getElementById(`col${c}`);
+            colDiv.innerHTML = "";
+            colonne[c].forEach(s => {
+                const row = document.createElement("div");
+                row.className = "grid-row";
+                row.innerHTML = `
+                    <div class="cell-room">${s.room || ""}</div>
+                    <div class="cell-name" style="cursor:pointer"><b>${s.cognome}</b> ${s.nome || ""}</div>
+                    <div class="cell-class">${s.classe} ${s.percorso || ""} ${s.gruppo ? "• "+s.gruppo : ""}</div>
+                    <div class="cell-check"><input type="checkbox" class="presenza-check"></div>
+                    <div class="cell-notes"><div class="line-notes"></div></div>
+                `;
+                const check = row.querySelector(".presenza-check");
+                const studentId = `${s.cognome}_${s.nome}_${s.room}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                check.checked = presenzeMap[studentId] === true;
+                check.addEventListener("change", (e) => { e.stopPropagation(); salvaPresenza(studentId, check.checked); });
+                row.querySelector(".cell-name").addEventListener("click", () => { row.classList.toggle("row-crossed"); });
+                colDiv.appendChild(row);
+            });
+        }
+    }
+
+    document.addEventListener("authReady", () => { caricaDati(); });
+</script>
 </body>
 </html>

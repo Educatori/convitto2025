@@ -6,22 +6,95 @@
     <title>Transfer for Lunch</title>
     <link rel="stylesheet" href="css/campus-theme.css">
     <link rel="stylesheet" href="css/transfer-style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
 <div class="no-print">
     <button class="btn" onclick="window.print()">STAMPA</button>
 </div>
-
 <div class="header-container">
     <img src="assets/Logo.png" alt="Logo" class="print-logo">
     <h1><a href="index.html">Transfer for Lunch</a></h1>
 </div>
-
 <div class="grid-container" id="mainGrid"></div>
 
-<script src="js/studenti_25-26.js"></script>
-<script src="js/permessi.js"></script>
-<script src="js/transfer-script.js"></script>
+<script type="module">
+    import { firebaseConfig } from "./js/firebase-config.js";
+    firebase.initializeApp(firebaseConfig);
+    import("./js/auth.js");
+
+    const db = firebase.database();
+    let studentiData = [];
+    let permessiData = {};
+
+    async function loadData() {
+        const [snapStud, snapPerm] = await Promise.all([
+            db.ref("studenti").once("value"),
+            db.ref("permessi").once("value")
+        ]);
+        const raw = snapStud.val();
+        studentiData = raw ? Object.values(raw) : [];
+        permessiData = snapPerm.val() || {};
+        render();
+    }
+
+    function isLabLunchOggi(classe) {
+        const oggi = new Date().getDay();
+        const labPranzo = permessiData?.LAB_PRANZO || [];
+        return labPranzo[oggi]?.includes(classe);
+    }
+
+    function render() {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = "";
+        const classiDaEscludere = ["1P", "2P", "3P", "2A", "2B", "5B"];
+        const classiMap = new Map();
+        studentiData.forEach(s => {
+            if (!s.cognome) return;
+            const cls = s.classe.toUpperCase();
+            if (classiDaEscludere.includes(cls)) return;
+            if (!classiMap.has(cls)) classiMap.set(cls, []);
+            classiMap.get(cls).push(s);
+        });
+        const sortedClassi = Array.from(classiMap.keys()).sort();
+        sortedClassi.forEach(classe => {
+            const studentiClasse = classiMap.get(classe);
+            studentiClasse.sort((a,b) => a.cognome.localeCompare(b.cognome));
+            const haLab = isLabLunchOggi(classe);
+            const box = document.createElement('div');
+            box.className = `room-box ${haLab ? 'has-lab' : ''}`;
+            box.innerHTML = `
+                <div class="room-info">
+                    <span>${classe}</span>
+                    <span class="count-badge">${studentiClasse.length}</span>
+                    ${haLab ? '<span class="lab-badge">LAB LUNCH</span>' : ''}
+                </div>
+                <div class="occupants-list">
+                    ${studentiClasse.map(s => {
+                        const roomNum = parseInt(s.room,10);
+                        const isConv = !isNaN(roomNum) && roomNum >= 101 && roomNum <= 221;
+                        let roomInfo = "";
+                        if (isConv) roomInfo = `${s.room}`;
+                        else if (s.room === "-") roomInfo = `-`;
+                        else if (s.room && s.room !== "-") roomInfo = `${s.room}`;
+                        const tagPercorso = s.percorso ? `<span class="percorso-tag">${s.percorso}</span>` : "";
+                        const tagGruppo = s.gruppo ? `• ${s.gruppo}` : "";
+                        const dettagli = [roomInfo, tagPercorso, tagGruppo].filter(Boolean).join(" ");
+                        return `<div class="row-student ${!isConv ? 'esterno' : ''}">
+                                    <span class="student-name"><b>${s.cognome}</b> ${s.nome}</span>
+                                    <span class="student-details">${dettagli}</span>
+                                </div>`;
+                    }).join('')}
+                </div>
+            `;
+            grid.appendChild(box);
+        });
+        document.title = `Transfer Lunch - ${new Date().toLocaleDateString('it-IT')}`;
+    }
+
+    document.addEventListener("authReady", loadData);
+</script>
 </body>
 </html>
