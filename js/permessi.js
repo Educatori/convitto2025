@@ -95,9 +95,7 @@ const OVERRIDE_TURNI_DINNER = {
 // 4. CALENDARIO LABORATORI DINNER (G1/G2 per 5A e 5B)
 const CALENDARIO_GRUPPI_DINNER = { 
          
-     "12/05/2026": "gr1", "14/05/2026": "gr1",
-    "19/05/2026": "gr2", "21/05/2026": "gr2", "26/05/2026": "gr1", "28/05/2026": "gr1",
-    "04/06/2026": "gr2", "09/06/2026": "gr2"
+      "09/06/2026": "gr2"
 };
 
  
