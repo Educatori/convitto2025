@@ -47,6 +47,19 @@
             border-left: 4px solid var(--lab);
             background: var(--lab-dim);
         }
+        
+        /* Variante "Simulimpresa NO" (Toni del rosso del tema) */
+        .time-slot.simula-no-slot {
+            border-left: 4px solid var(--absent);
+            background: var(--absent-dim);
+        }
+
+        /* Variante "Simulimpresa SI" (Toni del verde del tema) */
+        .time-slot.simula-si-slot {
+            border-left: 4px solid var(--ok);
+            background: var(--ok-dim);
+        }
+
         .slot-title {
             font-size: 0.78rem;
             font-weight: 700;
@@ -55,7 +68,12 @@
             margin-bottom: 4px;
             display: block;
         }
+        
+        /* Colori dinamici dei titoli in base allo stato */
         .gym-slot .slot-title { color: var(--lab); }
+        .simula-no-slot .slot-title { color: var(--absent); }
+        .simula-si-slot .slot-title { color: var(--ok); }
+
         .slot-data-list {
             margin: 0;
             padding-left: 16px;
@@ -89,28 +107,32 @@
                 "16:40": ["1A x6", "1B x10", "3A x5", "3B x7", "5A x12", "4A x14"]
             },
             "martedì": {
-                "14:00": ["5A x12 su BUS di 4B"],
+                "14:00": ["lab 5A x12 sul BUS di 4B"],
                 "14:30": ["3A x5"],
                 "15:50": ["3B x7", "3C x6", "4A x14"],
-                "Da palestra": ["4B x9"],
+                "15:50 da palestra": ["4B x9"],
                 "16:40": ["1A x6", "1B x10"]
             },
             "mercoledì": {
-                "14:00": ["4A x14 su BUS di 5A"],
+              //  "14:00 simulimpresa NO": ["4A x14"],
+                "14:00": ["4A x14 sul BUS di 5A"],
                 "14:50": ["3A x5", "3B x7"],
                 "15:50": ["3C x6"],
-                "Da palestra": ["5A x12"],
-                "16:40": ["1A x6", "1B x10", "4B x9"]
+                "15:50 da palestra": ["5A x12"],
+                "16:40": ["1A x6", "1B x10", "4B x9"],
+              //  "16:40 simulimpresa SI": ["4A x14"]
             },
             "giovedì": {
-                "14:00": ["4B x9 su BUS di 4A"],
+              //  "14:00 simulimpresa NO": ["4B x9"],
+                "14:00": ["4B x9 sul BUS di 4A"],
                 "14:30": ["3B x7", "3C x6"],
                 "15:50": ["1A x6", "1B x10", "3A x5", "4A x12"],
-                "Da palestra": ["4A x14"]
+                "15:50 da palestra": ["4A x14"],
+             //  "16:40 simulimpresa SI": ["4B x9"]
             }
         };
 
-        const ordineOrari = ["14:00", "14:30", "14:50", "15:50", "Da palestra", "16:40"];
+        const ordineOrari = ["14:00", "14:00 simulimpresa NO", "14:30", "14:50", "15:50", "15:50 da palestra", "16:40", "16:40 simulimpresa SI"];
 
         function init() {
             const d = new Date();
@@ -132,7 +154,7 @@
 
             Object.keys(programmaDati).forEach(giorno => {
                 const card = document.createElement('div');
-                card.className = 'day-card student-row'; // Sfrutta la classe del tuo CSS esterno
+                card.className = 'day-card student-row'; 
                 
                 const header = document.createElement('div');
                 header.className = 'day-header';
@@ -144,8 +166,18 @@
                 ordineOrari.forEach(ora => {
                     if (orariDelGiorno[ora] && orariDelGiorno[ora].length > 0) {
                         const slot = document.createElement('div');
-                        const isGym = ora === 'Da palestra';
-                        slot.className = `time-slot ${isGym ? 'gym-slot' : ''}`;
+                        
+                        // Gestione dinamica delle classi di stile per gli slot speciali
+                        let varianteClasse = '';
+                        if (ora === '15:50 da palestra') {
+                            varianteClasse = 'gym-slot';
+                        } else if (ora === '14:00 simulimpresa NO') {
+                            varianteClasse = 'simula-no-slot';
+                        } else if (ora === '16:40 simulimpresa SI') {
+                            varianteClasse = 'simula-si-slot';
+                        }
+
+                        slot.className = `time-slot ${varianteClasse}`;
 
                         const elementiLista = orariDelGiorno[ora].map(info => `<li>${info}</li>`).join('');
 
