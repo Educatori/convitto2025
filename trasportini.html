@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzazione Orari e Trasporti</title>
+    
+    <link rel="stylesheet" href="css/campus-theme.css">
+    <link rel="stylesheet" href="css/dashboard-style.css">
+
+    <style>
+        #quadroSettimanale {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        @media (max-width: 900px) {
+            #quadroSettimanale { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            #quadroSettimanale { grid-template-columns: 1fr; }
+        }
+
+        /* Struttura interna delle card orarie */
+        .day-card { align-self: start; }
+        .day-header {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--surface-3);
+        }
+        .time-slot {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+        .time-slot:last-child { margin-bottom: 0; }
+        
+        /* Variante "Da palestra" */
+        .time-slot.gym-slot {
+            border-left: 4px solid var(--lab);
+            background: var(--lab-dim);
+        }
+        .slot-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .gym-slot .slot-title { color: var(--lab); }
+        .slot-data-list {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 0.82rem;
+            color: var(--text-2);
+        }
+        .slot-data-list li { margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Piano Trasportini Settimanali</h1>
+                <div id="todayDate">-- -- ----</div>
+            </div>
+            <div style="text-align: right;">
+                <div id="digitalClock">--:--:--</div>
+            </div>
+        </header>
+
+        <div id="quadroSettimanale"></div>
+    </div>
+
+    <script>
+        // --- CONFIGURAZIONE DEI DATI ---
+        const programmaDati = {
+            "lunedì": {
+                "15:50": ["3C x6", "4B x9"],
+                "16:40": ["1A x6", "1B x10", "3A x5", "3B x7", "5A x12", "4A x14"]
+            },
+            "martedì": {
+                "14:00": ["5A x12 su BUS di 4B"],
+                "14:30": ["3A x5"],
+                "15:50": ["3B x7", "3C x6", "4A x14"],
+                "Da palestra": ["4B x9"],
+                "16:40": ["1A x6", "1B x10"]
+            },
+            "mercoledì": {
+                "14:00": ["4A x14 su BUS di 5A"],
+                "14:50": ["3A x5", "3B x7"],
+                "15:50": ["3C x6"],
+                "Da palestra": ["5A x12"],
+                "16:40": ["1A x6", "1B x10", "4B x9"]
+            },
+            "giovedì": {
+                "14:00": ["4B x9 su BUS di 4A"],
+                "14:30": ["3B x7", "3C x6"],
+                "15:50": ["1A x6", "1B x10", "3A x5", "4A x12"],
+                "Da palestra": ["4A x14"]
+            }
+        };
+
+        const ordineOrari = ["14:00", "14:30", "14:50", "15:50", "Da palestra", "16:40"];
+
+        function init() {
+            const d = new Date();
+            const dateEl = document.getElementById('todayDate');
+            if (dateEl) dateEl.innerText = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            
+            setInterval(() => {
+                const clockEl = document.getElementById('digitalClock');
+                if (clockEl) clockEl.innerText = new Date().toLocaleTimeString('it-IT');
+            }, 1000);
+
+            renderTabella();
+        }
+
+        function renderTabella() {
+            const container = document.getElementById('quadroSettimanale');
+            if (!container) return;
+            container.innerHTML = "";
+
+            Object.keys(programmaDati).forEach(giorno => {
+                const card = document.createElement('div');
+                card.className = 'day-card student-row'; // Sfrutta la classe del tuo CSS esterno
+                
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.innerText = giorno;
+                card.appendChild(header);
+
+                const orariDelGiorno = programmaDati[giorno];
+
+                ordineOrari.forEach(ora => {
+                    if (orariDelGiorno[ora] && orariDelGiorno[ora].length > 0) {
+                        const slot = document.createElement('div');
+                        const isGym = ora === 'Da palestra';
+                        slot.className = `time-slot ${isGym ? 'gym-slot' : ''}`;
+
+                        const elementiLista = orariDelGiorno[ora].map(info => `<li>${info}</li>`).join('');
+
+                        slot.innerHTML = `
+                            <span class="slot-title">${ora}</span>
+                            <ul class="slot-data-list">
+                                ${elementiLista}
+                            </ul>
+                        `;
+                        card.appendChild(slot);
+                    }
+                });
+
+                if (card.children.length > 1) {
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
