@@ -540,24 +540,43 @@ function salvaDatiLocale() {
 
 function caricaDatiLocale() { 
     const dati = JSON.parse(localStorage.getItem('datiConvitto') || "{}");
+    const giornoSettimana = new Date().getDay(); // Prende il giorno della settimana corrente (1=Lun, 2=Mar, ecc.)
+
     document.querySelectorAll('.student-row').forEach(r => {
-        const d = dati[r.dataset.cognome];
+        const cognome = r.dataset.cognome;
+        const cgn = cognome.toUpperCase();
+        const d = dati[cognome];
+
+        // 1. Recupera gli orari predefiniti dal JSON (ORARI_PP) per il giorno corrente
+        let ppOut = "";
+        let ppIn = "";
+        if (ORARI_PP[cgn] && ORARI_PP[cgn][giornoSettimana]) {
+            ppOut = ORARI_PP[cgn][giornoSettimana].out || "";
+            ppIn = ORARI_PP[cgn][giornoSettimana].in || "";
+        }
+
+        // 2. Assegna i valori alle celle: priorità alle modifiche manuali (d), altrimenti inserisce l'orario del JSON
+        r.querySelector('.in-u').value = (d && d.esce !== undefined) ? d.esce : ppOut;
+        r.querySelector('.in-i').value = (d && d.entra !== undefined) ? d.entra : ppIn;
+
+        // 3. Ripristina gli stati visivi e le classi condizionali dei pulsanti basandosi sul LocalStorage
         if (d) {
-            r.querySelector('.in-u').value = d.esce || "";
-            r.querySelector('.in-i').value = d.entra || "";
+            // Stato ASSENTE
             if (d.assente) { 
                 r.classList.add('assente'); 
                 const btnAss = r.querySelector('.btn-ass');
-                if (btnAss) btnAss.classList.add('active-ass');
+                if (btnAss) btnAss.classList.add('active-ass'); 
             } else {
                 r.classList.remove('assente');
                 const btnAss = r.querySelector('.btn-ass');
                 if (btnAss) btnAss.classList.remove('active-ass');
             }
+
+            // Stato NON CENA
             if (d.dinnerno === "1") { 
                 r.classList.add('dinner-no'); 
                 const btnDin = r.querySelector('.btn-din');
-                if (btnDin) btnDin.classList.add('active-din');
+                if (btnDin) btnDin.classList.add('active-din'); 
                 r.dataset.dinnerno = "1"; 
             } else {
                 r.classList.remove('dinner-no');
@@ -565,11 +584,21 @@ function caricaDatiLocale() {
                 if (btnDin) btnDin.classList.remove('active-din');
                 r.dataset.dinnerno = "0";
             }
+
+            // Stato CAMBIO TURNO (Switch)
+            if (d.switch) { 
+                cambiTurnoManuali[cognome] = true; 
+            }
         }
-        if (cambiTurnoManuali[r.dataset.cognome]) { 
+
+        // Forza lo stato del bottone switch se presente in memoria globale
+        if (cambiTurnoManuali[cognome]) {
             const btnSwitch = r.querySelector('.btn-switch');
             if (btnSwitch) btnSwitch.classList.add('modificato');
         }
+
+        // 4. Avvia il controllo automatico sul Dinner basandosi sul testo appena inserito nella cella ENTRA
+        controllaDinnerAutomatico(r);
     });
 }
 
