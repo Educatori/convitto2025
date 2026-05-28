@@ -1,4 +1,4 @@
- /* SCRIPT.JS */
+ /* DASHBOARD-SCRIPT.JS */
 
 let cambiTurnoManuali = {};
 let assenzeProgrammate = {};
@@ -156,7 +156,7 @@ function controllaDinnerAutomatico(riga) {
     let ppIn = (ORARI_PP[cognome] && ORARI_PP[cognome][giornoSettimana]) ? normalizzaOrario(ORARI_PP[cognome][giornoSettimana].in) : "";
 
     let limite = TURNI_DINNER[1].includes(classe) ? "18:30" : "19:15";
-    const paroleNo = ["x", "n", "no", "non", "nor", "no rientro"];
+    const paroleNo = ["X", "N", "NO", "NON", "NOR", "NO RIENTRO"];
 
     const isTardi = (orario) => orario.includes(":") && orario > limite;
     const isNoRientro = (orario) => paroleNo.includes(orario);
@@ -534,15 +534,44 @@ function salvaDatiLocale() {
 
 function caricaDatiLocale() { 
     const dati = JSON.parse(localStorage.getItem('datiConvitto') || "{}");
+    const giornoSettimana = new Date().getDay(); // Prende il giorno corrente (1=Lun, 2=Mar, ecc.)
+
     document.querySelectorAll('.student-row').forEach(r => {
-        const d = dati[r.dataset.cognome];
-        if (d) {
-            r.querySelector('.in-u').value = d.esce || "";
-            r.querySelector('.in-i').value = d.entra || "";
-            if (d.assente) { r.classList.add('assente'); r.querySelector('.btn-ass')?.classList.add('active-ass'); }
-            if (d.dinnerno === "1") { r.classList.add('dinner-no'); r.querySelector('.btn-din')?.classList.add('active-din'); r.dataset.dinnerno = "1"; }
-            if (d.switch) { cambiTurnoManuali[r.dataset.cognome] = true; r.querySelector('.btn-switch')?.classList.add('modificato'); }
+        const cognome = r.dataset.cognome;
+        const cgn = cognome.toUpperCase();
+        const d = dati[cognome];
+
+        // 1. Controlla se ci sono orari predefiniti in PERMESSI.js per OGGI
+        let ppOut = "";
+        let ppIn = "";
+        if (ORARI_PP[cgn] && ORARI_PP[cgn][giornoSettimana]) {
+            ppOut = ORARI_PP[cgn][giornoSettimana].out || "";
+            ppIn = ORARI_PP[cgn][giornoSettimana].in || "";
         }
+
+        // 2. Assegna i valori alle celle: priorità al manuale (d), altrimenti usa il PP automatico
+        r.querySelector('.in-u').value = (d && d.esce !== undefined) ? d.esce : ppOut;
+        r.querySelector('.in-i').value = (d && d.entra !== undefined) ? d.entra : ppIn;
+
+        // 3. Ripristina gli stati dei pulsanti (Assente, Dinner NO, Switch)
+        if (d) {
+            if (d.assente) { 
+                r.classList.add('assente'); 
+                r.querySelector('.btn-ass')?.classList.add('active-ass'); 
+            }
+            if (d.dinnerno === "1") { 
+                r.classList.add('dinner-no'); 
+                r.querySelector('.btn-din')?.classList.add('active-din'); 
+                r.dataset.dinnerno = "1"; 
+            }
+            if (d.switch) { 
+                cambiTurnoManuali[cognome] = true; 
+                r.querySelector('.btn-switch')?.classList.add('modificato'); 
+            }
+        }
+
+        // 4. Esegui il controllo automatico del dinner basandoti su quello che c'è scritto nella casella ENTRA
+        controllaDinnerAutomatico(r);
     });
 }
 
