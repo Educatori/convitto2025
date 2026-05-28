@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizzazione Orari e Trasporti</title>
+    <title>Trasportini Furgone</title>
     
     <link rel="stylesheet" href="css/campus-theme.css">
     <link rel="stylesheet" href="css/dashboard-style.css">
@@ -42,7 +42,7 @@
         }
         .time-slot:last-child { margin-bottom: 0; }
         
-        /* Variante "Da palestra" */
+        /* Variante "Dalla palestra" */
         .time-slot.gym-slot {
             border-left: 4px solid var(--lab);
             background: var(--lab-dim);
@@ -88,52 +88,56 @@
     <div class="container">
         <header>
             <div>
-                <h1><a href="index.html">Piano Trasportini Settimanali</a></h1>
-                
+                 <h1><a href="index.html"> Piano Trasportini Settimanali</a></h1>
                 <div id="todayDate">-- -- ----</div>
             </div>
             <div style="text-align: right;">
                 <div id="digitalClock">--:--:--</div>
             </div>
         </header>
-
+        
+        <div class="note-toolbar-container">
+            <div class="note-content">
+                <span class="note-icon">📌</span>
+                <textarea id="dailyNotes" placeholder="Note..." class="note-input" rows="2"></textarea>
+                <button class="clear-note-btn" onclick="cancellaNote()" title="Svuota note">✕</button>
+            </div>
+        </div>
+        
         <div id="quadroSettimanale"></div>
     </div>
 
+    
     <script>
         // --- CONFIGURAZIONE DEI DATI ---
         const programmaDati = {
             "lunedì": {
                 "15:50": ["3C x6", "4B x9"],
-                "16:40": ["1A x6", "1B x10", "3A x5", "3B x7", "5A x12", "4A x14"]
+                "16:40": ["1A x6", "1B x10", "3A x5", "3B x7", "4A x14", "5A x12" ]
             },
             "martedì": {
-                "14:00": ["lab 5A x12 sul BUS di 4B"],
+                "14:00": ["lab 5A x12 (sul BUS di 4B)"],
                 "14:30": ["3A x5"],
                 "15:50": ["3B x7", "3C x6", "4A x14"],
-                "15:50 da palestra": ["4B x9"],
+                "15:50 dalla palestra": ["4B x9"],
                 "16:40": ["1A x6", "1B x10"]
             },
             "mercoledì": {
-              //  "14:00 simulimpresa NO": ["4A x14"],
-                "14:00": ["4A x14 sul BUS di 5A"],
+                "14:00": ["4A x14 (sul BUS di 5A)"],
                 "14:50": ["3A x5", "3B x7"],
                 "15:50": ["3C x6"],
-                "15:50 da palestra": ["5A x12"],
-                "16:40": ["1A x6", "1B x10", "4B x9"],
-              //  "16:40 simulimpresa SI": ["4A x14"]
+                "15:50 dalla palestra": ["5A x12"],
+                "16:40": ["1A x6", "1B x10", "4B x9"]
             },
             "giovedì": {
-              //  "14:00 simulimpresa NO": ["4B x9"],
-                "14:00": ["4B x9 sul BUS di 4A"],
+                "14:00": ["4B x9 (sul BUS di 4A)"],
                 "14:30": ["3B x7", "3C x6"],
-                "15:50": ["1A x6", "1B x10", "3A x5", "4A x12"],
-                "15:50 da palestra": ["4A x14"],
-             //  "16:40 simulimpresa SI": ["4B x9"]
+                "15:50": ["1A x6", "1B x10", "3A x5", "5A x12"],
+                "15:50 dalla palestra": ["4A x14"]
             }
         };
 
-        const ordineOrari = ["14:00", "14:00 simulimpresa NO", "14:30", "14:50", "15:50", "15:50 da palestra", "16:40", "16:40 simulimpresa SI"];
+        const ordineOrari = ["14:00", "14:00 simulimpresa NO", "14:30", "14:50", "15:50", "15:50 dalla palestra", "16:40", "16:40 simulimpresa SI"];
 
         function init() {
             const d = new Date();
@@ -145,7 +149,31 @@
                 if (clockEl) clockEl.innerText = new Date().toLocaleTimeString('it-IT');
             }, 1000);
 
+            // Carica le note salvate nel localStorage all'avvio
+            const noteInput = document.getElementById('dailyNotes');
+            if (noteInput) {
+                const noteSalvate = localStorage.getItem('note_trasportini');
+                if (noteSalvate) {
+                    noteInput.value = noteSalvate;
+                }
+                
+                // Ascolta la digitazione e salva istantaneamente a ogni carattere inserito
+                noteInput.addEventListener('input', () => {
+                    localStorage.setItem('note_trasportini', noteInput.value);
+                });
+            }
+
             renderTabella();
+        }
+
+        function cancellaNote() {
+            if (confirm("⚠️ Cancellare definitivamente le note?")) {
+                const noteInput = document.getElementById('dailyNotes');
+                if (noteInput) {
+                    noteInput.value = '';
+                    localStorage.removeItem('note_trasportini');
+                }
+            }
         }
 
         function renderTabella() {
@@ -170,7 +198,7 @@
                         
                         // Gestione dinamica delle classi di stile per gli slot speciali
                         let varianteClasse = '';
-                        if (ora === '15:50 da palestra') {
+                        if (ora === '15:50 dalla palestra') {
                             varianteClasse = 'gym-slot';
                         } else if (ora === '14:00 simulimpresa NO') {
                             varianteClasse = 'simula-no-slot';
