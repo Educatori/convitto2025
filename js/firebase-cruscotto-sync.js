@@ -1,4 +1,32 @@
 /* FIREBASE-CRUSCOTTO-SYNC.JS */
+
+// ========== AGGANCIO SICURO AGLI OGGETTI ESISTENTI ==========
+// Usiamo variabili globali senza ridichiararle se esistono già, o le leggiamo da window
+if (typeof auth === 'undefined') {
+    window.auth = window.auth || (typeof firebase !== 'undefined' ? firebase.auth() : null);
+} else {
+    window.auth = auth;
+}
+
+if (typeof database === 'undefined') {
+    window.database = window.database || (typeof firebase !== 'undefined' ? firebase.database() : null);
+} else {
+    window.database = database;
+}
+
+// Inizializzazione sicura delle variabili di stato (evita conflitti se già dichiarate altrove)
+if (typeof autoSaveInterval === 'undefined') window.autoSaveInterval = null;
+if (typeof isSyncing === 'undefined') window.isSyncing = false;
+if (typeof currentDataListener === 'undefined') window.currentDataListener = null;
+if (typeof currentNoteListener === 'undefined') window.currentNoteListener = null;
+if (typeof currentAssenzeListener === 'undefined') window.currentAssenzeListener = null;
+if (typeof currentPermessiListener === 'undefined') window.currentPermessiListener = null;
+
+// Controllo di sicurezza
+if (!window.auth || !window.database) {
+    console.error("❌ Errore critico: Firebase Auth o Database non rilevati. Verifica l'ordine degli script.");
+}
+
 // ========== GESTIONE STATO CONNESSIONE ==========
 function updateConnectionStatus(connected) {
     const statusDiv = document.getElementById('connection-status');
@@ -19,7 +47,7 @@ function updateConnectionStatus(connected) {
 function startAutoSave() {
     if (autoSaveInterval) clearInterval(autoSaveInterval);
     autoSaveInterval = setInterval(() => {
-        if (auth.currentUser && navigator.onLine) {
+        if (auth && auth.currentUser && navigator.onLine) {
             triggerSync();
         }
     }, 5000);
@@ -35,7 +63,7 @@ function stopAutoSave() {
 // ========== SINCRONIZZAZIONE DATI CONVITTO ==========
 async function syncDataToFirebase() {
     if (isSyncing) return;
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -55,7 +83,7 @@ async function syncDataToFirebase() {
 }
 
 async function loadDataFromFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -89,7 +117,7 @@ async function loadDataFromFirebase() {
 }
 
 function listenToFirebaseChanges() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
@@ -99,7 +127,7 @@ function listenToFirebaseChanges() {
     }
     
     currentDataListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && auth.currentUser) {
+        if (!isSyncing && snapshot.exists() && auth && auth.currentUser) {
             const firebaseData = snapshot.val();
             const localData = localStorage.getItem('datiConvitto');
             
@@ -124,7 +152,7 @@ function listenToFirebaseChanges() {
 
 // ========== SINCRONIZZAZIONE NOTE ==========
 async function syncNoteToFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const note = localStorage.getItem('note_convitto');
     if (note !== null) {
@@ -138,7 +166,7 @@ async function syncNoteToFirebase() {
 }
 
 async function loadNoteFromFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('note/convitto').get();
@@ -159,14 +187,14 @@ async function loadNoteFromFirebase() {
 }
 
 function listenToNoteChanges() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     if (currentNoteListener) {
         database.ref('note/convitto').off('value', currentNoteListener);
     }
     
     currentNoteListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && auth.currentUser) {
+        if (!isSyncing && snapshot.exists() && auth && auth.currentUser) {
             const firebaseNote = snapshot.val();
             const localNote = localStorage.getItem('note_convitto');
             
@@ -186,7 +214,7 @@ function listenToNoteChanges() {
 
 // ========== SINCRONIZZAZIONE ASSENZE PROGRAMMATE ==========
 async function syncAssenzeToFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const assenze = localStorage.getItem('assenzeProgrammate');
     if (assenze) {
@@ -200,7 +228,7 @@ async function syncAssenzeToFirebase() {
 }
 
 async function loadAssenzeFromFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('assenze/programmate').get();
@@ -229,14 +257,14 @@ async function loadAssenzeFromFirebase() {
 }
 
 function listenToAssenzeChanges() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     if (currentAssenzeListener) {
         database.ref('assenze/programmate').off('value', currentAssenzeListener);
     }
     
     currentAssenzeListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && auth.currentUser) {
+        if (!isSyncing && snapshot.exists() && auth && auth.currentUser) {
             const firebaseAssenze = snapshot.val();
             const localAssenze = localStorage.getItem('assenzeProgrammate');
             
@@ -259,7 +287,7 @@ function listenToAssenzeChanges() {
 
 // ========== SINCRONIZZAZIONE PERMESSI ==========
 async function syncPermessiToFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     const permessi = localStorage.getItem('permessiPermanenti');
     if (permessi) {
@@ -273,7 +301,7 @@ async function syncPermessiToFirebase() {
 }
 
 async function loadPermessiFromFirebase() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     try {
         const snapshot = await database.ref('permessi/permanenti').get();
@@ -297,14 +325,14 @@ async function loadPermessiFromFirebase() {
 }
 
 function listenToPermessiChanges() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     
     if (currentPermessiListener) {
         database.ref('permessi/permanenti').off('value', currentPermessiListener);
     }
     
     currentPermessiListener = (snapshot) => {
-        if (!isSyncing && snapshot.exists() && auth.currentUser) {
+        if (!isSyncing && snapshot.exists() && auth && auth.currentUser) {
             const firebasePermessi = snapshot.val();
             const localPermessi = localStorage.getItem('permessiPermanenti');
             
@@ -327,14 +355,14 @@ function listenToPermessiChanges() {
 
 // ========== TRIGGER SYNC ==========
 function triggerSync() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
     syncDataToFirebase();
     syncNoteToFirebase();
     syncAssenzeToFirebase();
     syncPermessiToFirebase();
 }
 
-// ========== FUNZIONE RESET DATI (SINGOLA, NON DUPLICATA) ==========
+// ========== FUNZIONE RESET DATI ==========
 window.resetDati = function(modalita = 'soloManuali') {
     console.log("🔧 resetDati chiamata - modalità:", modalita);
     
@@ -342,7 +370,7 @@ window.resetDati = function(modalita = 'soloManuali') {
     if (modalita === 'completo') {
         conferma = confirm("⚠️ RESET COMPLETO: cancellerà TUTTI i dati (assenze programmate, permessi, note e variazioni). Sei sicuro? ⚠");
     } else {
-        conferma = confirm("⚠️ Sei sicuro? Questo cancellerà SOLO le variazioni giornaliere (uscite, ingressi, assenze del giorno). Le assenze programmate e i permessi rimarranno. ⚠");
+        conferma = confirm("⚠️ Sei sicuro? This cancellerà SOLO le variazioni giornaliere (uscite, ingressi, assenze del giorno). Le assenze programmate e i permessi rimarranno. ⚠");
     }
     
     if (!conferma) return;
@@ -509,28 +537,24 @@ async function initFirebaseSync() {
     console.log('✅ Firebase Sync attivo');
 }
 
-// Avvia sync solo quando l'utente è autenticato
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        initFirebaseSync();
-    }
-});
+// Avvia sync in sicurezza controllando che l'oggetto auth esista
+if (auth) {
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            initFirebaseSync();
+        }
+    });
+}
 
 // Pulisci listener alla chiusura
 window.addEventListener('beforeunload', () => {
     const oggi = new Date();
     const dateKey = oggi.toLocaleDateString('it-IT').split('/').join('-');
     
-    if (currentDataListener) {
-        database.ref(`convitto/${dateKey}/dati`).off('value', currentDataListener);
-    }
-    if (currentPermessiListener) {
-        database.ref('permessi/permanenti').off('value', currentPermessiListener);
-    }
-    if (currentAssenzeListener) {
-        database.ref('assenze/programmate').off('value', currentAssenzeListener);
-    }
-    if (currentNoteListener) {
-        database.ref('note/convitto').off('value', currentNoteListener);
+    if (database) {
+        if (currentDataListener) database.ref(`convitto/${dateKey}/dati`).off('value', currentDataListener);
+        if (currentPermessiListener) database.ref('permessi/permanenti').off('value', currentPermessiListener);
+        if (currentAssenzeListener) database.ref('assenze/programmate').off('value', currentAssenzeListener);
+        if (currentNoteListener) database.ref('note/convitto').off('value', currentNoteListener);
     }
 });
